@@ -1,5 +1,6 @@
 import { Heart } from "lucide-react";
 import Link from "next/link";
+import LoginButton from "./login-button";
 
 export default function Header() {
     return (
@@ -23,12 +24,7 @@ export default function Header() {
                     >
                         Přihlásit
                     </Link>
-                    <Link
-                        href="/register"
-                        className="bg-[#8FBC8F] hover:bg-[#7da87d] px-4 py-2 rounded-full font-medium text-white text-sm transition-colors"
-                    >
-                        Začít zdarma
-                    </Link>
+                    <LoginButton />
                 </div>
             </nav>
         </header>
