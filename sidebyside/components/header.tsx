@@ -13,7 +13,7 @@ export default function Header() {
                         className="w-6 h-6 text-secondary"
                         fill="currentColor"
                     />{" "}
-                    Togetherly
+                    SideBySide
                 </Link>
 
                 <div className="flex items-center gap-3">
