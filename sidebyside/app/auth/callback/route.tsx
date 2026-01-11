@@ -14,5 +14,6 @@ export async function GET(request: Request) {
         }
     }
 
-    return NextResponse.redirect(`${origin}/auth/auth-code-error`);
+    const next = searchParams.get("next") ?? "/dashboard";
+    return NextResponse.redirect(`${origin}${next}`);
 }

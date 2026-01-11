@@ -1,0 +1,47 @@
+"use client";
+
+import { Button } from "@/components/ui/button";
+import { Plus, Check, Copy } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+
+export default function InviteButton({ userId }: { userId: string }) {
+    const [copied, setCopied] = useState(false);
+
+    const handleCopyInvite = () => {
+        const inviteLink = `${window.location.origin}/invite?code=${userId}`;
+
+        navigator.clipboard.writeText(inviteLink);
+
+        setCopied(true);
+
+        // Hezčí toast
+        toast.success("Odkaz zkopírován!", {
+            description: "Pošli ho své polovičce a začněte plánovat.",
+            duration: 3000, // Zmizí za 3s
+            icon: <Copy className="size-4" />,
+            style: {
+                backgroundColor: "var(--popover)",
+                color: "var(--normal-text)",
+                border: "1px solid var(--border)",
+                borderRadius: "var(--radius)",
+            },
+        });
+
+        setTimeout(() => setCopied(false), 2000);
+    };
+
+    return (
+        <Button
+            onClick={handleCopyInvite}
+            className="z-0 hover:z-20 flex justify-center items-center bg-secondary hover:bg-[#cf866c] shadow-sm p-0 rounded-full w-10 h-10 text-white hover:scale-105 transition-all"
+            title="Pozvat partnera"
+        >
+            {copied ? (
+                <Check className="size-5" />
+            ) : (
+                <Plus className="size-5" />
+            )}
+        </Button>
+    );
+}
