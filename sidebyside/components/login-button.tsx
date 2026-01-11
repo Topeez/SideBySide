@@ -6,7 +6,7 @@ export default function LoginButton({ nextUrl }: { nextUrl?: string }) {
     const supabase = createClient();
 
     const handleLogin = async () => {
-        const callbackUrl = `${window.location.origin}/auth/callback${
+        const callbackUrl = `${window.location}/auth/callback${
             nextUrl ? `?next=${encodeURIComponent(nextUrl)}` : ""
         }`;
 
