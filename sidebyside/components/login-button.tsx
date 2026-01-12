@@ -18,9 +18,5 @@ export default function LoginButton({ nextUrl }: { nextUrl?: string }) {
         });
     };
 
-    return (
-        <Button onClick={handleLogin} className="bg-stone-900 text-white">
-            Přihlásit se přes Google
-        </Button>
-    );
+    return <Button onClick={handleLogin}>Přihlásit se přes Google</Button>;
 }

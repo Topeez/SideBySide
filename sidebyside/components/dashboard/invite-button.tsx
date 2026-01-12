@@ -15,10 +15,9 @@ export default function InviteButton({ userId }: { userId: string }) {
 
         setCopied(true);
 
-        // Hezčí toast
         toast.success("Odkaz zkopírován!", {
             description: "Pošli ho své polovičce a začněte plánovat.",
-            duration: 3000, // Zmizí za 3s
+            duration: 3000,
             icon: <Copy className="size-4" />,
             style: {
                 backgroundColor: "var(--popover)",

@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 
 export async function updateLoveNote(formData: FormData) {
   const note = formData.get("note") as string;
-  const coupleId = formData.get("coupleId") as string; // Pozor, ID páru si musíme poslat
+  const coupleId = formData.get("coupleId") as string;
 
   if (!coupleId || !note) return;
 
@@ -23,6 +23,5 @@ export async function updateLoveNote(formData: FormData) {
     })
     .eq('id', coupleId);
 
-  // Refresh stránky, aby se to hned ukázalo
   revalidatePath('/dashboard');
 }

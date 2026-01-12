@@ -21,12 +21,10 @@ export function LoveNoteCard({
     currentUserId,
 }: LoveNoteCardProps) {
     const [isEditing, setIsEditing] = useState(false);
-
-    // Kdo to napsal?
     const isMyNote = authorId === currentUserId;
 
     return (
-        <Card className="group relative md:col-span-3 bg-[#FFF5F0] border-[#FFDCC7]">
+        <Card className="group relative bg-[#FFF5F0] border-[#FFDCC7]">
             <CardHeader className="pb-2">
                 <CardTitle className="flex justify-between items-center gap-2 font-medium text-secondary text-sm">
                     <div className="flex items-center gap-2">
@@ -39,7 +37,7 @@ export function LoveNoteCard({
                         onClick={() => setIsEditing(!isEditing)}
                         className="hover:bg-transparent opacity-0 group-hover:opacity-100 text-secondary transition-all duration-300"
                     >
-                        <Pencil className="w-3 h-3" />
+                        <Pencil className="size-3" />
                     </Button>
                 </CardTitle>
             </CardHeader>
@@ -48,7 +46,7 @@ export function LoveNoteCard({
                     <form
                         action={async (formData) => {
                             await updateLoveNote(formData);
-                            setIsEditing(false); // Zavřít po uložení
+                            setIsEditing(false);
                         }}
                         className="space-y-2"
                     >
@@ -71,7 +69,7 @@ export function LoveNoteCard({
                             <Button
                                 type="submit"
                                 size="sm"
-                                className="bg-[#E27D60] hover:bg-[#cf866c] text-white"
+                                className="bg-secondary hover:bg-[#cf866c] text-white"
                             >
                                 Uložit
                             </Button>
