@@ -36,11 +36,13 @@ export function CoupleProfileWidget({
                     {/* JÁ */}
                     <div className="flex flex-col items-center gap-2">
                         <Avatar className="border-2 border-primary w-16 h-16">
+                            <AvatarImage
+                                src={userProfile?.avatar_url}
+                                className="object-cover"
+                                referrerPolicy="no-referrer"
+                            />
                             <AvatarFallback>JÁ</AvatarFallback>
                         </Avatar>
-                        <span className="font-medium text-sm">
-                            {userProfile?.nickname || userProfile?.fullname}
-                        </span>
                     </div>
 
                     {/* SPOJENÍ */}
@@ -53,6 +55,11 @@ export function CoupleProfileWidget({
                     {/* PARTNER */}
                     <div className="flex flex-col items-center gap-2">
                         <Avatar className="border-2 border-muted w-16 h-16">
+                            <AvatarImage
+                                src={partnerProfile?.avatar_url}
+                                className="object-cover"
+                                referrerPolicy="no-referrer"
+                            />
                             <AvatarFallback>TY</AvatarFallback>
                         </Avatar>
                         <span className="font-medium text-muted-foreground text-sm">

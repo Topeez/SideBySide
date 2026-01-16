@@ -108,7 +108,10 @@ export default async function DashboardPage() {
                     </p>
                 </div>
                 <div className="flex items-center gap-4">
-                    <UserNav />
+                    <UserNav
+                        avatar_url={user.user_metadata.avatar_url}
+                        fullname={""}
+                    />
                 </div>
             </header>
 

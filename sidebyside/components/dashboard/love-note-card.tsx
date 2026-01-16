@@ -37,7 +37,7 @@ export function LoveNoteCard({
                         onClick={() => setIsEditing(!isEditing)}
                         className="hover:bg-transparent opacity-0 group-hover:opacity-100 text-secondary transition-all duration-300"
                     >
-                        <Pencil className="size-3" />
+                        <Pencil className="size-4" />
                     </Button>
                 </CardTitle>
             </CardHeader>

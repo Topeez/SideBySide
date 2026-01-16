@@ -17,7 +17,13 @@ import Link from "next/link";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 
-export function UserNav() {
+interface ProfileData {
+    fullname: string;
+    nickname?: string;
+    avatar_url?: string;
+}
+
+export function UserNav({ avatar_url, fullname, nickname }: ProfileData) {
     const router = useRouter();
     const supabase = createClient();
 
@@ -26,17 +32,39 @@ export function UserNav() {
         router.push("/");
     };
 
+    const initials = fullname
+        ? fullname
+              .split(" ")
+              .map((n) => n[0])
+              .join("")
+              .toUpperCase()
+              .slice(0, 2)
+        : "JA";
+
+    const fullAvatarUrl = avatar_url?.startsWith("http")
+        ? avatar_url
+        : avatar_url
+        ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatars/${avatar_url}`
+        : undefined;
+
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button
                     variant="ghost"
-                    className="relative rounded-full w-10 h-10"
+                    className="relative rounded-full size-10"
                 >
-                    <Avatar className="border border-muted w-10 h-10">
-                        {/* Tady časem dáš URL z profilu */}
-                        <AvatarImage src="/avatars/01.png" alt="@uzivatel" />
-                        <AvatarFallback>JA</AvatarFallback>
+                    <Avatar className="border border-muted size-10">
+                        {/* Zobrazíme Image jen pokud máme URL */}
+                        {fullAvatarUrl && (
+                            <AvatarImage
+                                src={fullAvatarUrl}
+                                alt={nickname || fullname}
+                                className="object-cover"
+                                referrerPolicy="no-referrer"
+                            />
+                        )}
+                        <AvatarFallback>{initials}</AvatarFallback>
                     </Avatar>
                 </Button>
             </DropdownMenuTrigger>
