@@ -24,7 +24,7 @@ export function LoveNoteCard({
     const isMyNote = authorId === currentUserId;
 
     return (
-        <Card className="group relative bg-[#FFF5F0] border-[#FFDCC7]">
+        <Card className="group relative col-span-12 md:col-span-4 bg-[#FFF5F0] border-[#FFDCC7]">
             <CardHeader className="pb-2">
                 <CardTitle className="flex justify-between items-center gap-2 font-medium text-secondary text-sm">
                     <div className="flex items-center gap-2">

@@ -13,6 +13,8 @@ import { Label } from "@/components/ui/label";
 import { Plus, Clock, MapPin } from "lucide-react";
 import { createEvent } from "@/app/actions/events";
 import { useState } from "react";
+import { EVENT_TYPES, EventType } from "@/lib/event-types";
+import { cn } from "@/lib/utils";
 
 interface AddEventDialogProps {
     coupleId: string;
@@ -32,28 +34,23 @@ export function AddEventDialog({
 
     // Formát pro input type="date" (YYYY-MM-DD)
     const dateString = `${dateToUse.getFullYear()}-${String(
-        dateToUse.getMonth() + 1
+        dateToUse.getMonth() + 1,
     ).padStart(2, "0")}-${String(dateToUse.getDate()).padStart(2, "0")}`;
 
-    const EVENT_COLORS = [
-        { value: "#d16135", label: "Oranžová" }, // Default
-        { value: "#264653", label: "Tmavě modrá" },
-        { value: "#2A9D8F", label: "Tyrkysová" },
-        { value: "#E9C46A", label: "Žlutá" },
-        { value: "#F4A261", label: "Světle oranžová" },
-        { value: "#E76F51", label: "Červená" },
-        { value: "#A68A64", label: "Hnědá" }, // Neutrální
-    ];
+    const [selectedType, setSelectedType] = useState<EventType>("date");
 
-    // State pro barvu, defaultně první
-    const [color, setColor] = useState(EVENT_COLORS[0].value);
+    const iconClasses =
+        "top-2.5 left-2.5 absolute size-4 text-muted-foreground";
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
                 {children || (
-                    <Button size="sm" className="bg-primary hover:bg-[#7DA87D]">
-                        <Plus className="w-4 h-4" />
+                    <Button
+                        size="sm"
+                        className="bg-primary hover:bg-primary-foreground"
+                    >
+                        <Plus className="size-4" />
                     </Button>
                 )}
             </DialogTrigger>
@@ -70,8 +67,7 @@ export function AddEventDialog({
                     className="space-y-4 pt-4"
                 >
                     <input type="hidden" name="coupleId" value={coupleId} />
-                    {/* Skrytý input pro odeslání vybrané barvy */}
-                    <input type="hidden" name="color" value={color} />
+                    <input type="hidden" name="type" value={selectedType} />
 
                     <div className="space-y-1">
                         <Label htmlFor="dateBase">Kdy?</Label>
@@ -99,7 +95,7 @@ export function AddEventDialog({
                         <div className="flex-1 space-y-1">
                             <Label htmlFor="startTime">Začátek</Label>
                             <div className="relative">
-                                <Clock className="top-2.5 left-2.5 absolute w-4 h-4 text-stone-400" />
+                                <Clock className={`${iconClasses}`} />
                                 <Input
                                     id="startTime"
                                     name="startTime"
@@ -119,7 +115,7 @@ export function AddEventDialog({
                     <div className="space-y-1">
                         <Label htmlFor="location">Kde?</Label>
                         <div className="relative">
-                            <MapPin className="top-2.5 left-2.5 absolute w-4 h-4 text-stone-400" />
+                            <MapPin className={`${iconClasses}`} />
                             <Input
                                 id="location"
                                 name="location"
@@ -129,30 +125,51 @@ export function AddEventDialog({
                         </div>
                     </div>
 
-                    {/* Sekce pro výběr barvy - opraveno */}
-                    <div className="space-y-2">
-                        <Label>Barva štítku</Label>
-                        <div className="flex flex-wrap gap-2">
-                            {EVENT_COLORS.map((c) => (
-                                <button
-                                    key={c.value}
-                                    type="button" // Důležité, aby to neodeslalo formulář
-                                    onClick={() => setColor(c.value)}
-                                    className={`h-8 w-8 rounded-full border-2 transition-all ${
-                                        color === c.value
-                                            ? "border-black scale-110"
-                                            : "border-transparent hover:scale-105"
-                                    }`}
-                                    style={{ backgroundColor: c.value }}
-                                    title={c.label}
-                                />
-                            ))}
+                    <div className="space-y-3">
+                        <Label>Typ akce</Label>
+                        <div className="gap-2 grid grid-cols-3">
+                            {Object.entries(EVENT_TYPES).map(
+                                ([key, config]) => {
+                                    const isSelected = selectedType === key;
+                                    const Icon = config.icon;
+
+                                    return (
+                                        <button
+                                            key={key}
+                                            type="button"
+                                            onClick={() =>
+                                                setSelectedType(
+                                                    key as EventType,
+                                                )
+                                            }
+                                            className={cn(
+                                                "flex flex-col justify-center items-center gap-1 p-2 border-2 rounded-lg transition-all",
+                                                isSelected
+                                                    ? "border-primary bg-primary/10 text-primary"
+                                                    : "border-transparent bg-muted hover:bg-muted/80 text-muted-foreground",
+                                            )}
+                                        >
+                                            <Icon
+                                                className="w-5 h-5"
+                                                style={{
+                                                    color: isSelected
+                                                        ? "currentColor"
+                                                        : config.color,
+                                                }}
+                                            />
+                                            <span className="font-medium text-xs">
+                                                {config.label}
+                                            </span>
+                                        </button>
+                                    );
+                                },
+                            )}
                         </div>
                     </div>
 
                     <Button
                         type="submit"
-                        className="bg-[#8FBC8F] hover:bg-[#7DA87D] w-full"
+                        className="bg-primary hover:bg-primary-foreground w-full text-white"
                     >
                         Uložit
                     </Button>

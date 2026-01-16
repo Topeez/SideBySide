@@ -53,7 +53,6 @@
 
     /* Background: Off-white / Krémová */
     --background: #fdfbf7;
-    /* Text: Tmavě šedá (místo čisté černé) */
     --foreground: #292524; /* stone-800 */
 
     /* Karty a popovery: Čistě bílá */
@@ -64,11 +63,11 @@
 
     /* Primary: Sage Green */
     --primary: #8fbc8f;
-    --primary-foreground: #ffffff;
+    --primary-foreground: #699369;
 
     /* Secondary: Muted Coral */
-    --secondary: #d16135;
-    --secondary-foreground: #e38d6b;
+    --secondary: #ff5b1b;
+    --secondary-foreground: #ff8554;
 
     /* Neutrální prvky */
     --muted: #f5f5f4; /* stone-100 */

@@ -7,11 +7,10 @@ export async function createEvent(formData: FormData) {
   const title = formData.get("title") as string;
   const location = formData.get("location") as string;
   const coupleId = formData.get("coupleId") as string;
-  
-  // Data z formuláře
-  const dateBase = formData.get("dateBase") as string; // "2026-01-12"
-  const startTimeStr = formData.get("startTime") as string; // "14:00"
-  const endTimeStr = formData.get("endTime") as string; // "16:00" nebo ""
+  const type = formData.get("type") as string; 
+  const dateBase = formData.get("dateBase") as string;
+  const startTimeStr = formData.get("startTime") as string;
+  const endTimeStr = formData.get("endTime") as string;
 
   if (!title || !dateBase || !startTimeStr) return;
 
@@ -19,8 +18,6 @@ export async function createEvent(formData: FormData) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return;
 
-  // Slepíme Datum a Čas do ISO stringu (např. "2026-01-12T14:00:00.000Z")
-  // Pozor: new Date("2026-01-12T14:00") vytvoří lokální čas
   const startIso = new Date(`${dateBase}T${startTimeStr}`).toISOString();
   
   let endIso = null;
@@ -34,7 +31,8 @@ export async function createEvent(formData: FormData) {
     start_time: startIso,
     end_time: endIso,
     couple_id: coupleId,
-    created_by: user.id
+    created_by: user.id,
+    type: type || 'other',
   });
 
   revalidatePath("/dashboard");

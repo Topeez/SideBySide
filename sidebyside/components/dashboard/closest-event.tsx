@@ -10,20 +10,20 @@ export function ClosestEvent({
     coupleId,
 }: ClosestEventProps) {
     return (
-        <Card className="md:col-span-2 bg-primary/10 border-[#8FBC8F]/30 h-full">
+        <Card className="col-span-12 md:col-span-8 bg-primary/15 border-primary h-full">
             <CardHeader className="flex flex-row justify-between items-center pb-2">
                 <CardTitle className="font-medium text-[#2F4F2F] text-lg">
                     Nejbližší plán
                 </CardTitle>
-                <CalendarDays className="w-5 h-5 text-[#8FBC8F]" />
+                <CalendarDays className="size-5 text-primary" />
             </CardHeader>
             <CardContent>
                 {nextEvent ? (
                     <>
-                        <div className="mb-2 font-bold text-stone-800 text-3xl">
+                        <div className="mb-2 font-bold text-foreground text-3xl">
                             {nextEvent.title}
                         </div>
-                        <p className="mb-6 text-stone-600 capitalize">
+                        <p className="mb-6 text-muted-foreground capitalize">
                             {new Date(nextEvent.start_time).toLocaleDateString(
                                 "cs-CZ",
                                 {
@@ -32,7 +32,7 @@ export function ClosestEvent({
                                     month: "long",
                                     hour: "numeric",
                                     minute: "2-digit",
-                                }
+                                },
                             )}
                             {nextEvent.location
                                 ? ` • ${nextEvent.location}`
@@ -41,12 +41,12 @@ export function ClosestEvent({
                     </>
                 ) : (
                     <>
-                        <div className="opacity-60 mb-2 font-bold text-stone-800 text-3xl">
+                        <div className="opacity-60 mb-2 font-bold text-foreground text-3xl">
                             {hasCouple
                                 ? "Žádný plán v dohledu"
                                 : "Zatím žádný plán"}
                         </div>
-                        <p className="mb-6 text-stone-600">
+                        <p className="mb-6 text-muted-foreground">
                             {hasCouple
                                 ? "Co takhle si něco naplánovat?"
                                 : "Naplánuj si něco hezkého."}
@@ -56,12 +56,12 @@ export function ClosestEvent({
 
                 {coupleId ? (
                     <AddEventDialog coupleId={coupleId}>
-                        <Button className="bg-[#8FBC8F] hover:bg-[#7DA87D] text-white">
-                            <Plus className="mr-2 w-4 h-4" /> Přidat
+                        <Button className="bg-primary hover:bg-primary-foreground text-white">
+                            <Plus className="mr-2 size-4" /> Přidat
                         </Button>
                     </AddEventDialog>
                 ) : (
-                    <Button className="bg-primary hover:bg-[#7DA87D] text-white">
+                    <Button className="bg-primary hover:bg-primary-foreground text-white">
                         <Plus className="mr-2 size-4" /> Přidat
                     </Button>
                 )}

@@ -6,8 +6,8 @@ import { LoveNoteCard } from "@/components/dashboard/love-note-card";
 import { TodoList } from "@/components/dashboard/todo-list";
 import { CalendarWidget } from "@/components/dashboard/calendar-widget";
 import { ClosestEvent } from "@/components/dashboard/closest-event";
-import { UserNav } from "@/components/dashboard/user-nav";
 import { CoupleProfileWidget } from "@/components/dashboard/couple-profile-widget";
+import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 
 export default async function DashboardPage() {
     const supabase = await createClient();
@@ -24,8 +24,6 @@ export default async function DashboardPage() {
             </div>
         );
     }
-
-    const userName = user.user_metadata.name || "Návštěvníku";
 
     // 1. Načteme Pár
     const { data: couple } = await supabase
@@ -96,27 +94,10 @@ export default async function DashboardPage() {
     return (
         <div className="space-y-6 p-4 md:p-8 cs-container">
             {/* --- HEADER --- */}
-            <header className="flex justify-between items-center bg-background shadow-sm mb-8 px-6 border border-b rounded-lg h-16">
-                <div>
-                    <h1 className="font-bold text-foreground text-2xl">
-                        Ahoj, {userName}! 👋
-                    </h1>
-                    <p className="text-muted-foreground text-xs md:text-sm">
-                        {couple
-                            ? "Co spolu dnes podniknete?"
-                            : "Vítej ve své osobní zóně."}
-                    </p>
-                </div>
-                <div className="flex items-center gap-4">
-                    <UserNav
-                        avatar_url={user.user_metadata.avatar_url}
-                        fullname={""}
-                    />
-                </div>
-            </header>
+            <DashboardHeader />
 
             {/* --- BENTO GRID --- */}
-            <div className="gap-4 grid grid-cols-1 md:grid-cols-4">
+            <div className="gap-4 grid grid-cols-12">
                 {/* 1. ŘÁDEK */}
 
                 {/* Hlavní karta - Next Event */}
@@ -135,7 +116,7 @@ export default async function DashboardPage() {
                         currentUserId={user.id}
                     />
                 ) : (
-                    <Card className="md:col-span-1 bg-[#FFF5F0] border-[#FFDCC7] border-dashed">
+                    <Card className="col-span-12 md:col-span-3 lg:col-span-4 bg-[#FFF5F0] border-[#FFDCC7] border-dashed">
                         <CardHeader className="pb-2">
                             <CardTitle className="flex items-center gap-2 font-medium text-secondary text-sm">
                                 <Heart className="fill-secondary size-4" />
@@ -157,7 +138,7 @@ export default async function DashboardPage() {
                 {couple ? (
                     <TodoList initialTodos={todos} coupleId={couple.id} />
                 ) : (
-                    <Card className="md:col-span-1">
+                    <Card className="col-span-12 md:col-span-4">
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2 text-base">
                                 <ShoppingBag className="w-4 h-4" /> Nákupy
@@ -191,7 +172,7 @@ export default async function DashboardPage() {
                         />
                     </>
                 ) : (
-                    <Card className="md:col-span-3">
+                    <Card className="col-span-12 md:col-span-4">
                         <CardHeader>
                             <CardTitle>Kalendář</CardTitle>
                         </CardHeader>

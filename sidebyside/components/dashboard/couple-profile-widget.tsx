@@ -22,9 +22,9 @@ export function CoupleProfileWidget({
     partnerProfile,
 }: CoupleProfileWidgetProps) {
     return (
-        <Card className="relative flex flex-col justify-between col-span-1 h-full overflow-hidden">
+        <Card className="relative flex flex-col justify-between col-span-12 lg:col-span-4 h-full overflow-hidden">
             <div className="top-0 right-0 absolute opacity-10 p-4">
-                <HeartHandshake className="w-24 h-24" />
+                <HeartHandshake className="size-24" />
             </div>
 
             <CardHeader>

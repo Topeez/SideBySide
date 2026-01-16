@@ -1,8 +1,16 @@
-import { Heart } from "lucide-react";
+import { Heart, LayoutDashboard } from "lucide-react";
 import Link from "next/link";
 import LoginButton from "./login-button";
+import { createClient } from "@/utils/supabase/server";
+import { Button } from "./ui/button";
 
-export default function Header() {
+export default async function Header() {
+    const supabase = await createClient();
+
+    const {
+        data: { user },
+    } = await supabase.auth.getSession();
+
     return (
         <header className="top-0 right-0 left-0 z-999 fixed shadow-sm">
             <nav className="flex justify-between items-center py-4 w-full cs-container">
@@ -11,20 +19,28 @@ export default function Header() {
                     className="flex items-center gap-2 font-bold text-stone-800 text-xl"
                 >
                     <Heart
-                        className="w-6 h-6 text-secondary"
+                        className="size-6 text-secondary"
                         fill="currentColor"
                     />{" "}
                     SideBySide
                 </Link>
 
                 <div className="flex items-center gap-3">
-                    <Link
-                        href="/login"
-                        className="font-medium text-stone-600 hover:text-stone-900 text-sm"
-                    >
-                        Přihlásit
-                    </Link>
-                    <LoginButton />
+                    {user ? (
+                        <Link href="/dashboard">
+                            <Button className="gap-2 bg-primary hover:bg-primary/90 shadow-md text-white cursor-pointer">
+                                <LayoutDashboard className="size-4" />
+                                Přejít do aplikace
+                            </Button>
+                        </Link>
+                    ) : (
+                        <Link href="/dashboard">
+                            <Button className="gap-2 bg-primary hover:bg-primary/90 shadow-md text-white">
+                                <LayoutDashboard className="size-4" />
+                                Přejít do aplikace
+                            </Button>
+                        </Link>
+                    )}
                 </div>
             </nav>
         </header>
