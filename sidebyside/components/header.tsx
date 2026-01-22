@@ -9,7 +9,7 @@ export default async function Header() {
 
     const {
         data: { user },
-    } = await supabase.auth.getSession();
+    } = await supabase.auth.getUser();
 
     return (
         <header className="top-0 right-0 left-0 z-999 fixed shadow-sm">
