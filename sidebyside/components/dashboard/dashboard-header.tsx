@@ -1,12 +1,16 @@
 import { createClient } from "@/utils/supabase/server";
 import { UserNav } from "./user-nav";
 import { ThemeToggleWrapper } from "../theme-switcher-wrapper";
+import Link from "next/link";
+import { House } from "lucide-react";
 
 export async function DashboardHeader() {
     const supabase = await createClient();
     const {
         data: { user },
     } = await supabase.auth.getUser();
+
+    if (!user) return null;
 
     const userName = user?.user_metadata.name || "Návštěvníku";
 
@@ -19,7 +23,7 @@ export async function DashboardHeader() {
     return (
         <header className="flex justify-between items-center bg-background shadow-sm mb-8 px-6 border border-b rounded-lg h-16">
             <div>
-                <h1 className="font-bold text-foreground text-2xl">
+                <h1 className="font-bold text-foreground text-xl sm:text-2xl">
                     Ahoj, {userName}! 👋
                 </h1>
                 <p className="text-muted-foreground text-xs md:text-sm">
@@ -28,11 +32,19 @@ export async function DashboardHeader() {
                         : "Vítej ve své osobní zóně."}
                 </p>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-1 sm:gap-2 md:gap-4">
+                <Link href="/" className="p-2 border border-muted rounded-full">
+                    <House
+                        size={18}
+                        className="text-muted-foreground hover:text-foreground transition-colors"
+                    />
+                </Link>
                 <ThemeToggleWrapper />
                 <UserNav
+                    user_id={user?.id || ""}
+                    email={user?.email || ""}
                     avatar_url={user?.user_metadata.avatar_url}
-                    fullname={""}
+                    full_name={""}
                 />
             </div>
         </header>

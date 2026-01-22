@@ -34,12 +34,7 @@ export default async function Header() {
                             </Button>
                         </Link>
                     ) : (
-                        <Link href="/dashboard">
-                            <Button className="gap-2 bg-primary hover:bg-primary/90 shadow-md text-white">
-                                <LayoutDashboard className="size-4" />
-                                Přejít do aplikace
-                            </Button>
-                        </Link>
+                        <LoginButton />
                     )}
                 </div>
             </nav>

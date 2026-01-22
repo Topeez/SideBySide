@@ -1,0 +1,76 @@
+"use client";
+
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { deleteAccount } from "@/app/actions/account";
+import { useTransition } from "react";
+import { toast } from "sonner";
+import { Loader2, Trash2 } from "lucide-react";
+
+export function DeleteAccount() {
+    const [isPending, startTransition] = useTransition();
+
+    const handleDelete = () => {
+        startTransition(async () => {
+            const result = await deleteAccount();
+            // Pokud se to povede, funkce deleteAccount provede redirect,
+            // takže kód dál už se v podstatě nespustí.
+            // Pokud se vrátí výsledek, znamená to chybu.
+            if (result && !result.success) {
+                toast.error(result.message);
+            }
+        });
+    };
+
+    return (
+        <AlertDialog>
+            <AlertDialogTrigger asChild>
+                <Button variant="destructive">
+                    <Trash2 className="mr-2 size-4" />
+                    Smazat účet
+                </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Jste si naprosto jistí?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        Tato akce je nevratná. Trvale smaže váš účet a odstraní
+                        vaše data z našich serverů.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel className="cursor-pointer">
+                        Zrušit
+                    </AlertDialogCancel>
+                    <AlertDialogAction
+                        onClick={(e) => {
+                            e.preventDefault(); // Zabrání zavření dialogu, dokud se nedokončí akce
+                            handleDelete();
+                        }}
+                        className="bg-destructive hover:bg-red-700 focus:ring-red-600 text-foreground cursor-pointer"
+                        disabled={isPending}
+                    >
+                        {isPending ? (
+                            <>
+                                <Loader2 className="mr-2 w-4 h-4 animate-spin" />
+                                Mazání...
+                            </>
+                        ) : (
+                            "Ano, smazat účet"
+                        )}
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+    );
+}

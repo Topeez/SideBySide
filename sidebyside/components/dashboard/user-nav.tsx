@@ -16,14 +16,14 @@ import { User, Settings, LogOut, Heart } from "lucide-react";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
-
-interface ProfileData {
-    fullname: string;
-    nickname?: string;
-    avatar_url?: string;
-}
-
-export function UserNav({ avatar_url, fullname, nickname }: ProfileData) {
+import { ProfileData } from "@/types/profile";
+export function UserNav({
+    user_id,
+    email,
+    avatar_url,
+    full_name,
+    nickname,
+}: ProfileData) {
     const router = useRouter();
     const supabase = createClient();
 
@@ -32,8 +32,8 @@ export function UserNav({ avatar_url, fullname, nickname }: ProfileData) {
         router.push("/");
     };
 
-    const initials = fullname
-        ? fullname
+    const initials = full_name
+        ? full_name
               .split(" ")
               .map((n) => n[0])
               .join("")
@@ -44,22 +44,22 @@ export function UserNav({ avatar_url, fullname, nickname }: ProfileData) {
     const fullAvatarUrl = avatar_url?.startsWith("http")
         ? avatar_url
         : avatar_url
-        ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatars/${avatar_url}`
-        : undefined;
+          ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatars/${avatar_url}`
+          : undefined;
 
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button
                     variant="ghost"
-                    className="relative rounded-full size-10"
+                    className="relative rounded-full size-10 cursor-pointer"
                 >
                     <Avatar className="border border-muted size-10">
                         {/* Zobrazíme Image jen pokud máme URL */}
                         {fullAvatarUrl && (
                             <AvatarImage
                                 src={fullAvatarUrl}
-                                alt={nickname || fullname}
+                                alt={nickname || full_name}
                                 className="object-cover"
                                 referrerPolicy="no-referrer"
                             />
@@ -75,20 +75,20 @@ export function UserNav({ avatar_url, fullname, nickname }: ProfileData) {
                             Můj Profil
                         </p>
                         <p className="text-muted-foreground text-xs leading-none">
-                            user@example.com
+                            {email}
                         </p>
                     </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                    <Link href="/profile">
+                    <Link href={`/dashboard/profile/${user_id}`}>
                         <DropdownMenuItem className="cursor-pointer">
                             <User className="mr-2 w-4 h-4" />
                             <span>O mně</span>
                             <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
                         </DropdownMenuItem>
                     </Link>
-                    <Link href="/settings">
+                    <Link href="/dashboard/settings">
                         <DropdownMenuItem className="cursor-pointer">
                             <Settings className="mr-2 w-4 h-4" />
                             <span>Nastavení</span>
@@ -97,7 +97,7 @@ export function UserNav({ avatar_url, fullname, nickname }: ProfileData) {
                     </Link>
                     <Link href="/couple">
                         <DropdownMenuItem className="cursor-pointer">
-                            <Heart className="mr-2 w-4 h-4 text-red-500" />
+                            <Heart className="mr-2 size-4 text-destructive" />
                             <span>Náš vztah</span>
                         </DropdownMenuItem>
                     </Link>
@@ -105,9 +105,9 @@ export function UserNav({ avatar_url, fullname, nickname }: ProfileData) {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                     onClick={handleSignOut}
-                    className="text-red-600 cursor-pointer"
+                    className="text-destructive cursor-pointer"
                 >
-                    <LogOut className="mr-2 w-4 h-4" />
+                    <LogOut className="mr-2 size-4 text-destructive" />
                     <span>Odhlásit se</span>
                 </DropdownMenuItem>
             </DropdownMenuContent>

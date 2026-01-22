@@ -14,9 +14,10 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { AddEventDialog } from "./add-event-dialog";
-import { Plus, MapPin, Gift } from "lucide-react";
+import { Plus, MapPin, Gift, Trash2 } from "lucide-react";
 import { Event } from "@/types/event";
 import { getEventColor, getEventLabel } from "@/lib/event-types";
+import { deleteEvent } from "@/app/actions/events";
 
 interface Profile {
     birth_date?: string | Date;
@@ -136,7 +137,7 @@ export function CalendarWidget({
 
                     // TLAČÍTKO DNE (SAMOTNÝ ČTVEREČEK)
                     day: cn(
-                        "flex flex-col justify-start items-center hover:bg-accent/50 aria-selected:opacity-100 m-2 p-0 rounded-md size-full font-normal transition-colors",
+                        "flex flex-col justify-start items-center hover:bg-accent/50 aria-selected:opacity-100 m-1 sm:m-2 p-0 rounded-md size-full font-normal transition-colors",
                     ),
 
                     // STAVY
@@ -259,6 +260,13 @@ export function CalendarWidget({
                                                     ? "CELÝ DEN"
                                                     : `${start}${end ? ` - ${end}` : ""}`}
                                             </span>
+                                            <Trash2
+                                                className="size-4 hover:text-destructive transition-colors cursor-pointer"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    deleteEvent(event.id);
+                                                }}
+                                            />
                                         </div>
                                         {event.description && (
                                             <p className="text-muted-foreground text-xs line-clamp-1">

@@ -5,12 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Settings2, HeartHandshake } from "lucide-react";
 import Link from "next/link";
-
-interface ProfileData {
-    fullname: string;
-    nickname?: string;
-    avatar_url?: string;
-}
+import { ProfileData } from "@/types/profile";
 
 interface CoupleProfileWidgetProps {
     userProfile?: ProfileData | null;
@@ -64,15 +59,15 @@ export function CoupleProfileWidget({
                         </Avatar>
                         <span className="font-medium text-muted-foreground text-sm">
                             {partnerProfile?.nickname ||
-                                partnerProfile?.fullname}
+                                partnerProfile?.full_name}
                         </span>
                     </div>
                 </div>
 
                 <div className="mt-auto pt-4">
-                    <Link href="/profile">
+                    <Link href={`/dashboard/profile/${userProfile?.user_id}`}>
                         <Button variant="outline" className="gap-2 w-full">
-                            <Settings2 className="w-4 h-4" />
+                            <Settings2 className="size-4" />
                             Upravit profil
                         </Button>
                     </Link>

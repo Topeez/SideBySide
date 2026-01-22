@@ -24,14 +24,13 @@ export function LoveNoteCard({
     const isMyNote = authorId === currentUserId;
 
     return (
-        <Card className="group relative col-span-12 md:col-span-4 bg-[#FFF5F0] border-[#FFDCC7]">
+        <Card className="group relative col-span-12 md:col-span-4 bg-secondary/15 border-secondary">
             <CardHeader className="pb-2">
                 <CardTitle className="flex justify-between items-center gap-2 font-medium text-secondary text-sm">
                     <div className="flex items-center gap-2">
                         <Heart className="fill-current w-4 h-4" />
                         {isMyNote ? "Tvůj vzkaz" : "Vzkaz pro tebe"}
                     </div>
-                    {/* Tlačítko editace (zobrazí se po najetí myší) */}
                     <Button
                         variant={"ghost"}
                         onClick={() => setIsEditing(!isEditing)}
@@ -76,7 +75,7 @@ export function LoveNoteCard({
                         </div>
                     </form>
                 ) : (
-                    <p className="min-h-10 text-stone-700 italic whitespace-pre-wrap">
+                    <p className="min-h-10 text-muted-foreground italic whitespace-pre-wrap">
                         &quot;{initialNote}&quot;
                     </p>
                 )}

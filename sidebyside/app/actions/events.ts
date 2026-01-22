@@ -37,3 +37,9 @@ export async function createEvent(formData: FormData) {
 
   revalidatePath("/dashboard");
 }
+
+export async function deleteEvent(eventId: string) {
+  const supabase = await createClient();
+  await supabase.from("events").delete().eq("id", eventId);
+  revalidatePath("/dashboard");
+}

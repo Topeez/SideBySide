@@ -12,7 +12,7 @@ export function ClosestEvent({
     return (
         <Card className="col-span-12 md:col-span-8 bg-primary/15 border-primary h-full">
             <CardHeader className="flex flex-row justify-between items-center pb-2">
-                <CardTitle className="font-medium text-[#2F4F2F] text-lg">
+                <CardTitle className="font-medium text-primary text-lg">
                     Nejbližší plán
                 </CardTitle>
                 <CalendarDays className="size-5 text-primary" />
