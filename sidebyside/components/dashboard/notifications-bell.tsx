@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Bell } from "lucide-react";
+import { Bell, CheckCheck, Trash2 } from "lucide-react"; // Přidán Trash2
 import { createClient } from "@/utils/supabase/client";
 import {
     Popover,
@@ -51,7 +51,6 @@ export function NotificationsBell({ userId }: { userId: string }) {
 
         fetchNotifications();
 
-        // Realtime odběr (Subscribe)
         const channel = supabase
             .channel("realtime-notifications")
             .on(
@@ -75,11 +74,29 @@ export function NotificationsBell({ userId }: { userId: string }) {
         };
     }, [userId, supabase]);
 
-    // 2. Označení jako přečtené (všechny najednou po otevření)
+    // 2. Označení JEDNÉ notifikace
+    const markAsRead = async (notificationId: string) => {
+        const notification = notifications.find((n) => n.id === notificationId);
+        if (notification?.is_read) return;
+
+        setNotifications((prev) =>
+            prev.map((n) =>
+                n.id === notificationId ? { ...n, is_read: true } : n,
+            ),
+        );
+        setUnreadCount((prev) => Math.max(0, prev - 1));
+
+        await supabase
+            .from("notifications")
+            .update({ is_read: true })
+            .eq("id", notificationId)
+            .eq("user_id", userId);
+    };
+
+    // 3. Označení VŠECH
     const markAllAsRead = async () => {
         if (unreadCount === 0) return;
 
-        // Optimisticky aktualizovat UI
         const updatedNotifs = notifications.map((n) => ({
             ...n,
             is_read: true,
@@ -87,7 +104,6 @@ export function NotificationsBell({ userId }: { userId: string }) {
         setNotifications(updatedNotifs);
         setUnreadCount(0);
 
-        // Poslat do DB
         await supabase
             .from("notifications")
             .update({ is_read: true })
@@ -95,27 +111,52 @@ export function NotificationsBell({ userId }: { userId: string }) {
             .eq("is_read", false);
     };
 
-    // Handler pro otevření
-    const handleOpenChange = (open: boolean) => {
-        setIsOpen(open);
-        if (open) {
-            markAllAsRead();
+    // 4. SMAZÁNÍ Notifikace (NOVÉ)
+    const deleteNotification = async (
+        e: React.MouseEvent,
+        notificationId: string,
+    ) => {
+        // Zabráníme prokliku na odkaz (Link) při kliknutí na koš
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Zjistíme, jestli mazaná zpráva byla nepřečtená (abychom snížili počítadlo)
+        const wasUnread =
+            notifications.find((n) => n.id === notificationId)?.is_read ===
+            false;
+
+        // UI Update (odstraníme ze seznamu)
+        setNotifications((prev) => prev.filter((n) => n.id !== notificationId));
+
+        if (wasUnread) {
+            setUnreadCount((prev) => Math.max(0, prev - 1));
+        }
+
+        // DB Delete
+        const { error } = await supabase
+            .from("notifications")
+            .delete()
+            .eq("id", notificationId)
+            .eq("user_id", userId);
+
+        if (error) {
+            console.error("Chyba při mazání:", error);
         }
     };
 
     return (
-        <Popover open={isOpen} onOpenChange={handleOpenChange}>
+        <Popover open={isOpen} onOpenChange={setIsOpen}>
             <PopoverTrigger asChild>
                 <Button
                     variant="ghost"
                     size="icon"
-                    className="relative border border-muted rounded-full text-muted-foreground hover:text-white rounde"
+                    className="relative border border-muted rounded-full text-muted-foreground hover:text-foreground cursor-pointer"
                 >
-                    <Bell className="w-5 h-5" />
+                    <Bell size={20} />
                     {unreadCount > 0 && (
-                        <span className="top-1 right-1 absolute flex w-2.5 h-2.5">
-                            <span className="inline-flex absolute bg-red-400 opacity-75 rounded-full w-full h-full animate-ping"></span>
-                            <span className="inline-flex relative bg-red-500 rounded-full w-2.5 h-2.5"></span>
+                        <span className="top-0 right-0 absolute flex size-2.5 -translate-y-0.5 translate-x-0.5">
+                            <span className="inline-flex absolute bg-secondary/75 rounded-full size-full animate-ping"></span>
+                            <span className="inline-flex relative bg-secondary rounded-full size-2.5"></span>
                         </span>
                     )}
                 </Button>
@@ -123,15 +164,30 @@ export function NotificationsBell({ userId }: { userId: string }) {
 
             <PopoverContent
                 className="shadow-lg mr-4 p-0 border-muted rounded-lg w-80"
-                align="end"
+                align="center"
             >
                 {/* Hlavička */}
-                <div className="flex justify-between items-center bg-muted px-4 py-3 border-b rounded-t-lg">
-                    <h4 className="font-semibold text-sm">Oznámení</h4>
+                <div className="flex justify-between items-center bg-muted/50 px-4 py-3 border-b">
+                    <div className="flex items-center gap-2">
+                        <h4 className="font-semibold text-sm">Oznámení</h4>
+                        {unreadCount > 0 && (
+                            <span className="bg-secondary/10 px-1.5 py-0.5 rounded-full font-medium text-[10px] text-secondary">
+                                {unreadCount} nových
+                            </span>
+                        )}
+                    </div>
+
                     {unreadCount > 0 && (
-                        <span className="text-muted-foreground text-xs">
-                            {unreadCount} nových
-                        </span>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            className="p-1 h-auto text-muted-foreground hover:text-foreground text-xs"
+                            onClick={markAllAsRead}
+                            title="Označit vše jako přečtené"
+                        >
+                            <CheckCheck className="mr-1 w-3 h-3" />
+                            Přečíst vše
+                        </Button>
                     )}
                 </div>
 
@@ -149,18 +205,47 @@ export function NotificationsBell({ userId }: { userId: string }) {
                                     key={notification.id}
                                     href={notification.link || "#"}
                                     className={cn(
-                                        "flex flex-col gap-1 hover:bg-stone-50 p-4 text-left transition-colors",
+                                        "group relative flex flex-col gap-1 hover:bg-muted/50 p-4 text-left transition-colors",
                                         !notification.is_read &&
                                             "bg-secondary/5",
                                     )}
-                                    onClick={() => setIsOpen(false)} // Zavřít po kliknutí
+                                    onClick={() => {
+                                        markAsRead(notification.id);
+                                        setIsOpen(false);
+                                    }}
                                 >
-                                    <div className="flex justify-between items-start">
+                                    {/* Indikátor nepřečteného */}
+                                    {!notification.is_read && (
+                                        <span className="top-4 left-2 absolute bg-secondary rounded-full w-1.5 h-1.5" />
+                                    )}
+
+                                    {/* Tlačítko SMAZAT (Zobrazí se jen při hoveru na skupinu) */}
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="top-2 right-2 absolute hover:bg-red-50 opacity-0 group-hover:opacity-100 w-6 h-6 text-muted-foreground hover:text-destructive transition-all duration-200"
+                                        onClick={(e) =>
+                                            deleteNotification(
+                                                e,
+                                                notification.id,
+                                            )
+                                        }
+                                        title="Smazat upozornění"
+                                    >
+                                        <Trash2 className="w-3.5 h-3.5" />
+                                    </Button>
+
+                                    <div
+                                        className={cn(
+                                            "flex justify-between items-start pr-6",
+                                            !notification.is_read ? "pl-2" : "",
+                                        )}
+                                    >
                                         <span
                                             className={cn(
                                                 "font-medium text-sm",
                                                 !notification.is_read &&
-                                                    "text-secondary font-bold",
+                                                    "text-secondary-foreground",
                                             )}
                                         >
                                             {notification.title}
@@ -177,7 +262,12 @@ export function NotificationsBell({ userId }: { userId: string }) {
                                             )}
                                         </span>
                                     </div>
-                                    <p className="text-muted-foreground text-xs line-clamp-2">
+                                    <p
+                                        className={cn(
+                                            "text-muted-foreground text-xs line-clamp-2",
+                                            !notification.is_read ? "pl-2" : "",
+                                        )}
+                                    >
                                         {notification.message}
                                     </p>
                                 </Link>

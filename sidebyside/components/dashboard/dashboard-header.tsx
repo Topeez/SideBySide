@@ -4,6 +4,7 @@ import { ThemeToggleWrapper } from "../theme-switcher-wrapper";
 import Link from "next/link";
 import { House } from "lucide-react";
 import { NotificationsBell } from "./notifications-bell";
+import { Button } from "../ui/button";
 
 export async function DashboardHeader() {
     const supabase = await createClient();
@@ -34,11 +35,14 @@ export async function DashboardHeader() {
                 </p>
             </div>
             <div className="flex items-center gap-1 sm:gap-2 md:gap-4">
-                <Link href="/" className="p-2 border border-muted rounded-full">
-                    <House
-                        size={18}
-                        className="text-muted-foreground hover:text-foreground transition-colors"
-                    />
+                <Link href="/">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="relative border border-muted rounded-full text-muted-foreground hover:text-foreground cursor-pointer"
+                    >
+                        <House size={5} />
+                    </Button>
                 </Link>
                 <ThemeToggleWrapper />
                 <NotificationsBell userId={user.id} />

@@ -123,28 +123,26 @@ export function CalendarWidget({
                 className="p-0 w-full"
                 classNames={{
                     month: "w-full flex flex-col items-center space-y-4",
-                    table: "w-full border-collapse", // Odstranil jsem text-xl, to dělá obří čísla
+                    table: "w-full border-collapse",
                     head_row: "flex w-full mb-2",
                     head_cell:
-                        "text-muted-foreground rounded-md w-full font-normal text-sm", // Zmenšil jsem font hlavičky
+                        "text-muted-foreground rounded-md w-full font-normal text-sm",
                     row: "flex w-full mt-2",
-
-                    // BUŇKA (KONTEJNER)
                     cell: cn(
-                        "relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-accent/50",
-                        "h-16 w-full md:h-20",
+                        "focus-within:z-20 relative focus-within:relative m-1 sm:m-2 p-0 w-full h-16 md:h-20 text-sm text-center",
+                        "bg-transparent",
                     ),
-
-                    // TLAČÍTKO DNE (SAMOTNÝ ČTVEREČEK)
                     day: cn(
-                        "flex flex-col justify-start items-center hover:bg-accent/50 aria-selected:opacity-100 m-1 sm:m-2 p-0 rounded-md size-full font-normal transition-colors",
+                        "group flex flex-col justify-start items-center m-2 size-full font-normal transition-colors",
+                        "rounded-md",
+                        "hover:bg-accent/50",
                     ),
-
-                    // STAVY
-                    day_selected:
-                        "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground shadow-md",
-                    day_today:
-                        "bg-secondary text-secondary-foreground font-bold", // Dnešek
+                    selected: cn(
+                        "bg-primary shadow-md text-foreground",
+                        "hover:bg-primary hover:text-foreground focus:bg-primary focus:text-foreground",
+                        "!rounded-md",
+                    ),
+                    day_today: "text-secondary-foreground font-bold rounded-md",
                     day_outside: "text-muted-foreground opacity-50",
                     day_disabled: "text-muted-foreground opacity-50",
                     day_hidden: "invisible",
@@ -159,8 +157,7 @@ export function CalendarWidget({
                         const hasEvents = dayEvents.length > 0;
 
                         return (
-                            <div className="relative flex flex-col justify-start items-center p-2 size-full">
-                                {/* Číslo dne - můžeš zvětšit text-lg */}
+                            <div className="relative flex flex-col justify-start items-center p-2 rounded-md size-full">
                                 <span className="font-medium text-xl">
                                     {date.getDate()}
                                 </span>
