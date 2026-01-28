@@ -3,6 +3,7 @@ import { UserNav } from "./user-nav";
 import { ThemeToggleWrapper } from "../theme-switcher-wrapper";
 import Link from "next/link";
 import { House } from "lucide-react";
+import { NotificationsBell } from "./notifications-bell";
 
 export async function DashboardHeader() {
     const supabase = await createClient();
@@ -23,10 +24,10 @@ export async function DashboardHeader() {
     return (
         <header className="flex justify-between items-center bg-background shadow-sm mb-8 px-6 border border-b rounded-lg h-16">
             <div>
-                <h1 className="font-bold text-foreground text-xl sm:text-2xl">
+                <h1 className="font-bold text-foreground text-md sm:text-2xl">
                     Ahoj, {userName}! 👋
                 </h1>
-                <p className="text-muted-foreground text-xs md:text-sm">
+                <p className="hidden sm:block text-muted-foreground text-xs md:text-sm">
                     {couple
                         ? "Co spolu dnes podniknete?"
                         : "Vítej ve své osobní zóně."}
@@ -40,6 +41,7 @@ export async function DashboardHeader() {
                     />
                 </Link>
                 <ThemeToggleWrapper />
+                <NotificationsBell userId={user.id} />
                 <UserNav
                     user_id={user?.id || ""}
                     email={user?.email || ""}

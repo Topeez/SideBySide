@@ -4,8 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Plus, Check, Copy } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
-export default function InviteButton({ userId }: { userId: string }) {
+export default function InviteButton({
+    userId,
+    className,
+}: {
+    userId: string;
+    className?: string;
+}) {
     const [copied, setCopied] = useState(false);
 
     const handleCopyInvite = () => {
@@ -33,7 +40,10 @@ export default function InviteButton({ userId }: { userId: string }) {
     return (
         <Button
             onClick={handleCopyInvite}
-            className="z-0 hover:z-20 flex justify-center items-center bg-secondary hover:bg-[#cf866c] shadow-sm p-0 rounded-full w-10 h-10 text-white hover:scale-105 transition-all"
+            className={cn(
+                "z-0 hover:z-20 flex justify-center items-center bg-secondary hover:bg-[#cf866c] shadow-sm p-0 rounded-full w-10 h-10 text-white hover:scale-105 transition-all",
+                className,
+            )}
             title="Pozvat partnera"
         >
             {copied ? (

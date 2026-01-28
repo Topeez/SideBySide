@@ -20,7 +20,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { updateProfile } from "@/app/actions/profile";
-import { useState, useTransition } from "react";
+import { useTransition } from "react";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { Profile } from "@/types/profile";
@@ -38,7 +38,6 @@ export function EditProfileDialog({
 }: EditProfileDialogProps) {
     const [isPending, startTransition] = useTransition();
 
-    // Handler pro odeslání
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
@@ -48,7 +47,7 @@ export function EditProfileDialog({
 
             if (result?.success) {
                 toast.success("Profil aktualizován");
-                onOpenChange(false); // Zavřít modal
+                onOpenChange(false);
             } else {
                 toast.error(result?.message || "Něco se pokazilo");
             }
@@ -67,7 +66,6 @@ export function EditProfileDialog({
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="gap-6 grid py-4">
-                    {/* OSOBNÍ INFO */}
                     <div className="space-y-4">
                         <h3 className="pb-1 border-b font-medium text-muted-foreground text-sm">
                             Základní info
@@ -103,7 +101,6 @@ export function EditProfileDialog({
                         </div>
                     </div>
 
-                    {/* VELIKOSTI (TAHÁK) */}
                     <div className="space-y-4">
                         <h3 className="pb-1 border-b font-medium text-muted-foreground text-sm">
                             Velikosti (Tahák pro partnera)
@@ -155,8 +152,6 @@ export function EditProfileDialog({
                             </div>
                         </div>
                     </div>
-
-                    {/* OSTATNÍ */}
                     <div className="space-y-4">
                         <h3 className="pb-1 border-b font-medium text-muted-foreground text-sm">
                             Detaily

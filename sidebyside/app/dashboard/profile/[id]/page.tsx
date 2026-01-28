@@ -17,16 +17,12 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     } = await supabase.auth.getUser();
     if (!user) redirect("/login");
 
-    console.log("Hledám profil ID:", id);
-
     // 2. Načteme data profilu podle ID v URL
     const { data: profile, error } = await supabase
         .from("profiles")
         .select("*")
         .eq("id", id)
         .single();
-
-    console.log("Výsledek:", profile, error);
 
     if (error || !profile) {
         return notFound();

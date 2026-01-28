@@ -80,7 +80,7 @@ export default async function DashboardPage() {
             .gte("start_time", now)
             .order("start_time", { ascending: true })
             .limit(1)
-            .single();
+            .maybeSingle();
         nextEvent = nextEventData;
 
         // Všechny akce pro kalendář
@@ -98,14 +98,33 @@ export default async function DashboardPage() {
 
             {/* --- BENTO GRID --- */}
             <div className="gap-4 grid grid-cols-12">
-                {/* 1. ŘÁDEK */}
-
-                {/* Hlavní karta - Next Event */}
-                <ClosestEvent
-                    nextEvent={nextEvent}
-                    hasCouple={!!couple}
-                    coupleId={couple?.id}
-                />
+                {couple ? (
+                    <ClosestEvent
+                        nextEvent={nextEvent}
+                        hasCouple={!!couple}
+                        coupleId={couple?.id}
+                    />
+                ) : (
+                    <Card className="col-span-12 md:col-span-8 bg-primary/15 border-primary h-full">
+                        <CardContent>
+                            <div className="mb-2 font-bold text-foreground text-2xl">
+                                Naplánujte si něco hezkého se svou polovičkou.
+                            </div>
+                            <p className="mb-6 text-muted-foreground">
+                                Ale nejprv si ji/ho musíš přidat!
+                            </p>
+                            <div className="flex items-center gap-2 scale-90 origin-left">
+                                <InviteButton
+                                    userId={user.id}
+                                    className="bg-primary hover:bg-primary-foreground"
+                                />
+                                <span className="text-muted-foreground">
+                                    Pozvi svou polovičku
+                                </span>
+                            </div>
+                        </CardContent>
+                    </Card>
+                )}
 
                 {/* Love Note */}
                 {couple ? (
@@ -116,7 +135,7 @@ export default async function DashboardPage() {
                         currentUserId={user.id}
                     />
                 ) : (
-                    <Card className="col-span-12 md:col-span-3 lg:col-span-4 bg-[#FFF5F0] border-[#FFDCC7] border-dashed">
+                    <Card className="col-span-12 md:col-span-3 lg:col-span-4 bg-secondary/15 border-secondary border-dashed">
                         <CardHeader className="pb-2">
                             <CardTitle className="flex items-center gap-2 font-medium text-secondary text-sm">
                                 <Heart className="fill-secondary size-4" />
@@ -124,40 +143,38 @@ export default async function DashboardPage() {
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="flex flex-col justify-center h-24">
-                            <p className="mb-3 text-stone-500 text-xs">
+                            <p className="mb-3 text-muted-foreground text-xs">
                                 Tady si budete psát vzkazy.
                             </p>
-                            <div className="scale-90 origin-left">
+                            <div className="flex items-center gap-2 scale-90 origin-left">
                                 <InviteButton userId={user.id} />
+                                <span className="text-muted-foreground">
+                                    Pozvi svou polovičku
+                                </span>
                             </div>
                         </CardContent>
                     </Card>
                 )}
 
-                {/* Úkoly */}
                 {couple ? (
                     <TodoList initialTodos={todos} coupleId={couple.id} />
                 ) : (
                     <Card className="col-span-12 md:col-span-4">
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2 text-base">
-                                <ShoppingBag className="w-4 h-4" /> Nákupy
+                                <ShoppingBag className="w-4 h-4" /> Úkoly
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="py-6 text-stone-400 text-sm text-center">
+                            <div className="py-6 text-muted-foreground text-sm text-center">
                                 Zatím jsi na to sám/sama.
                             </div>
                         </CardContent>
                     </Card>
                 )}
 
-                {/* 2. ŘÁDEK - Kalendář a Profil */}
-
                 {couple ? (
                     <>
-                        {/* Kalendář (má v sobě nastaveno md:col-span-2 ?) */}
-                        {/* Pokud ne, musíme ho obalit nebo mu poslat className, ale CalendarWidget v minulém kroku měl Card s md:col-span-2 */}
                         <CalendarWidget
                             events={events}
                             coupleId={couple.id}
@@ -165,7 +182,6 @@ export default async function DashboardPage() {
                             partnerProfile={partnerProfile}
                         />
 
-                        {/* Profil Widget (vyplní zbylé místo - col-span-1) */}
                         <CoupleProfileWidget
                             userProfile={userProfile}
                             partnerProfile={partnerProfile}
@@ -176,7 +192,7 @@ export default async function DashboardPage() {
                         <CardHeader>
                             <CardTitle>Kalendář</CardTitle>
                         </CardHeader>
-                        <CardContent className="flex justify-center items-center bg-stone-50 rounded-md h-48 text-stone-400">
+                        <CardContent className="flex justify-center items-center rounded-md h-48 text-muted-foreground">
                             (Kalendář se aktivuje po spárování)
                         </CardContent>
                     </Card>

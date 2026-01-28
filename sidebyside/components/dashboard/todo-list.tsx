@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Trash2, Plus, Loader2 } from "lucide-react";
 import { createTodo, toggleTodo, deleteTodo } from "@/app/actions/todos";
-import { useState, useRef, useTransition } from "react";
+import { useRef, useTransition } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ShoppingBag } from "lucide-react";
 

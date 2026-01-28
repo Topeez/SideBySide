@@ -21,12 +21,7 @@ export default async function InvitePage({
     } = await supabase.auth.getUser();
 
     // 1. Pokud uživatel není přihlášený -> poslat na login
-    // Ale musíme si pamatovat, že chtěl jít na invite!
     if (!user) {
-        // Trik: Předáme 'next' parametr do loginu
-        // Musíš upravit LoginButton, aby respektoval 'next' parametr, nebo to udělat přes middleware
-        // Pro teď to uděláme jednoduše: Pošleme ho na login a doufáme, že se pak vrátí na ten link ručně
-        // (Lepší řešení je upravit Login flow, ale to je složitější)
         return (
             <div className="flex flex-col justify-center items-center p-4 min-h-screen text-center">
                 <h1 className="mb-4 font-bold text-2xl">Skoro tam! 💑</h1>
@@ -45,9 +40,9 @@ export default async function InvitePage({
             <div className="flex justify-center items-center min-h-screen">
                 <p>
                     Nemůžeš pozvat sám sebe, blázínku! 😄{" "}
-                    <a href="/dashboard" className="underline">
+                    <Link href="/dashboard" className="underline">
                         Zpět
-                    </a>
+                    </Link>
                 </p>
             </div>
         );
