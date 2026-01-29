@@ -52,7 +52,7 @@ export function UserNav({
             <DropdownMenuTrigger asChild>
                 <Button
                     variant="ghost"
-                    className="relative rounded-full size-10 cursor-pointer"
+                    className="relative shadow-md rounded-full size-10 cursor-pointer"
                 >
                     <Avatar className="border border-muted size-10">
                         {/* Zobrazíme Image jen pokud máme URL */}

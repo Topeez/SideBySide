@@ -1,5 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { PageSkeleton } from "@/components/page-skeleton";
+import { Heart } from "lucide-react";
 
 export default function DashboardLoading() {
     return (
@@ -88,18 +89,20 @@ export default function DashboardLoading() {
                             </div>
 
                             {/* 2. Prostředek - Čára a srdce */}
-                            <div className="relative flex flex-1 justify-center items-center px-2 pb-5">
-                                {/* pb-5 kompenzuje výšku textu u avatarů, aby byla čára v rovině s kruhy */}
-                                <Skeleton className="w-full h-0.5" />
-                                <Skeleton className="absolute border-4 border-card rounded-full w-6 h-6" />
-                                {/* border-card udělá kolem srdíčka "výřez" v čáře */}
+                            <div className="relative flex justify-center items-center min-w-32 h-32">
+                                <Heart
+                                    className="absolute text-muted animate-pulse"
+                                    size={200}
+                                    strokeWidth={1}
+                                />
+                                <div className="z-10 relative flex flex-col justify-center items-center pb-2 animate-pulse">
+                                    <Skeleton className="mb-2 rounded-md w-12 h-8" />
+                                </div>
                             </div>
 
-                            {/* 3. Pravý avatar (Linda) + Jméno */}
                             <div className="flex flex-col items-center gap-2">
-                                <Skeleton className="border-2 border-background rounded-full w-14 h-14" />
+                                <Skeleton className="border-2 border-background rounded-full size-14" />
                                 <Skeleton className="rounded-md w-24 h-3" />{" "}
-                                {/* Jméno Linda Baráková */}
                             </div>
                         </div>
                     ),

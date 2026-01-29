@@ -3,25 +3,28 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Settings2, HeartHandshake } from "lucide-react";
+import { Settings2, Heart } from "lucide-react";
 import Link from "next/link";
 import { ProfileData } from "@/types/profile";
+import { differenceInDays } from "date-fns";
 
 interface CoupleProfileWidgetProps {
     userProfile?: ProfileData | null;
     partnerProfile?: ProfileData | null;
+    relationshipStart?: string | null;
 }
 
 export function CoupleProfileWidget({
     userProfile,
     partnerProfile,
+    relationshipStart,
 }: CoupleProfileWidgetProps) {
-    return (
-        <Card className="relative flex flex-col justify-between col-span-12 lg:col-span-4 h-full overflow-hidden">
-            <div className="top-0 right-0 absolute opacity-10 p-4">
-                <HeartHandshake className="size-24" />
-            </div>
+    const daysTogether = relationshipStart
+        ? differenceInDays(new Date(), new Date(relationshipStart))
+        : null;
 
+    return (
+        <Card className="relative inset-shadow-muted inset-shadow-xs flex flex-col justify-between col-span-12 lg:col-span-4 shadow-lg border-none h-full overflow-hidden">
             <CardHeader>
                 <CardTitle className="text-lg">My dva</CardTitle>
             </CardHeader>
@@ -41,10 +44,31 @@ export function CoupleProfileWidget({
                     </div>
 
                     {/* SPOJENÍ */}
-                    <div className="-top-2.5 relative flex-1 bg-border h-px">
-                        <div className="-top-2 left-1/2 absolute text-red-500 -translate-x-1/2">
-                            ❤️
-                        </div>
+                    <div className="relative flex justify-center items-center min-w-32 h-32">
+                        {/* POZADÍ - Velké srdce */}
+                        {/* opacity-10 zajistí, že bude jen jemně vidět a text přes něj bude čitelný */}
+                        <Heart
+                            className="absolute text-red-500"
+                            size={200}
+                            strokeWidth={1}
+                        />
+
+                        {daysTogether !== null ? (
+                            <div className="z-10 relative flex flex-col justify-center items-center pb-2 animate-in duration-500 fade-in zoom-in">
+                                <span className="drop-shadow-sm font-bold tabular-nums text-3xl">
+                                    {daysTogether}
+                                </span>
+                                <span className="font-semibold text-[10px] text-muted-foreground uppercase tracking-widest">
+                                    Dní
+                                </span>
+                            </div>
+                        ) : (
+                            // Fallback (čára), pokud datum není nastaveno
+                            <div className="absolute px-2 w-full">
+                                <div className="bg-border/50 w-full h-px"></div>
+                                <Heart className="top-1/2 left-1/2 absolute fill-red-500 w-4 h-4 text-red-500 -translate-x-1/2 -translate-y-1/2" />
+                            </div>
+                        )}
                     </div>
 
                     {/* PARTNER */}
@@ -65,7 +89,7 @@ export function CoupleProfileWidget({
                 </div>
 
                 <div className="mt-auto pt-4">
-                    <Link href={`/dashboard/profile/${userProfile?.user_id}`}>
+                    <Link href={`/dashboard/profile/${userProfile?.id}`}>
                         <Button variant="outline" className="gap-2 w-full">
                             <Settings2 className="size-4" />
                             Upravit profil

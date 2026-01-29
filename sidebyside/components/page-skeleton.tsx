@@ -23,8 +23,10 @@ export function PageSkeleton({
                 </div>
                 <div className="flex items-center gap-4">
                     {/* Avatar a Theme toggle placeholder */}
+                    <Skeleton className="rounded-full size-8" />
                     <Skeleton className="rounded-full w-16 h-8" />
-                    <Skeleton className="rounded-full w-10 h-10" />
+                    <Skeleton className="rounded-full size-8" />
+                    <Skeleton className="rounded-full size-10" />
                 </div>
             </div>
 

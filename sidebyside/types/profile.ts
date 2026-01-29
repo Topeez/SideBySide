@@ -14,7 +14,7 @@ export interface Profile {
 }
 
 export interface ProfileData {
-  user_id: string;
+  id: string; // user ID
   email: string;
   full_name: string;
   nickname?: string;

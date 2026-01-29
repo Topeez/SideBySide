@@ -150,7 +150,7 @@ export function NotificationsBell({ userId }: { userId: string }) {
                 <Button
                     variant="ghost"
                     size="icon"
-                    className="relative border border-muted rounded-full text-muted-foreground hover:text-foreground cursor-pointer"
+                    className="relative bg-accent shadow-md border border-muted rounded-full text-muted-foreground hover:text-foreground cursor-pointer"
                 >
                     <Bell size={20} />
                     {unreadCount > 0 && (

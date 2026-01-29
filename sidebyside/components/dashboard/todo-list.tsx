@@ -78,7 +78,7 @@ export function TodoList({
     const [isCreating, startCreateTransition] = useTransition();
 
     return (
-        <Card className="flex flex-col col-span-12 md:col-span-6 lg:col-span-4 h-full">
+        <Card className="inset-shadow-muted inset-shadow-xs flex flex-col col-span-12 md:col-span-6 lg:col-span-4 shadow-lg border-none h-full">
             <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-base">
                     <ShoppingBag className="size-4 text-secondary" /> Společné

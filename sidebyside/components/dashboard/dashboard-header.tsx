@@ -23,7 +23,7 @@ export async function DashboardHeader() {
         .single();
 
     return (
-        <header className="flex justify-between items-center bg-background shadow-sm mb-8 px-6 border border-b rounded-lg h-16">
+        <header className="flex justify-between items-center bg-card shadow-sm mb-8 px-6 rounded-lg h-16">
             <div>
                 <h1 className="font-bold text-foreground text-md sm:text-2xl">
                     Ahoj, {userName}! 👋
@@ -39,7 +39,7 @@ export async function DashboardHeader() {
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="relative border border-muted rounded-full text-muted-foreground hover:text-foreground cursor-pointer"
+                        className="relative bg-accent shadow-md border border-muted rounded-full text-muted-foreground hover:text-foreground cursor-pointer"
                     >
                         <House size={5} />
                     </Button>
@@ -47,7 +47,7 @@ export async function DashboardHeader() {
                 <ThemeToggleWrapper />
                 <NotificationsBell userId={user.id} />
                 <UserNav
-                    user_id={user?.id || ""}
+                    id={user?.id || ""}
                     email={user?.email || ""}
                     avatar_url={user?.user_metadata.avatar_url}
                     full_name={""}

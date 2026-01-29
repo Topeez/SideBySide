@@ -114,7 +114,7 @@ export function CalendarWidget({
         : [];
 
     return (
-        <div className="flex flex-col space-y-4 col-span-12 md:col-span-6 lg:col-span-4 bg-background shadow-sm p-4 border rounded-xl h-full">
+        <div className="inset-shadow-muted inset-shadow-xs flex flex-col space-y-4 col-span-12 md:col-span-6 lg:col-span-4 bg-background shadow-lg p-4 border border-none rounded-xl h-full">
             <Calendar
                 mode="single"
                 selected={date}
@@ -129,11 +129,11 @@ export function CalendarWidget({
                         "text-muted-foreground rounded-md w-full font-normal text-sm",
                     row: "flex w-full mt-2",
                     cell: cn(
-                        "focus-within:z-20 relative focus-within:relative m-1 sm:m-2 p-0 w-full h-16 md:h-20 text-sm text-center",
+                        "focus-within:z-20 relative focus-within:relative w-full h-16 md:h-20 text-sm text-center",
                         "bg-transparent",
                     ),
                     day: cn(
-                        "group flex flex-col justify-start items-center m-2 size-full font-normal transition-colors",
+                        "group flex flex-col justify-start items-center m-1 sm:m-4 md:m-2 p-0 size-full font-normal transition-colors",
                         "rounded-md",
                         "hover:bg-accent/50",
                     ),

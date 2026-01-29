@@ -41,9 +41,9 @@ export function ProfileView({ profile, isEditable }: ProfileViewProps) {
     return (
         <div className="space-y-4 cs-container">
             {/* --- HLAVIČKA A AKCE --- */}
-            <div className="flex md:flex-row flex-col justify-between items-center gap-4 mb-6">
+            <div className="flex md:flex-row flex-col justify-between items-center gap-4 bg-card shadow-sm mb-6 px-6 py-2 rounded-lg">
                 <div>
-                    <h1 className="font-bold text-3xl md:text-left text-center tracking-tight">
+                    <h1 className="font-bold text-2xl md:text-left text-center tracking-tight">
                         {isEditable
                             ? "Můj Profil"
                             : `Profil ${profile.nickname || "partnera"}`}
@@ -60,7 +60,7 @@ export function ProfileView({ profile, isEditable }: ProfileViewProps) {
                         <ThemeToggleWrapper />
                         <Button
                             onClick={() => setIsEditDialogOpen(true)}
-                            className="gap-2 bg-primary text-background cursor-pointer"
+                            className="inset-shadow-primary-foreground inset-shadow-xs gap-2 bg-primary shadow-md border-none text-background cursor-pointer"
                         >
                             <Edit className="size-4" />
                             <span className="hidden md:block">
@@ -81,7 +81,7 @@ export function ProfileView({ profile, isEditable }: ProfileViewProps) {
             {/* --- BENTO GRID --- */}
             <div className="gap-4 grid grid-cols-1 md:grid-cols-4 auto-rows-[minmax(120px,auto)]">
                 {/* 1. KARTA IDENTITY (Velká) - col-span-2 */}
-                <Card className="flex flex-col justify-center items-center md:col-span-2 md:row-span-2 bg-linear-to-br from-background to-muted/50 p-6 border-2 text-center">
+                <Card className="inset-shadow-muted inset-shadow-xs flex flex-col justify-center items-center md:col-span-2 md:row-span-2 bg-linear-to-br from-background to-muted/50 shadow-lg p-6 border-2 border-none text-center">
                     <Avatar className="shadow-xl mb-4 border-4 border-background w-32 h-32">
                         <AvatarImage
                             src={profile.avatar_url || ""}
@@ -97,14 +97,14 @@ export function ProfileView({ profile, isEditable }: ProfileViewProps) {
                         @{profile.nickname || "Přezdívka"}
                     </p>
                     {profile.bio && (
-                        <div className="bg-background/80 shadow-sm p-3 border rounded-lg max-w-xs text-stone-600 text-sm italic">
+                        <div className="inset-shadow-muted inset-shadow-xs bg-background/80 shadow-sm p-3 border-none rounded-lg max-w-xs text-stone-600 text-sm italic">
                             &quot;{profile.bio}&quot;
                         </div>
                     )}
                 </Card>
 
                 {/* 2. LOVE LANGUAGE (Jazyk lásky) - col-span-2 */}
-                <Card className="md:col-span-2 bg-pink-50/50 dark:bg-pink-950/10 border-pink-100 dark:border-pink-900">
+                <Card className="inset-shadow-pink-500/50 inset-shadow-xs md:col-span-2 bg-pink-50/50 dark:bg-pink-950/10 shadow-lg border-none">
                     <CardHeader className="flex flex-row justify-between items-center space-y-0 pb-2">
                         <CardTitle className="font-medium text-pink-600 text-sm">
                             Jazyk lásky
@@ -125,7 +125,7 @@ export function ProfileView({ profile, isEditable }: ProfileViewProps) {
                 </Card>
 
                 {/* 3. CHEAT SHEET (Velikosti) - col-span-2, row-span-2 (vysoká) */}
-                <Card className="relative md:col-span-2 md:row-span-2 overflow-hidden">
+                <Card className="relative inset-shadow-muted inset-shadow-xs md:col-span-2 md:row-span-2 shadow-lg border-none overflow-hidden">
                     <div className="top-0 right-0 absolute opacity-5 p-4">
                         <Ruler className="w-32 h-32" />
                     </div>
@@ -163,7 +163,7 @@ export function ProfileView({ profile, isEditable }: ProfileViewProps) {
                 </Card>
 
                 {/* 4. OBLÍBENÁ BARVA - col-span-1 */}
-                <Card className="flex flex-col justify-center items-center md:col-span-1 p-4">
+                <Card className="inset-shadow-muted inset-shadow-xs flex flex-col justify-center items-center md:col-span-1 shadow-lg p-4 border-none">
                     <div className="flex items-center gap-2 mb-2 font-medium text-muted-foreground text-sm">
                         <Palette className="w-4 h-4" /> Oblíbená barva
                     </div>
@@ -216,7 +216,7 @@ function SizeItem({
 }) {
     return (
         <div
-            className={`flex flex-col p-3 rounded-lg border ${highlight ? "bg-orange-50 border-orange-200 dark:bg-orange-950/20 dark:border-orange-900" : "bg-muted/30 border-transparent"}`}
+            className={`flex flex-col p-3 border-none shadow-lg inset-shadow-xs inset-shadow-muted rounded-lg border ${highlight ? "bg-orange-50 inset-shadow-orange-50 dark:inset-shadow-orange-900 border-orange-200 dark:bg-orange-950/20 dark:border-orange-900" : "bg-muted/30 border-transparent"}`}
         >
             <div className="flex items-center gap-2 mb-1 text-muted-foreground">
                 {icon}

@@ -10,7 +10,7 @@ export function ClosestEvent({
     coupleId,
 }: ClosestEventProps) {
     return (
-        <Card className="col-span-12 md:col-span-8 bg-primary/15 border-primary h-full">
+        <Card className="inset-shadow-primary/75 inset-shadow-xs col-span-12 md:col-span-8 bg-primary/15 shadow-md border-none h-full">
             <CardHeader className="flex flex-row justify-between items-center pb-2">
                 <CardTitle className="font-medium text-primary text-lg">
                     Nejbližší plán

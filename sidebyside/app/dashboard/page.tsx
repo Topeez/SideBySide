@@ -185,6 +185,7 @@ export default async function DashboardPage() {
                         <CoupleProfileWidget
                             userProfile={userProfile}
                             partnerProfile={partnerProfile}
+                            relationshipStart={couple?.relationship_start}
                         />
                     </>
                 ) : (

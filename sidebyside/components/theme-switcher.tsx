@@ -40,7 +40,7 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
     return (
         <div
             className={cn(
-                "flex backdrop-blur-lg p-1.5 border border-muted rounded-full w-16 h-8 transition-all duration-300 cursor-pointer",
+                "flex bg-accent hover:bg-accent shadow-md backdrop-blur-lg p-1.5 border border-muted hover:border-muted-foreground/15 rounded-full w-16 h-8 transition-all duration-300 cursor-pointer",
                 className,
             )}
             onClick={() => setTheme(isDark ? "light" : "dark")}
@@ -58,13 +58,13 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
                     className={cn(
                         "flex justify-center items-center rounded-full w-6 h-6 transition-transform duration-300",
                         isDark
-                            ? "transform translate-x-0 bg-zinc-800"
-                            : "transform translate-x-8 bg-gray-200",
+                            ? "transform translate-x-0 bg-muted-foreground/15"
+                            : "transform translate-x-8 bg-muted-foreground/15",
                     )}
                 >
                     {isDark ? (
                         <Moon
-                            className="size-4 text-foregorund"
+                            className="size-4 text-foreground"
                             strokeWidth={1.5}
                         />
                     ) : (
@@ -76,18 +76,18 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
                 </div>
                 <div
                     className={cn(
-                        "flex justify-center items-center rounded-full w-6 h-6 transition-transform duration-300",
+                        "flex justify-center items-center rounded-full size-6 transition-transform duration-300",
                         isDark ? "bg-transparent" : "transform -translate-x-8",
                     )}
                 >
                     {isDark ? (
                         <Sun
-                            className="w-4 h-4 text-foreground"
+                            className="size-4 text-foreground"
                             strokeWidth={1.5}
                         />
                     ) : (
                         <Moon
-                            className="w-4 h-4 text-foreground"
+                            className="size-4 text-foreground"
                             strokeWidth={1.5}
                         />
                     )}
