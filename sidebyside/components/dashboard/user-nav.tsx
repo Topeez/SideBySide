@@ -18,7 +18,7 @@ import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import { ProfileData } from "@/types/profile";
 export function UserNav({
-    user_id,
+    id,
     email,
     avatar_url,
     full_name,
@@ -81,7 +81,7 @@ export function UserNav({
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                    <Link href={`/dashboard/profile/${user_id}`}>
+                    <Link href={`/dashboard/profile/${id}`}>
                         <DropdownMenuItem className="cursor-pointer">
                             <User className="mr-2 w-4 h-4" />
                             <span>O mně</span>
