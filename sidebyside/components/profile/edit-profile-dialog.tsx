@@ -72,11 +72,11 @@ export function EditProfileDialog({
                         </h3>
                         <div className="gap-4 grid grid-cols-2">
                             <div className="space-y-2">
-                                <Label htmlFor="fullname">Celé jméno</Label>
+                                <Label htmlFor="full_name">Celé jméno</Label>
                                 <Input
-                                    id="fullname"
-                                    name="fullname"
-                                    defaultValue={profile.fullname || ""}
+                                    id="full_name"
+                                    name="full_name"
+                                    defaultValue={profile.full_name || ""}
                                     required
                                 />
                             </div>
@@ -164,26 +164,27 @@ export function EditProfileDialog({
                                 <Select
                                     name="love_language"
                                     defaultValue={
-                                        profile.love_language || "words"
+                                        profile.love_language ||
+                                        "Slova ujištění"
                                     }
                                 >
                                     <SelectTrigger>
                                         <SelectValue placeholder="Vyber..." />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="words">
+                                        <SelectItem value="Slova ujištění">
                                             Slova ujištění
                                         </SelectItem>
-                                        <SelectItem value="acts">
+                                        <SelectItem value="Skutky služby">
                                             Skutky služby
                                         </SelectItem>
-                                        <SelectItem value="gifts">
+                                        <SelectItem value="Dárky">
                                             Dárky
                                         </SelectItem>
-                                        <SelectItem value="time">
+                                        <SelectItem value="Pozornost (Čas)">
                                             Pozornost (Čas)
                                         </SelectItem>
-                                        <SelectItem value="touch">
+                                        <SelectItem value="Fyzický kontakt">
                                             Fyzický kontakt
                                         </SelectItem>
                                     </SelectContent>
@@ -218,9 +219,13 @@ export function EditProfileDialog({
                     </div>
 
                     <DialogFooter>
-                        <Button type="submit" disabled={isPending}>
+                        <Button
+                            type="submit"
+                            disabled={isPending}
+                            className="text-background"
+                        >
                             {isPending && (
-                                <Loader2 className="mr-2 w-4 h-4 animate-spin" />
+                                <Loader2 className="mr-2 size-4 animate-spin" />
                             )}
                             Uložit změny
                         </Button>
