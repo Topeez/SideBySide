@@ -33,7 +33,8 @@ export async function saveSubscription(sub: PushSubscriptionJSON) {
 }
 
 // 2. Odeslání notifikace uživateli (tuto funkci budeš volat třeba při vytvoření eventu)
-export async function sendNotificationToUser(userId: string, title: string, body: string, url: string = "/") {
+export async function sendNotificationToUser(userId: string, title: string, body: string, url: string = "/dashboard") {
+  console.log(`Sending push to User ${userId}`);
     const supabase = await createClient();
     
     const { data: subscriptions } = await supabase
@@ -41,6 +42,7 @@ export async function sendNotificationToUser(userId: string, title: string, body
         .select("*")
         .eq("user_id", userId);
 
+    console.log(`Found ${subscriptions?.length} subscriptions`);  
     if (!subscriptions || subscriptions.length === 0) return;
 
     const payload = JSON.stringify({ title, body, url });
