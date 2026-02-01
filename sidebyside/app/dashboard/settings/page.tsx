@@ -8,6 +8,13 @@ import { Input } from "@/components/ui/input";
 import { PasswordForm } from "@/components/settings/password-form";
 import { DeleteAccount } from "@/components/settings/delete-account";
 import { RelationshipForm } from "@/components/settings/relationships-form";
+import { ThemeToggleWrapper } from "@/components/theme-switcher-wrapper";
+import { UserNav } from "@/components/dashboard/user-nav";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { LayoutDashboard } from "lucide-react";
+import { AppearanceForm } from "@/components/settings/appearance-form";
+import { PushNotificationManager } from "@/components/push-notification-manager";
 export default async function SettingsPage() {
     const supabase = await createClient();
 
@@ -48,6 +55,24 @@ export default async function SettingsPage() {
                         Spravuj svůj účet a preference.
                     </p>
                 </div>
+                <div className="flex items-center gap-2">
+                    <Link href="/dashboard">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="relative bg-accent shadow-md border border-muted rounded-full text-muted-foreground hover:text-foreground cursor-pointer"
+                        >
+                            <LayoutDashboard />
+                        </Button>
+                    </Link>
+                    <ThemeToggleWrapper />
+                    <UserNav
+                        id={user?.id || ""}
+                        email={user?.email || ""}
+                        avatar_url={user?.user_metadata.avatar_url || ""}
+                        full_name={user?.user_metadata.full_name || ""}
+                    />
+                </div>
             </div>
 
             <Separator />
@@ -58,9 +83,6 @@ export default async function SettingsPage() {
                     <TabsTrigger value="profile">Profil</TabsTrigger>
                     <TabsTrigger value="relationship">Vztah</TabsTrigger>
                     <TabsTrigger value="appearance">Vzhled</TabsTrigger>
-                    <TabsTrigger value="notifications" disabled>
-                        Notifikace
-                    </TabsTrigger>
                     <TabsTrigger value="account">Účet</TabsTrigger>
                 </TabsList>
 
@@ -80,8 +102,6 @@ export default async function SettingsPage() {
                         </div>
                         <Separator />
 
-                        {/* Tady to jen vykreslíš */}
-                        {/* Pozor: Zkontroluj, jestli DB vrací 'full_name', ale komponenta čeká 'fullname' */}
                         <ProfileForm profile={profile} />
                     </div>
                 </TabsContent>
@@ -116,8 +136,15 @@ export default async function SettingsPage() {
                 </TabsContent>
 
                 <TabsContent value="appearance">
-                    <div className="py-6 text-muted-foreground text-center">
-                        Zatím prázdno... (Připravíme později)
+                    <div className="space-y-6 p-6 border rounded-lg">
+                        <div>
+                            <h3 className="font-medium text-lg">Vzhled</h3>
+                            <p className="text-muted-foreground text-sm">
+                                Přizpůsob si vzhled svého dashboardu.
+                            </p>
+                        </div>
+                        <Separator />
+                        <AppearanceForm />
                     </div>
                 </TabsContent>
                 <TabsContent value="account" className="space-y-6 mt-6">
@@ -152,6 +179,10 @@ export default async function SettingsPage() {
                         </div>
 
                         <PasswordForm />
+                    </div>
+
+                    <div className="space-y-4 p-6 border rounded-lg">
+                        <PushNotificationManager />
                     </div>
 
                     {/* Danger Zone */}

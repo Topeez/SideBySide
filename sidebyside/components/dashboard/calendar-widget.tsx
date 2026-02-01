@@ -142,10 +142,10 @@ export function CalendarWidget({
                         "hover:bg-primary hover:text-foreground focus:bg-primary focus:text-foreground",
                         "!rounded-md",
                     ),
-                    day_today: "text-secondary-foreground font-bold rounded-md",
-                    day_outside: "text-muted-foreground opacity-50",
-                    day_disabled: "text-muted-foreground opacity-50",
-                    day_hidden: "invisible",
+                    today: "text-primary font-bold rounded-md",
+                    outside: "text-muted-foreground opacity-50",
+                    disabled: "text-muted-foreground opacity-50",
+                    hidden: "invisible",
                     caption:
                         "flex justify-center pt-1 relative items-center mb-4",
                     caption_label: "text-lg font-bold capitalize",
@@ -296,7 +296,7 @@ export function CalendarWidget({
 
                     <div className="flex justify-end mt-2 pt-2 border-t">
                         <AddEventDialog coupleId={coupleId} defaultDate={date}>
-                            <Button className="gap-2 bg-primary hover:bg-primary-foreground w-full sm:w-auto text-white">
+                            <Button className="gap-2 bg-primary hover:bg-primary-foreground w-full sm:w-auto text-background">
                                 <Plus className="size-4" />
                                 Naplánovat akci
                             </Button>

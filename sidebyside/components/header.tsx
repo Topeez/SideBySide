@@ -28,7 +28,7 @@ export default async function Header() {
                 <div className="flex items-center gap-3">
                     {user ? (
                         <Link href="/dashboard">
-                            <Button className="gap-2 bg-primary hover:bg-primary/90 shadow-md text-white cursor-pointer">
+                            <Button className="gap-2 bg-primary hover:bg-primary-foreground shadow-md text-background cursor-pointer">
                                 <LayoutDashboard className="size-4" />
                                 Přejít do aplikace
                             </Button>

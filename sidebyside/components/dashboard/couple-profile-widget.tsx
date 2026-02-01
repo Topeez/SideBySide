@@ -24,7 +24,7 @@ export function CoupleProfileWidget({
         : null;
 
     return (
-        <Card className="relative inset-shadow-muted inset-shadow-xs flex flex-col justify-between col-span-12 lg:col-span-4 shadow-lg border-none h-full overflow-hidden">
+        <Card className="@container relative inset-shadow-muted inset-shadow-xs flex flex-col justify-between col-span-12 lg:col-span-4 shadow-lg border-none h-full overflow-hidden">
             <CardHeader>
                 <CardTitle className="text-lg">My dva</CardTitle>
             </CardHeader>
@@ -43,30 +43,25 @@ export function CoupleProfileWidget({
                         </Avatar>
                     </div>
 
-                    {/* SPOJENÍ */}
-                    <div className="relative flex justify-center items-center min-w-32 h-32">
-                        {/* POZADÍ - Velké srdce */}
-                        {/* opacity-10 zajistí, že bude jen jemně vidět a text přes něj bude čitelný */}
+                    <div className="relative flex justify-center items-center min-w-28 sm:min-w-52 h-28 sm:h-52">
                         <Heart
-                            className="absolute text-red-500"
-                            size={200}
+                            className="absolute size-28 @min-[350px]:size-52 text-red-500 transition-all"
                             strokeWidth={1}
                         />
 
                         {daysTogether !== null ? (
                             <div className="z-10 relative flex flex-col justify-center items-center pb-2 animate-in duration-500 fade-in zoom-in">
-                                <span className="drop-shadow-sm font-bold tabular-nums text-3xl">
+                                <span className="drop-shadow-sm font-bold tabular-nums text-xl sm:text-4xl">
                                     {daysTogether}
                                 </span>
-                                <span className="font-semibold text-[10px] text-muted-foreground uppercase tracking-widest">
+                                <span className="font-semibold text-[9px] text-muted-foreground sm:text-xs uppercase tracking-widest">
                                     Dní
                                 </span>
                             </div>
                         ) : (
-                            // Fallback (čára), pokud datum není nastaveno
                             <div className="absolute px-2 w-full">
                                 <div className="bg-border/50 w-full h-px"></div>
-                                <Heart className="top-1/2 left-1/2 absolute fill-red-500 w-4 h-4 text-red-500 -translate-x-1/2 -translate-y-1/2" />
+                                <Heart className="top-1/2 left-1/2 absolute fill-red-500 size-4 text-red-500 -translate-x-1/2 -translate-y-1/2" />
                             </div>
                         )}
                     </div>

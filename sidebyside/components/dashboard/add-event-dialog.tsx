@@ -28,6 +28,7 @@ export function AddEventDialog({
     children,
 }: AddEventDialogProps) {
     const [isOpen, setIsOpen] = useState(false);
+    const [location, setLocation] = useState("");
 
     // Pokud není datum, dáme dnešek
     const dateToUse = defaultDate || new Date();
@@ -114,14 +115,39 @@ export function AddEventDialog({
 
                     <div className="space-y-1">
                         <Label htmlFor="location">Kde?</Label>
-                        <div className="relative">
-                            <MapPin className={`${iconClasses}`} />
-                            <Input
-                                id="location"
-                                name="location"
-                                placeholder="Místo..."
-                                className="pl-9"
-                            />
+                        <div className="flex gap-2">
+                            <div className="relative flex-1">
+                                <MapPin className={`${iconClasses}`} />
+                                <Input
+                                    id="location"
+                                    name="location"
+                                    placeholder="Místo..."
+                                    className="pl-9"
+                                    // Uložíme si hodnotu do state, abychom ji mohli použít v tlačítku
+                                    onChange={(e) =>
+                                        setLocation(e.target.value)
+                                    }
+                                    value={location}
+                                />
+                            </div>
+                            {location && (
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="icon"
+                                    title="Otevřít v mapách"
+                                    onClick={() => {
+                                        // Univerzální link, který na mobilu otevře nativní mapy
+                                        // a na desktopu Google Maps
+                                        window.open(
+                                            `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`,
+                                            "_blank",
+                                        );
+                                    }}
+                                >
+                                    <MapPin className="size-4" />
+                                </Button>
+                            )}
                         </div>
                     </div>
 
@@ -169,7 +195,7 @@ export function AddEventDialog({
 
                     <Button
                         type="submit"
-                        className="bg-primary hover:bg-primary-foreground w-full text-white"
+                        className="bg-primary hover:bg-primary-foreground w-full text-background"
                     >
                         Uložit
                     </Button>

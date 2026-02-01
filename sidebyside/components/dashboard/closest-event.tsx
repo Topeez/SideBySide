@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CalendarDays, Plus } from "lucide-react";
+import { CalendarDays, MapPin, Plus } from "lucide-react";
 import { ClosestEventProps } from "@/types/event";
 import { AddEventDialog } from "./add-event-dialog";
 
@@ -34,9 +34,15 @@ export function ClosestEvent({
                                     minute: "2-digit",
                                 },
                             )}
-                            {nextEvent.location
-                                ? ` • ${nextEvent.location}`
-                                : ""}
+                            {nextEvent.location ? (
+                                <>
+                                    {" "}
+                                    <MapPin className="inline-block mr-1 size-4 text-destructive" />
+                                    {nextEvent.location}
+                                </>
+                            ) : (
+                                ""
+                            )}
                         </p>
                     </>
                 ) : (
@@ -56,12 +62,12 @@ export function ClosestEvent({
 
                 {coupleId ? (
                     <AddEventDialog coupleId={coupleId}>
-                        <Button className="bg-primary hover:bg-primary-foreground text-white">
+                        <Button className="bg-primary hover:bg-primary-foreground text-background">
                             <Plus className="mr-2 size-4" /> Přidat
                         </Button>
                     </AddEventDialog>
                 ) : (
-                    <Button className="bg-primary hover:bg-primary-foreground text-white">
+                    <Button className="bg-primary hover:bg-primary-foreground text-background">
                         <Plus className="mr-2 size-4" /> Přidat
                     </Button>
                 )}

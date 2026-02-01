@@ -62,8 +62,12 @@ export function ProfileForm({ profile }: { profile: Profile }) {
             </div>
 
             {/* Tlačítko */}
-            <div className="flex justify-end">
-                <Button type="submit" disabled={isPending}>
+            <div className="flex justify-center">
+                <Button
+                    type="submit"
+                    className="text-background"
+                    disabled={isPending}
+                >
                     {isPending && (
                         <Loader2 className="mr-2 size-4 animate-spin" />
                     )}

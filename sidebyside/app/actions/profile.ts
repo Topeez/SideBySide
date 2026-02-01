@@ -65,3 +65,25 @@ export async function updateProfile(prevState: unknown, formData: FormData) {
   
   return { message: "Uloženo úspěšně", success: true };
 }
+
+export async function updateTheme(theme: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        throw new Error("Nejste přihlášen");
+    }
+
+    const { error } = await supabase
+        .from("profiles")
+        .update({ theme })
+        .eq("id", user.id);
+
+    if (error) {
+        console.error("Error updating theme:", error);
+        throw new Error("Chyba při ukládání vzhledu");
+    }
+
+    revalidatePath("/dashboard");
+    return { success: true };
+}
