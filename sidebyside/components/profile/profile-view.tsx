@@ -60,7 +60,7 @@ export function ProfileView({ profile, isEditable }: ProfileViewProps) {
                         <ThemeToggleWrapper />
                         <Button
                             onClick={() => setIsEditDialogOpen(true)}
-                            className="inset-shadow-primary-foreground inset-shadow-xs gap-2 bg-primary shadow-md border-none text-background cursor-pointer"
+                            className="inset-shadow-primary-foreground inset-shadow-xs gap-2 shadow-md border-none text-button-text cursor-pointer"
                         >
                             <Edit className="size-4" />
                             <span className="hidden md:block">

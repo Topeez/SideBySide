@@ -6,6 +6,7 @@ import { useState } from "react";
 import { updateLoveNote } from "@/app/actions/update-note"; // Import akce
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import ActionButton from "../action-button";
 
 interface LoveNoteCardProps {
     initialNote: string;
@@ -53,7 +54,7 @@ export function LoveNoteCard({
                         <Textarea
                             name="note"
                             defaultValue={initialNote}
-                            className="bg-white/50 border-[#E27D60]/20 min-h-20 text-sm"
+                            className="bg-white/50 border-[#E27D60]/20 focus-visible:border-secondary-foreground/50 focus:ring-secondary-foreground/50! min-h-20 text-sm"
                             autoFocus
                         />
                         <div className="flex justify-end gap-2">
@@ -65,13 +66,13 @@ export function LoveNoteCard({
                             >
                                 Zrušit
                             </Button>
-                            <Button
+                            <ActionButton
                                 type="submit"
                                 size="sm"
-                                className="bg-secondary hover:bg-[#cf866c] text-white"
+                                className="bg-secondary hover:bg-secondary-foreground"
                             >
                                 Uložit
-                            </Button>
+                            </ActionButton>
                         </div>
                     </form>
                 ) : (

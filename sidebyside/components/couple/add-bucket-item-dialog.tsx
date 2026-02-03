@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import {
     Dialog,
     DialogContent,
@@ -20,6 +19,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import ActionButton from "../action-button";
 
 export function AddBucketItemDialog({ coupleId }: { coupleId: string }) {
     const [isOpen, setIsOpen] = useState(false);
@@ -27,13 +27,10 @@ export function AddBucketItemDialog({ coupleId }: { coupleId: string }) {
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                <Button
-                    size="sm"
-                    className="gap-2 text-button-text cursor-pointer"
-                >
+                <ActionButton>
                     <Plus className="size-4" />{" "}
                     <span className="hidden sm:block">Přidat sen</span>
-                </Button>
+                </ActionButton>
             </DialogTrigger>
             <DialogContent className="sm:max-w-106.25">
                 <DialogHeader>
@@ -80,9 +77,7 @@ export function AddBucketItemDialog({ coupleId }: { coupleId: string }) {
                         </Select>
                     </div>
 
-                    <Button type="submit" className="text-button-text">
-                        Přidat na seznam
-                    </Button>
+                    <ActionButton type="submit">Přidat na seznam</ActionButton>
                 </form>
             </DialogContent>
         </Dialog>

@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -9,6 +8,7 @@ import { useTransition } from "react";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { Profile } from "@/types/profile";
+import ActionButton from "../action-button";
 
 export function ProfileForm({ profile }: { profile: Profile }) {
     const [isPending, startTransition] = useTransition();
@@ -63,16 +63,12 @@ export function ProfileForm({ profile }: { profile: Profile }) {
 
             {/* Tlačítko */}
             <div className="flex justify-center">
-                <Button
-                    type="submit"
-                    className="text-background"
-                    disabled={isPending}
-                >
+                <ActionButton type="submit" disabled={isPending}>
                     {isPending && (
                         <Loader2 className="mr-2 size-4 animate-spin" />
                     )}
                     Uložit změny
-                </Button>
+                </ActionButton>
             </div>
         </form>
     );

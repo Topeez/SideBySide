@@ -2,12 +2,12 @@
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { Trash2, Plus, Loader2 } from "lucide-react";
 import { createTodo, toggleTodo, deleteTodo } from "@/app/actions/todos";
 import { useRef, useTransition } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ShoppingBag } from "lucide-react";
+import ActionButton from "../action-button";
 
 type Todo = {
     id: string;
@@ -121,22 +121,21 @@ export function TodoList({
                     <Input
                         name="title"
                         placeholder="Nový úkol..."
-                        className="bg-muted border-border h-9 text-sm"
+                        className="inset-shadow-muted inset-shadow-xs bg-muted border-none h-9 text-sm"
                         autoComplete="off"
                         disabled={isCreating}
                     />
-                    <Button
+                    <ActionButton
                         type="submit"
                         size="icon"
-                        className="bg-secondary hover:bg-secondary-foreground size-9 text-white shrink-0"
-                        disabled={isCreating}
+                        className="bg-secondary hover:bg-secondary-foreground size-9 shrink-0"
                     >
                         {isCreating ? (
                             <Loader2 className="size-4 animate-spin" />
                         ) : (
                             <Plus className="size-4" />
                         )}
-                    </Button>
+                    </ActionButton>
                 </form>
             </CardContent>
         </Card>

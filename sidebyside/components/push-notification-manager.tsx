@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Bell, BellOff, Loader2 } from "lucide-react";
 import { saveSubscription } from "@/app/actions/push";
 import { toast } from "sonner";
+import ActionButton from "./action-button";
 
-// ... funkce urlBase64ToUint8Array zůstává stejná ...
 function urlBase64ToUint8Array(base64String: string) {
     const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
     const base64 = (base64String + padding)
@@ -115,7 +115,7 @@ export function PushNotificationManager() {
     if (!isSupported) return null;
 
     return (
-        <div className="flex justify-between items-center bg-card p-4 border rounded-lg text-card-foreground">
+        <div className="flex justify-between items-center text-card-foreground">
             <div className="flex items-center gap-3">
                 <div className="bg-primary/10 p-2 rounded-full text-primary">
                     {subscription ? (
@@ -135,22 +135,22 @@ export function PushNotificationManager() {
             </div>
 
             {loading ? (
-                <Button variant="ghost" size="sm" disabled>
+                <ActionButton variant="ghost" size="sm" disabled>
                     <Loader2 className="size-4 animate-spin" />
-                </Button>
+                </ActionButton>
             ) : subscription ? (
-                <Button
+                <ActionButton
                     onClick={unsubscribeFromPush}
                     variant="outline"
                     size="sm"
                     className="hover:bg-red-50 border-red-200 text-red-600 hover:text-red-700"
                 >
                     Vypnout
-                </Button>
+                </ActionButton>
             ) : (
-                <Button onClick={subscribeToPush} size="sm">
+                <ActionButton onClick={subscribeToPush} size="sm">
                     Zapnout
-                </Button>
+                </ActionButton>
             )}
         </div>
     );

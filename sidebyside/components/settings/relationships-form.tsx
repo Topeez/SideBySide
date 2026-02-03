@@ -14,6 +14,7 @@ import { cs } from "date-fns/locale";
 import { CalendarIcon, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import ActionButton from "../action-button";
 
 export function RelationshipForm({
     coupleId,
@@ -82,12 +83,15 @@ export function RelationshipForm({
                         </PopoverContent>
                     </Popover>
 
-                    <Button onClick={handleSave} disabled={loading || !date}>
+                    <ActionButton
+                        onClick={handleSave}
+                        disabled={loading || !date}
+                    >
                         {loading && (
                             <Loader2 className="mr-2 size-4 animate-spin" />
                         )}
                         Uložit
-                    </Button>
+                    </ActionButton>
                 </div>
                 <p className="text-[0.8rem] text-muted-foreground">
                     Zobrazí se na vašem dashboardu jako počítadlo dní.

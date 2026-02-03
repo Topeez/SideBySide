@@ -11,11 +11,11 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
 import { deleteAccount } from "@/app/actions/account";
 import { useTransition } from "react";
 import { toast } from "sonner";
 import { Loader2, Trash2 } from "lucide-react";
+import ActionButton from "../action-button";
 
 export function DeleteAccount() {
     const [isPending, startTransition] = useTransition();
@@ -35,10 +35,10 @@ export function DeleteAccount() {
     return (
         <AlertDialog>
             <AlertDialogTrigger asChild>
-                <Button variant="destructive">
+                <ActionButton variant="destructive">
                     <Trash2 className="mr-2 size-4" />
                     Smazat účet
-                </Button>
+                </ActionButton>
             </AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>
@@ -57,12 +57,12 @@ export function DeleteAccount() {
                             e.preventDefault(); // Zabrání zavření dialogu, dokud se nedokončí akce
                             handleDelete();
                         }}
-                        className="bg-destructive hover:bg-red-700 focus:ring-red-600 text-foreground cursor-pointer"
+                        className="inset-shadow-red-700 inset-shadow-xs bg-destructive hover:bg-red-700 focus:ring-red-600 text-foreground cursor-pointer"
                         disabled={isPending}
                     >
                         {isPending ? (
                             <>
-                                <Loader2 className="mr-2 w-4 h-4 animate-spin" />
+                                <Loader2 className="mr-2 size-4 animate-spin" />
                                 Mazání...
                             </>
                         ) : (

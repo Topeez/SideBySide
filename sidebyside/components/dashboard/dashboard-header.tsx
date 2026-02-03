@@ -23,7 +23,7 @@ export async function DashboardHeader() {
         .single();
 
     return (
-        <header className="flex justify-between items-center bg-card shadow-sm mb-8 px-6 rounded-lg h-16">
+        <header className="flex justify-between items-center mb-8 px-6 rounded-lg h-16">
             <div>
                 <h1 className="font-bold text-foreground text-md sm:text-2xl">
                     Ahoj, {userName}! 👋

@@ -4,7 +4,6 @@ import { useMemo, useState } from "react";
 import { format } from "date-fns";
 import { cs } from "date-fns/locale";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
     Dialog,
@@ -18,6 +17,7 @@ import { Plus, MapPin, Gift, Trash2 } from "lucide-react";
 import { Event } from "@/types/event";
 import { getEventColor, getEventLabel } from "@/lib/event-types";
 import { deleteEvent } from "@/app/actions/events";
+import ActionButton from "../action-button";
 
 interface Profile {
     birth_date?: string | Date;
@@ -296,10 +296,10 @@ export function CalendarWidget({
 
                     <div className="flex justify-end mt-2 pt-2 border-t">
                         <AddEventDialog coupleId={coupleId} defaultDate={date}>
-                            <Button className="gap-2 bg-primary hover:bg-primary-foreground w-full sm:w-auto text-background">
+                            <ActionButton>
                                 <Plus className="size-4" />
                                 Naplánovat akci
-                            </Button>
+                            </ActionButton>
                         </AddEventDialog>
                     </div>
                 </DialogContent>

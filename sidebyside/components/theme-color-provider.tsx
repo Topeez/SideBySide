@@ -2,8 +2,15 @@
 
 import * as React from "react";
 
-export type ThemeColor = "default" | "rose" | "blue" | "violet";
-
+export type ThemeColor =
+    | "default"
+    | "rose"
+    | "blue"
+    | "violet"
+    | "orange"
+    | "green"
+    | "yellow"
+    | "slate";
 interface ThemeColorContextType {
     themeColor: ThemeColor;
     setThemeColor: (theme: ThemeColor) => void;

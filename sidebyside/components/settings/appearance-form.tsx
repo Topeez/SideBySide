@@ -12,6 +12,10 @@ const colors: { value: ThemeColor; label: string; colorClass: string }[] = [
     { value: "rose", label: "Růžová", colorClass: "bg-rose-600" },
     { value: "blue", label: "Modrá", colorClass: "bg-blue-600" },
     { value: "violet", label: "Fialová", colorClass: "bg-violet-600" },
+    { value: "orange", label: "Oranžová", colorClass: "bg-orange-500" },
+    { value: "green", label: "Zelená", colorClass: "bg-emerald-500" },
+    { value: "yellow", label: "Žlutá", colorClass: "bg-amber-500" },
+    { value: "slate", label: "Šedá", colorClass: "bg-slate-600" },
 ];
 
 export function AppearanceForm() {
@@ -25,7 +29,7 @@ export function AppearanceForm() {
         try {
             await updateTheme(newTheme);
             toast.success("Vzhled byl aktualizován");
-        } catch (error) {
+        } catch {
             toast.error("Nepodařilo se uložit vzhled");
         }
     };
@@ -53,7 +57,7 @@ export function AppearanceForm() {
                     >
                         <div
                             className={cn(
-                                "shadow-sm rounded-full w-8 h-8",
+                                "shadow-sm rounded-full size-8",
                                 color.colorClass,
                             )}
                         />
@@ -61,7 +65,7 @@ export function AppearanceForm() {
 
                         {themeColor === color.value && (
                             <div className="top-2 right-2 absolute bg-background p-0.5 rounded-full text-primary">
-                                <Check className="w-3 h-3" />
+                                <Check className="size-3" />
                             </div>
                         )}
                     </Button>

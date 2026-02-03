@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import ActionButton from "@/components/action-button";
 import {
     Dialog,
     DialogContent,
@@ -45,13 +45,10 @@ export function AddMilestoneDialog({ coupleId }: { coupleId: string }) {
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                <Button
-                    size="sm"
-                    className="gap-2 text-button-text cursor-pointer"
-                >
+                <ActionButton>
                     <Plus className="size-4" />{" "}
                     <span className="hidden sm:block">Přidat milník</span>
-                </Button>
+                </ActionButton>
             </DialogTrigger>
             <DialogContent className="sm:max-w-106.25">
                 <DialogHeader>
@@ -118,9 +115,7 @@ export function AddMilestoneDialog({ coupleId }: { coupleId: string }) {
                         />
                     </div>
 
-                    <Button type="submit" className="text-button-text">
-                        Uložit vzpomínku
-                    </Button>
+                    <ActionButton type="submit">Uložit vzpomínku</ActionButton>
                 </form>
             </DialogContent>
         </Dialog>

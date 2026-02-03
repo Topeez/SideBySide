@@ -1,12 +1,12 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { updatePassword } from "@/app/actions/auth"; // Import action
 import { useTransition, useRef } from "react";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import ActionButton from "../action-button";
 
 export function PasswordForm() {
     const [isPending, startTransition] = useTransition();
@@ -64,12 +64,12 @@ export function PasswordForm() {
             </div>
 
             <div className="flex justify-end pt-2">
-                <Button type="submit" disabled={isPending}>
+                <ActionButton type="submit" disabled={isPending}>
                     {isPending && (
                         <Loader2 className="mr-2 w-4 h-4 animate-spin" />
                     )}
                     Změnit heslo
-                </Button>
+                </ActionButton>
             </div>
         </form>
     );

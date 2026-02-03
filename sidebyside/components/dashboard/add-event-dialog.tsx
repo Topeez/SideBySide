@@ -15,6 +15,7 @@ import { createEvent } from "@/app/actions/events";
 import { useState } from "react";
 import { EVENT_TYPES, EventType } from "@/lib/event-types";
 import { cn } from "@/lib/utils";
+import ActionButton from "../action-button";
 
 interface AddEventDialogProps {
     coupleId: string;
@@ -47,12 +48,9 @@ export function AddEventDialog({
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
                 {children || (
-                    <Button
-                        size="sm"
-                        className="bg-primary hover:bg-primary-foreground"
-                    >
+                    <ActionButton>
                         <Plus className="size-4" />
-                    </Button>
+                    </ActionButton>
                 )}
             </DialogTrigger>
             <DialogContent className="sm:max-w-106.25">
@@ -193,12 +191,7 @@ export function AddEventDialog({
                         </div>
                     </div>
 
-                    <Button
-                        type="submit"
-                        className="bg-primary hover:bg-primary-foreground w-full text-background"
-                    >
-                        Uložit
-                    </Button>
+                    <ActionButton type="submit">Uložit</ActionButton>
                 </form>
             </DialogContent>
         </Dialog>
