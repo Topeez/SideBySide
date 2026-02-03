@@ -68,7 +68,7 @@ function TodoItem({ todo }: { todo: Todo }) {
 }
 
 export function TodoList({
-    initialTodos = [],
+    initialTodos,
     coupleId,
 }: {
     initialTodos: Todo[];
@@ -76,6 +76,16 @@ export function TodoList({
 }) {
     const formRef = useRef<HTMLFormElement>(null);
     const [isCreating, startCreateTransition] = useTransition();
+
+    const handleSubmit = async (formData: FormData) => {
+        const title = formData.get("title");
+        if (!title) return;
+
+        startCreateTransition(async () => {
+            await createTodo(formData);
+            formRef.current?.reset();
+        });
+    };
 
     return (
         <Card className="inset-shadow-muted inset-shadow-xs flex flex-col col-span-12 md:col-span-6 lg:col-span-4 shadow-lg border-none h-full">
@@ -102,16 +112,12 @@ export function TodoList({
                 {/* Formulář přidání */}
                 <form
                     ref={formRef}
-                    action={async (formData) => {
-                        // Použijeme transition pro plynulost
-                        startCreateTransition(async () => {
-                            await createTodo(formData);
-                            formRef.current?.reset();
-                        });
-                    }}
+                    action={handleSubmit}
                     className="flex gap-2 mt-auto pt-2 border-muted border-t"
                 >
-                    <input type="hidden" name="coupleId" value={coupleId} />
+                    {coupleId && (
+                        <input type="hidden" name="coupleId" value={coupleId} />
+                    )}
                     <Input
                         name="title"
                         placeholder="Nový úkol..."
