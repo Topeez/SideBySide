@@ -1,0 +1,128 @@
+"use client";
+
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { createMilestone } from "@/app/actions/couple";
+import {
+    Plus,
+    Heart,
+    Home,
+    Plane,
+    Circle,
+    Baby,
+    Car,
+    Star,
+    MapPin,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+
+// Seznam ikonek pro výběr
+const ICONS = [
+    { id: "heart", icon: Heart, label: "Láska" },
+    { id: "home", icon: Home, label: "Domov" },
+    { id: "plane", icon: Plane, label: "Cesta" },
+    { id: "ring", icon: Circle, label: "Výročí" },
+    { id: "baby", icon: Baby, label: "Rodina" },
+    { id: "car", icon: Car, label: "Auto" },
+    { id: "map", icon: MapPin, label: "Místo" },
+    { id: "star", icon: Star, label: "Jiné" },
+];
+
+export function AddMilestoneDialog({ coupleId }: { coupleId: string }) {
+    const [isOpen, setIsOpen] = useState(false);
+    const [selectedIcon, setSelectedIcon] = useState("heart");
+
+    return (
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogTrigger asChild>
+                <Button
+                    size="sm"
+                    className="gap-2 text-button-text cursor-pointer"
+                >
+                    <Plus className="size-4" />{" "}
+                    <span className="hidden sm:block">Přidat milník</span>
+                </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-106.25">
+                <DialogHeader>
+                    <DialogTitle>Nový milník</DialogTitle>
+                </DialogHeader>
+
+                <form
+                    action={async (formData) => {
+                        await createMilestone(formData);
+                        setIsOpen(false);
+                    }}
+                    className="gap-4 grid py-4"
+                >
+                    <input type="hidden" name="coupleId" value={coupleId} />
+                    <input type="hidden" name="icon" value={selectedIcon} />
+
+                    <div className="gap-2 grid">
+                        <Label htmlFor="title">Název</Label>
+                        <Input
+                            id="title"
+                            name="title"
+                            placeholder="Např. První dovolená"
+                            required
+                        />
+                    </div>
+
+                    <div className="gap-2 grid">
+                        <Label htmlFor="date">Datum</Label>
+                        <Input type="date" id="date" name="date" required />
+                    </div>
+
+                    <div className="gap-2 grid">
+                        <Label>Ikona</Label>
+                        <div className="flex flex-wrap gap-2">
+                            {ICONS.map((item) => {
+                                const Icon = item.icon;
+                                const isSelected = selectedIcon === item.id;
+                                return (
+                                    <button
+                                        key={item.id}
+                                        type="button"
+                                        onClick={() => setSelectedIcon(item.id)}
+                                        className={cn(
+                                            "hover:bg-muted p-2 border rounded-md transition-all",
+                                            isSelected
+                                                ? "border-primary bg-primary/10 text-primary"
+                                                : "border-muted text-muted-foreground",
+                                        )}
+                                        title={item.label}
+                                    >
+                                        <Icon className="size-5" />
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    <div className="gap-2 grid">
+                        <Label htmlFor="description">Popis (volitelné)</Label>
+                        <Textarea
+                            id="description"
+                            name="description"
+                            placeholder="Krátká poznámka..."
+                        />
+                    </div>
+
+                    <Button type="submit" className="text-button-text">
+                        Uložit vzpomínku
+                    </Button>
+                </form>
+            </DialogContent>
+        </Dialog>
+    );
+}

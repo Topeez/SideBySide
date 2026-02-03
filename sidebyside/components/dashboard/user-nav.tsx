@@ -17,6 +17,7 @@ import Link from "next/link";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import { ProfileData } from "@/types/profile";
+import { useCallback, useEffect } from "react";
 export function UserNav({
     id,
     email,
@@ -27,10 +28,43 @@ export function UserNav({
     const router = useRouter();
     const supabase = createClient();
 
-    const handleSignOut = async () => {
+    const handleSignOut = useCallback(async () => {
         await supabase.auth.signOut();
         router.push("/");
-    };
+    }, [router, supabase.auth]);
+
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            const target = e.target as HTMLElement;
+            if (
+                target.tagName === "INPUT" ||
+                target.tagName === "TEXTAREA" ||
+                target.isContentEditable
+            ) {
+                return;
+            }
+
+            if (e.altKey && e.code === "KeyP") {
+                e.preventDefault();
+                router.push(`/dashboard/profile/${id}`);
+            }
+            if (e.altKey && e.code === "KeyS") {
+                e.preventDefault();
+                router.push("/dashboard/settings");
+            }
+            if (e.altKey && e.code === "KeyC") {
+                e.preventDefault();
+                router.push("/dashboard/couple");
+            }
+            if (e.altKey && e.code === "KeyQ") {
+                e.preventDefault();
+                handleSignOut();
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [id, router, handleSignOut]);
 
     const initials = full_name
         ? full_name
@@ -83,22 +117,23 @@ export function UserNav({
                 <DropdownMenuGroup>
                     <Link href={`/dashboard/profile/${id}`}>
                         <DropdownMenuItem className="cursor-pointer">
-                            <User className="mr-2 w-4 h-4" />
+                            <User className="mr-2 size-4" />
                             <span>O mně</span>
-                            <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+                            <DropdownMenuShortcut>⌥P</DropdownMenuShortcut>
                         </DropdownMenuItem>
                     </Link>
                     <Link href="/dashboard/settings">
                         <DropdownMenuItem className="cursor-pointer">
-                            <Settings className="mr-2 w-4 h-4" />
+                            <Settings className="mr-2 size-4" />
                             <span>Nastavení</span>
-                            <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+                            <DropdownMenuShortcut>⌥S</DropdownMenuShortcut>
                         </DropdownMenuItem>
                     </Link>
-                    <Link href="/couple">
+                    <Link href="/dashboard/couple">
                         <DropdownMenuItem className="cursor-pointer">
                             <Heart className="mr-2 size-4 text-destructive" />
                             <span>Náš vztah</span>
+                            <DropdownMenuShortcut>⌥C</DropdownMenuShortcut>
                         </DropdownMenuItem>
                     </Link>
                 </DropdownMenuGroup>
@@ -109,6 +144,7 @@ export function UserNav({
                 >
                     <LogOut className="mr-2 size-4 text-destructive" />
                     <span>Odhlásit se</span>
+                    <DropdownMenuShortcut>⌥Q</DropdownMenuShortcut>
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>

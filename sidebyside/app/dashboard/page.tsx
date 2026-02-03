@@ -8,6 +8,7 @@ import { CalendarWidget } from "@/components/dashboard/calendar-widget";
 import { ClosestEvent } from "@/components/dashboard/closest-event";
 import { CoupleProfileWidget } from "@/components/dashboard/couple-profile-widget";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
+import Link from "next/link";
 
 export default async function DashboardPage() {
     const supabase = await createClient();
@@ -17,10 +18,11 @@ export default async function DashboardPage() {
 
     if (!user) {
         return (
-            <div className="flex justify-center items-center h-full">
-                <p className="text-stone-600">
-                    Nepodařilo se načíst uživatele.
-                </p>
+            <div className="flex justify-center items-center h-full cs-container">
+                <p className="text-muted">Nepodařilo se načíst uživatele.</p>
+                <Link href="/" className="ml-2 text-primary hover:underline">
+                    Přihlásit se
+                </Link>
             </div>
         );
     }
