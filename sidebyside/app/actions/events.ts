@@ -44,10 +44,11 @@ export async function createEvent(formData: FormData) {
   try {
       // 1. Zjistíme partnera
       const { data: couple } = await supabase
-          .from("couples")
+        .from("couples")
           .select("user1_id, user2_id")
           .eq("id", coupleId)
           .single();
+          
 
       if (couple) {
           // Kdo je ten druhý?

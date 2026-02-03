@@ -1,5 +1,6 @@
 "use server";
 
+import { createAdminClient } from "@/utils/supabase/admin";
 import { createClient } from "@/utils/supabase/server";
 import webPush, { WebPushError } from "web-push";
 
@@ -32,10 +33,9 @@ export async function saveSubscription(sub: PushSubscriptionJSON) {
   return { success: true };
 }
 
-// 2. Odeslání notifikace uživateli (tuto funkci budeš volat třeba při vytvoření eventu)
 export async function sendNotificationToUser(userId: string, title: string, body: string, url: string = "/dashboard") {
   console.log(`Sending push to User ${userId}`);
-    const supabase = await createClient();
+    const supabase = createAdminClient();
     
     const { data: subscriptions } = await supabase
         .from("push_subscriptions")
