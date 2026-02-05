@@ -7,6 +7,7 @@ import { Settings2, Heart } from "lucide-react";
 import Link from "next/link";
 import { ProfileData } from "@/types/profile";
 import { differenceInDays } from "date-fns";
+import ActionButton from "../action-button";
 
 interface CoupleProfileWidgetProps {
     userProfile?: ProfileData | null;
@@ -68,14 +69,16 @@ export function CoupleProfileWidget({
 
                     {/* PARTNER */}
                     <div className="flex flex-col items-center gap-2">
-                        <Avatar className="border-2 border-muted w-16 h-16">
-                            <AvatarImage
-                                src={partnerProfile?.avatar_url}
-                                className="object-cover"
-                                referrerPolicy="no-referrer"
-                            />
-                            <AvatarFallback>TY</AvatarFallback>
-                        </Avatar>
+                        <Link href={`/dashboard/profile/${partnerProfile?.id}`}>
+                            <Avatar className="border-2 border-muted size-16">
+                                <AvatarImage
+                                    src={partnerProfile?.avatar_url}
+                                    className="object-cover"
+                                    referrerPolicy="no-referrer"
+                                />
+                                <AvatarFallback>TY</AvatarFallback>
+                            </Avatar>
+                        </Link>
                         <span className="font-medium text-muted-foreground text-sm">
                             {partnerProfile?.nickname ||
                                 partnerProfile?.full_name}
@@ -85,10 +88,13 @@ export function CoupleProfileWidget({
 
                 <div className="mt-auto pt-4">
                     <Link href={`/dashboard/profile/${userProfile?.id}`}>
-                        <Button variant="outline" className="gap-2 w-full">
+                        <ActionButton
+                            variant="outline"
+                            className="gap-2 w-full text-foregrou d"
+                        >
                             <Settings2 className="size-4" />
                             Upravit profil
-                        </Button>
+                        </ActionButton>
                     </Link>
                 </div>
             </CardContent>

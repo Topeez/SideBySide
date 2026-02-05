@@ -19,7 +19,7 @@ export default function LoginButton({ nextUrl }: { nextUrl?: string }) {
     };
 
     return (
-        <Button onClick={handleLogin} className="text-background">
+        <Button onClick={handleLogin} className="text-button-text">
             Přihlásit se přes Google
         </Button>
     );

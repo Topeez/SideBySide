@@ -18,8 +18,18 @@ export function PageSkeleton({
             {/* 1. HEADER SKELETON */}
             <div className="flex justify-between items-center mb-8 px-6">
                 <div className="space-y-2">
-                    <Skeleton className={cn("rounded-md h-8", titleWidth)} />
-                    <Skeleton className={cn("rounded-md h-4", subtitleWidth)} />
+                    <Skeleton
+                        className={cn(
+                            "rounded-md w-24 h-8",
+                            `md:${titleWidth}`,
+                        )}
+                    />
+                    <Skeleton
+                        className={cn(
+                            "hidden md:block rounded-md w-32 h-4",
+                            `md:${subtitleWidth}`,
+                        )}
+                    />
                 </div>
                 <div className="flex items-center gap-4">
                     {/* Avatar a Theme toggle placeholder */}

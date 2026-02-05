@@ -12,11 +12,11 @@ export default async function Header() {
     } = await supabase.auth.getUser();
 
     return (
-        <header className="top-0 right-0 left-0 z-999 fixed shadow-sm">
+        <header className="top-0 right-0 left-0 z-999 fixed bg-muted/5 shadow-xs backdrop-blur-lg">
             <nav className="flex justify-between items-center py-4 w-full cs-container">
                 <Link
                     href="/"
-                    className="flex items-center gap-2 font-bold text-stone-800 text-xl"
+                    className="flex items-center gap-2 font-bold text-foreground text-xl"
                 >
                     <Heart
                         className="size-6 text-secondary"

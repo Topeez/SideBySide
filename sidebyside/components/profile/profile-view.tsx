@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
     Edit,
-    Gift,
     Heart,
     Palette,
     Ruler,
@@ -41,7 +40,7 @@ export function ProfileView({ profile, isEditable }: ProfileViewProps) {
     return (
         <div className="space-y-4 cs-container">
             {/* --- HLAVIČKA A AKCE --- */}
-            <div className="flex md:flex-row flex-col justify-between items-center gap-4 bg-card shadow-sm mb-6 px-6 py-2 rounded-lg">
+            <div className="flex md:flex-row flex-col justify-between items-center gap-4 shadow-sm mb-6 px-6 py-2">
                 <div>
                     <h1 className="font-bold text-2xl md:text-left text-center tracking-tight">
                         {isEditable
@@ -51,7 +50,7 @@ export function ProfileView({ profile, isEditable }: ProfileViewProps) {
                     <p className="text-muted-foreground">
                         {isEditable
                             ? "Tady si nastav, co má tvůj partner vědět."
-                            : "Tahák pro nákup dárků a plánování."}
+                            : "Podívej se na údaje, které s tebou tvůj partner sdílí."}
                     </p>
                 </div>
 
@@ -69,12 +68,7 @@ export function ProfileView({ profile, isEditable }: ProfileViewProps) {
                         </Button>
                     </div>
                 ) : (
-                    <Button
-                        variant="outline"
-                        className="gap-2 hover:bg-primary/10 border-primary border-dashed text-primary"
-                    >
-                        <Gift className="w-4 h-4" /> Přidat nápad na dárek
-                    </Button>
+                    <></>
                 )}
             </div>
 

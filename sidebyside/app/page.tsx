@@ -13,7 +13,7 @@ export default function LandingPage() {
                 {/* Off-white pozadí */}
                 <main className="flex-1">
                     {/* HERO SECTION */}
-                    <section className="px-4 py-20 md:py-44 w-full text-center">
+                    <section className="px-4 md:py-44 pt-28 pb-12 w-full text-center">
                         <div className="space-y-6 mx-auto max-w-3xl container">
                             <h1 className="font-extrabold text-foreground text-4xl sm:text-5xl md:text-6xl tracking-tight">
                                 Konečně na{" "}
@@ -42,21 +42,21 @@ export default function LandingPage() {
                         <div className="gap-8 grid md:grid-cols-3">
                             <FeatureCard
                                 icon={
-                                    <Calendar className="w-10 h-10 text-primary" />
+                                    <Calendar className="size-10 text-primary" />
                                 }
                                 title="Společný kalendář"
-                                desc="Propoj si svůj Google Calendar a vidíš, kdy má partner čas. Už žádné dvojité bookingy."
+                                desc="Propoj si svůj Google účet s aplikací a vidíš, kdy má partner čas. Už žádné dvojité bookingy."
                             />
                             <FeatureCard
                                 icon={
-                                    <Share2 className="w-10 h-10 text-primary" />
+                                    <Share2 className="size-10 text-primary" />
                                 }
                                 title="Sdílené nápady"
                                 desc="Všechny nápady na dárky, filmy a výlety na jednom místě. Přidej teď, rozhodněte se později."
                             />
                             <FeatureCard
                                 icon={
-                                    <CheckCircle2 className="w-10 h-10 text-primary" />
+                                    <CheckCircle2 className="size-10 text-primary" />
                                 }
                                 title="Žádné zapomínání"
                                 desc="Notifikace na výročí a společné úkoly. Myšlení na detaily nech na nás."
@@ -103,8 +103,8 @@ function FeatureCard({
     desc: string;
 }) {
     return (
-        <div className="flex flex-col items-center bg-white shadow-sm hover:shadow-md p-6 border border-stone-100 rounded-2xl text-center transition-shadow">
-            <div className="bg-background mb-4 p-3 rounded-full">{icon}</div>
+        <div className="flex flex-col items-center bg-card shadow-sm hover:shadow-md p-6 border border-muted rounded-2xl text-center transition-shadow">
+            <div className="mb-4">{icon}</div>
             <h3 className="mb-2 font-bold text-foreground text-xl">{title}</h3>
             <p className="text-muted-foreground">{desc}</p>
         </div>
@@ -117,7 +117,7 @@ function Step({ number, text }: { number: string; text: string }) {
             <span className="flex justify-center items-center bg-[#E27D60]/20 rounded-full w-8 h-8 font-bold text-[#E27D60]">
                 {number}
             </span>
-            <span className="font-medium text-muted">{text}</span>
+            <span className="font-medium text-foreground">{text}</span>
         </div>
     );
 }

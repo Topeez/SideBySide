@@ -55,7 +55,7 @@ export function RelationshipForm({
                 <label className="peer-disabled:opacity-70 font-medium text-sm leading-none peer-disabled:cursor-not-allowed">
                     Datum začátku vztahu
                 </label>
-                <div className="flex gap-2">
+                <div className="flex justify-between items-center w-full">
                     <Popover>
                         <PopoverTrigger asChild>
                             <Button
@@ -73,7 +73,10 @@ export function RelationshipForm({
                                 )}
                             </Button>
                         </PopoverTrigger>
-                        <PopoverContent className="p-0 w-auto" align="start">
+                        <PopoverContent
+                            className="p-0 w-auto max-w-3/4"
+                            align="start"
+                        >
                             <Calendar
                                 mode="single"
                                 selected={date}
@@ -93,7 +96,7 @@ export function RelationshipForm({
                         Uložit
                     </ActionButton>
                 </div>
-                <p className="text-[0.8rem] text-muted-foreground">
+                <p className="text-muted-foreground text-xs">
                     Zobrazí se na vašem dashboardu jako počítadlo dní.
                 </p>
             </div>

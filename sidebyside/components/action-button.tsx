@@ -30,7 +30,7 @@ export default function ActionButton({
             size={size}
             disabled={disabled || isLoading}
             className={cn(
-                "inset-shadow-primary-foreground inset-shadow-xs gap-2 shadow-md border-none text-button-text cursor-pointer",
+                "inset-shadow-muted inset-shadow-xs gap-2 shadow-md border-none text-button-text cursor-pointer",
                 className,
                 "disabled:shadow-none disabled:inset-shadow-none disabled:cursor-not-allowed disabled:opacity-50",
             )}
