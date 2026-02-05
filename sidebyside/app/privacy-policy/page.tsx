@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function PrivacyPolicy() {
     return (
         <div className="mx-auto px-4 py-12 max-w-3xl text-foreground container">
@@ -116,12 +118,12 @@ export default function PrivacyPolicy() {
                     <p>
                         Pokud máte jakékoliv dotazy ohledně ochrany soukromí,
                         kontaktujte vývojáře na emailu: <br />
-                        <a
-                            href="mailto:tvuj-email@example.com"
+                        <Link
+                            href="mailto:topetopinka7@seznam.cz"
                             className="text-primary hover:underline"
                         >
-                            tvuj-email@example.com
-                        </a>
+                            topetopinka7@seznam.cz
+                        </Link>
                     </p>
                 </section>
             </div>
