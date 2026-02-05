@@ -4,6 +4,14 @@ import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import { sendNotificationToUser } from "./push";
 import { v4 as uuidv4 } from "uuid";
+import { z } from "zod";
+
+const BucketItemSchema = z.object({
+  title: z.string().min(1, "Název je povinný"),
+    image_url: z.string().url("Neplatný formát URL").optional().or(z.literal("")), 
+    status: z.enum(["planned", "in_progress", "completed"]),
+    coupleId: z.string().uuid(),
+})
 
 export async function updateCoverPhoto(coupleId: string, formData: FormData) {
     const imageFile = formData.get("cover") as File;
@@ -84,26 +92,40 @@ export async function createMilestone(formData: FormData) {
 }
 
 export async function createBucketItem(formData: FormData) {
-  const title = formData.get("title") as string;
-  const status = formData.get("status") as string;
-  const coupleId = formData.get("coupleId") as string;
+    const rawData = {
+        title: formData.get("title"),
+        image_url: formData.get("image_url"),
+        status: formData.get("status"),
+        coupleId: formData.get("coupleId"),
+    };
 
-  if(!title || !coupleId) return;
+    // 1. Validace pomocí Zod
+    const validatedFields = BucketItemSchema.safeParse(rawData);
 
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+    if (!validatedFields.success) {
+      // Vracíme první chybu
+      return { success: false, message: validatedFields.error.message };
+    }
+    
+    const { title, image_url, status, coupleId } = validatedFields.data;
 
-  if (!user) return;
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
 
+    if (!user) return { success: false, message: "Nejste přihlášen" };
+
+    // 2. Uložení do DB
     const { error } = await supabase.from("bucket_list_items").insert({
         title,
-        status: status || "planned",
+        status,
+        // Pokud je string prázdný, uložíme NULL, jinak URL
+        image_url: image_url || null, 
         couple_id: coupleId
     });
 
     if (error) {
         console.error("Error creating bucket item:", error);
-        return;
+        return { success: false, message: "Chyba při ukládání do databáze" };
     }
 
 
@@ -125,6 +147,23 @@ export async function createBucketItem(formData: FormData) {
 
     revalidatePath("/dashboard/couple");
 }
+
+export async function deleteBucketItem(itemId: string) {
+    const supabase = await createClient();
+    
+    const { error } = await supabase
+        .from("bucket_list_items")
+        .delete()
+        .eq("id", itemId);
+
+    if (error) {
+        console.error("Error deleting bucket item:", error);
+        return;
+    }
+
+    revalidatePath("/dashboard/couple");
+}
+
 
 export async function toggleBucketItemStatus(itemId: string, newStatus: string) {
     const supabase = await createClient();

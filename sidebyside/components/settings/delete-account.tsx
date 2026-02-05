@@ -54,7 +54,7 @@ export function DeleteAccount() {
                     </AlertDialogCancel>
                     <AlertDialogAction
                         onClick={(e) => {
-                            e.preventDefault(); // Zabrání zavření dialogu, dokud se nedokončí akce
+                            e.preventDefault();
                             handleDelete();
                         }}
                         className="inset-shadow-red-700 inset-shadow-xs bg-destructive hover:bg-red-700 focus:ring-red-600 text-foreground cursor-pointer"
