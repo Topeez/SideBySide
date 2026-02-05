@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { format } from "date-fns";
 import { cs } from "date-fns/locale";
+import Link from "next/link";
 
 export const metadata = {
     title: "Changelog | SideBySide",
@@ -35,17 +36,17 @@ export default async function ChangelogPage() {
 
                             <div className="flex sm:flex-row flex-col sm:items-center gap-2 mb-2">
                                 <h2 className="font-semibold text-2xl hover:underline">
-                                    <a
+                                    <Link
                                         href={release.html_url}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                     >
                                         {release.name || release.tag_name}
-                                    </a>
+                                    </Link>
                                 </h2>
                                 <div className="flex items-center gap-2">
                                     <Badge
-                                        variant="secondary"
+                                        variant="outline"
                                         className="font-mono"
                                     >
                                         {release.tag_name}
