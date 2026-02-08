@@ -81,6 +81,7 @@ export function ProfileView({ profile, isEditable }: ProfileViewProps) {
                             src={profile.avatar_url || ""}
                             className="object-cover"
                             referrerPolicy="no-referrer"
+                            alt="your avatar image"
                         />
                         <AvatarFallback className="text-4xl">
                             {initials}

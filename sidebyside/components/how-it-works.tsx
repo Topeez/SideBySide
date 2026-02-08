@@ -59,7 +59,7 @@ export default function HowItWorks() {
                         {/* Content */}
                         <div className="space-y-3 pt-1">
                             <div className="flex items-center gap-3">
-                                <span className="opacity-70 font-bold text-primary text-sm uppercase tracking-wider">
+                                <span className="font-bold text-primary-foreground dark:text-primary text-sm uppercase tracking-wider">
                                     Krok {index + 1}
                                 </span>
                             </div>

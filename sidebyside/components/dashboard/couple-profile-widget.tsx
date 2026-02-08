@@ -2,7 +2,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import { Settings2, Heart } from "lucide-react";
 import Link from "next/link";
 import { ProfileData } from "@/types/profile";
@@ -31,7 +30,7 @@ export function CoupleProfileWidget({
             </CardHeader>
 
             <CardContent className="flex flex-col gap-6">
-                <div className="flex justify-between items-center gap-4">
+                <div className="flex flex-row xl:flex-row md:flex-col justify-between items-center gap-4">
                     {/* JÁ */}
                     <div className="flex flex-col items-center gap-2">
                         <Avatar className="border-2 border-primary w-16 h-16">
@@ -39,6 +38,7 @@ export function CoupleProfileWidget({
                                 src={userProfile?.avatar_url}
                                 className="object-cover"
                                 referrerPolicy="no-referrer"
+                                alt="your avatar image"
                             />
                             <AvatarFallback>JÁ</AvatarFallback>
                         </Avatar>
@@ -69,12 +69,16 @@ export function CoupleProfileWidget({
 
                     {/* PARTNER */}
                     <div className="flex flex-col items-center gap-2">
-                        <Link href={`/dashboard/profile/${partnerProfile?.id}`}>
+                        <Link
+                            href={`/dashboard/profile/${partnerProfile?.id}`}
+                            aria-label="partner profile link"
+                        >
                             <Avatar className="border-2 border-muted size-16">
                                 <AvatarImage
                                     src={partnerProfile?.avatar_url}
                                     className="object-cover"
                                     referrerPolicy="no-referrer"
+                                    alt="partner avatar image"
                                 />
                                 <AvatarFallback>TY</AvatarFallback>
                             </Avatar>

@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { format } from "date-fns";
-import { cs } from "date-fns/locale";
+import { cs, is } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -18,6 +18,8 @@ import { Event } from "@/types/event";
 import { getEventColor, getEventLabel } from "@/lib/event-types";
 import { deleteEvent } from "@/app/actions/events";
 import ActionButton from "../action-button";
+import { useDashboardLayout } from "../layout-provider";
+import { layoutConfig } from "@/config/dashboard-layouts";
 
 interface Profile {
     birth_date?: string | Date;
@@ -45,6 +47,12 @@ export function CalendarWidget({
     userProfile,
     partnerProfile,
 }: CalendarWidgetProps) {
+    const { layout } = useDashboardLayout();
+
+    const isCalendarLayout = layout === "calendar";
+
+    const wrapperClasses = layoutConfig[layout].calendar;
+
     const [date, setDate] = useState<Date | undefined>(new Date());
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -114,41 +122,49 @@ export function CalendarWidget({
         : [];
 
     return (
-        <div className="inset-shadow-muted inset-shadow-xs flex flex-col space-y-4 col-span-12 md:col-span-6 lg:col-span-4 bg-background shadow-lg p-4 border border-none rounded-xl h-full">
+        <div
+            suppressHydrationWarning
+            className="inset-shadow-muted inset-shadow-xs flex flex-col space-y-4 col-span-12 md:col-span-6 lg:col-span-4 bg-background shadow-lg p-4 border border-none rounded-xl h-full"
+        >
             <Calendar
                 mode="single"
                 selected={date}
                 onSelect={handleDateSelect}
                 locale={cs}
-                className="p-0 w-full"
+                className="p-0 size-full"
                 classNames={{
-                    month: "w-full flex flex-col items-center space-y-4",
-                    table: "w-full border-collapse",
-                    head_row: "flex w-full mb-2",
-                    head_cell:
-                        "text-muted-foreground rounded-md w-full font-normal text-sm",
-                    row: "flex w-full mt-2",
-                    cell: cn(
-                        "focus-within:z-20 relative focus-within:relative w-full h-16 md:h-20 text-sm text-center",
-                        "bg-transparent",
+                    month: cn(
+                        "flex flex-col items-center space-y-4 w-full",
+                        isCalendarLayout && "text-4xl",
                     ),
+                    month_grid: "w-full border-collapse",
+                    weekdays: cn("flex my-2 w-full"),
+                    weekday: cn(
+                        "rounded-xl w-full font-normal text-muted-foreground text-sm",
+                        isCalendarLayout && "md:text-xl",
+                    ),
+                    week: "flex w-full mt-2",
                     day: cn(
                         "group flex flex-col justify-start items-center m-1 sm:m-4 md:m-2 p-0 size-full font-normal transition-colors",
-                        "rounded-md",
+                        isCalendarLayout && "md:m-4 md:p-2 lg:m-6",
+                        "rounded-xl",
                         "hover:bg-accent/50",
                     ),
                     selected: cn(
                         "bg-primary shadow-md text-foreground",
                         "hover:bg-primary hover:text-foreground focus:bg-primary focus:text-foreground",
-                        "!rounded-md",
+                        "!rounded-xl",
                     ),
-                    today: "text-primary font-bold rounded-md",
+                    today: "text-primary font-bold rounded-xl",
                     outside: "text-muted-foreground opacity-50",
                     disabled: "text-muted-foreground opacity-50",
                     hidden: "invisible",
-                    caption:
-                        "flex justify-center pt-1 relative items-center mb-4",
-                    caption_label: "text-lg font-bold capitalize",
+                    month_caption:
+                        "flex justify-center py-1 relative items-center mb-4",
+                    caption_label: cn(
+                        "font-bold text-lg capitalize",
+                        isCalendarLayout && "md:text-2xl",
+                    ),
                 }}
                 formatters={{
                     formatDay: (date) => {
@@ -158,7 +174,12 @@ export function CalendarWidget({
 
                         return (
                             <div className="relative flex flex-col justify-start items-center p-2 rounded-md size-full">
-                                <span className="font-medium text-xl">
+                                <span
+                                    className={cn(
+                                        "font-medium text-xl",
+                                        isCalendarLayout && "md:text-2xl ",
+                                    )}
+                                >
                                     {date.getDate()}
                                 </span>
 

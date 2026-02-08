@@ -97,6 +97,7 @@ export default function CoupleHero({ couple, user1, user2 }: CoupleHeroProps) {
                 className="top-4 right-4 z-20 absolute hover:bg-muted/30 text-foreground/70 hover:text-white cursor-pointer"
                 onClick={handleCameraClick}
                 disabled={isUploading}
+                aria-label="change cover photo button"
             >
                 {isUploading ? (
                     <Loader2 className="size-5 animate-spin" />
@@ -110,7 +111,10 @@ export default function CoupleHero({ couple, user1, user2 }: CoupleHeroProps) {
                 {/* Avatary (překrývající se) */}
                 <div className="flex justify-center items-center -space-x-4 mb-6">
                     <Avatar className="shadow-lg border-4 border-background/50 size-20">
-                        <AvatarImage src={user1.avatar_url || ""} />
+                        <AvatarImage
+                            src={user1.avatar_url || ""}
+                            alt="your avatar image"
+                        />
                         <AvatarFallback className="bg-white/10 backdrop-blur-md text-white text-xl">
                             {u1Init}
                         </AvatarFallback>
@@ -122,7 +126,10 @@ export default function CoupleHero({ couple, user1, user2 }: CoupleHeroProps) {
                     </div>
 
                     <Avatar className="shadow-lg border-4 border-background/50 size-20">
-                        <AvatarImage src={user2.avatar_url || ""} />
+                        <AvatarImage
+                            src={user2.avatar_url || ""}
+                            alt="partner avatar image"
+                        />
                         <AvatarFallback className="bg-white/10 backdrop-blur-md text-white text-xl">
                             {u2Init}
                         </AvatarFallback>

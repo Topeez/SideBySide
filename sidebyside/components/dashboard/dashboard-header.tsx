@@ -39,6 +39,7 @@ export async function DashboardHeader() {
                     <Button
                         variant="ghost"
                         size="icon"
+                        aria-label="back to home link"
                         className="relative bg-accent shadow-md border border-muted rounded-full text-muted-foreground hover:text-foreground cursor-pointer"
                     >
                         <House size={5} />

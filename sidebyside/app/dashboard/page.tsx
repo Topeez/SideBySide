@@ -19,10 +19,10 @@ export default async function DashboardPage() {
 
     if (!user) {
         return (
-            <div className="flex justify-center items-center h-full cs-container">
+            <div className="flex justify-center items-center min-h-full cs-container">
                 <p className="text-muted">Nepodařilo se načíst uživatele.</p>
                 <Link href="/" className="ml-2 text-primary hover:underline">
-                    Přihlásit se
+                    Zpět na hlavní stránku
                 </Link>
             </div>
         );

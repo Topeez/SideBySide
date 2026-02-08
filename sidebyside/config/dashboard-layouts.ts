@@ -9,7 +9,6 @@ type WidgetClasses = {
 };
 
 export const layoutConfig: Record<DashboardLayoutType, WidgetClasses> = {
-  // Klasický layout (jako máš teď)
   default: {
     closestEvent: "col-span-12 md:col-span-8",
     loveNote: "col-span-12 md:col-span-4",
@@ -17,20 +16,18 @@ export const layoutConfig: Record<DashboardLayoutType, WidgetClasses> = {
     calendar: "col-span-12 md:col-span-4",
     profile: "col-span-12 md:col-span-4",
   },
-  // Focus layout - Úkoly jsou velké, události menší
   focus: {
     closestEvent: "col-span-12 md:col-span-6",
     loveNote: "col-span-12 md:col-span-6",
-    todo: "col-span-12 md:col-span-8 row-span-2", // Velké úkoly
+    todo: "col-span-12 md:col-span-8 row-span-2", 
     calendar: "col-span-12 md:col-span-4",
     profile: "col-span-12 md:col-span-4",
   },
-  // Calendar layout - Kalendář je dominantní
   calendar: {
     closestEvent: "col-span-12 md:col-span-8",
     loveNote: "col-span-12 md:col-span-4",
     profile: "col-span-12 md:col-span-4",
-    calendar: "col-span-12 md:col-span-8 row-span-2", // Velký kalendář
+    calendar: "col-span-12 md:col-span-8 row-span-2",
     todo: "col-span-12 md:col-span-4",
   },
 };

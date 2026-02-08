@@ -60,6 +60,7 @@ export function BucketList({ items }: { items: BucketItem[] }) {
                             <Button
                                 variant="destructive"
                                 size="icon"
+                                aria-label="add bucket item"
                                 className="top-2 right-2 z-20 absolute opacity-0 group-hover:opacity-100 shadow-sm w-8 h-8 transition-all"
                             >
                                 <Trash2 className="size-4" />

@@ -99,16 +99,14 @@ export function RelationshipForm({
                 </p>
 
                 <div className="pt-6 border-t">
-                    <h4 className="flex items-center gap-2 mb-2 font-semibold text-destructive">
-                        <HeartCrack className="size-4" /> Nebezpečná zóna
-                    </h4>
                     <div className="bg-destructive/10 p-4 border border-destructive/20 rounded-lg">
                         <div className="flex sm:flex-row flex-col justify-between items-start sm:items-center gap-4">
                             <div className="text-sm">
-                                <p className="font-medium text-destructive-foreground">
+                                <p className="flex items-center gap-2 font-medium text-red-600 dark:text-red-400">
+                                    <HeartCrack className="size-4" />
                                     Odpárovat partnera
                                 </p>
-                                <p className="mt-1 text-muted-foreground">
+                                <p className="mt-1 text-red-600/80 dark:text-red-400/80 text-sm">
                                     Pokud se rozhodnete jít každý svou cestou,
                                     zde můžete ukončit sdílení dat.
                                 </p>

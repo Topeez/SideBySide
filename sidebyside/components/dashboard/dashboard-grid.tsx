@@ -25,7 +25,7 @@ export function DashboardGrid({
     const config = layoutConfig[layout] || layoutConfig.default;
 
     return (
-        <div className="gap-4 grid grid-cols-12">
+        <div className="gap-4 grid grid-cols-12 h-full">
             {/* auto-rows-fr pomůže, aby se widgety roztahovaly stejně */}
 
             <div

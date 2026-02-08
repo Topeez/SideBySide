@@ -56,10 +56,11 @@ export default async function SettingsPage() {
                     </p>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Link href="/dashboard">
+                    <Link href="/dashboard" aria-label="link to dashboard">
                         <Button
                             variant="ghost"
                             size="icon"
+                            aria-label="dashboard link button"
                             className="relative bg-accent shadow-md border border-muted rounded-full text-muted-foreground hover:text-foreground cursor-pointer"
                         >
                             <LayoutDashboard />

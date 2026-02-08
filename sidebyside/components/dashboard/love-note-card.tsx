@@ -54,7 +54,7 @@ export function LoveNoteCard({
                         <Textarea
                             name="note"
                             defaultValue={initialNote}
-                            className="bg-white/50 border-[#E27D60]/20 focus-visible:border-secondary-foreground/50 focus:ring-secondary-foreground/50! min-h-20 text-sm"
+                            className="bg-white/50 border-[#E27D60]/20 focus-visible:border-secondary-foreground/50 focus:ring-secondary-foreground/50! min-h-20 font-sans! text-sm"
                             autoFocus
                         />
                         <div className="flex justify-end gap-2">
@@ -76,7 +76,7 @@ export function LoveNoteCard({
                         </div>
                     </form>
                 ) : (
-                    <p className="min-h-10 text-muted-foreground italic whitespace-pre-wrap">
+                    <p className="min-h-10 font-sans text-muted-foreground whitespace-pre-wrap">
                         &quot;{initialNote}&quot;
                     </p>
                 )}

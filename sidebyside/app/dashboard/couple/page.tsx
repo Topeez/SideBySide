@@ -64,10 +64,11 @@ export default async function CouplePage() {
             <div className="flex justify-between items-center mb-4 w-full">
                 <span className="font-bold text-2xl sm:text-3xl">Vztah</span>
                 <div className="flex items-center gap-2">
-                    <Link href="/dashboard">
+                    <Link href="/dashboard" aria-label="dashboard link">
                         <Button
                             variant="ghost"
                             size="icon"
+                            aria-label="dashboard link button"
                             className="relative bg-accent shadow-md border border-muted rounded-full text-muted-foreground hover:text-foreground cursor-pointer"
                         >
                             <LayoutDashboard />

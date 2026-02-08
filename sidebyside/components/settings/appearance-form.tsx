@@ -4,7 +4,7 @@ import { useThemeColor, ThemeColor } from "@/components/theme-color-provider";
 import { useDashboardLayout } from "@/components/layout-provider";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Calendar, Check, LucideIcon } from "lucide-react";
+import { Calendar, Check, Eye, LucideIcon } from "lucide-react";
 import {
     updateTheme,
     updateLayout,
@@ -30,7 +30,7 @@ const layouts: {
     icon: LucideIcon;
 }[] = [
     { value: "default", label: "Výchozí", icon: Check },
-    { value: "focus", label: "Fokus", icon: Check },
+    { value: "focus", label: "Soustředění (větší todo-list)", icon: Eye },
     { value: "calendar", label: "Kalendář", icon: Calendar },
 ];
 
@@ -122,43 +122,42 @@ export function AppearanceForm() {
                             )}
                             onClick={() => handleLayoutChange(l.value)}
                         >
-                            {/* Vizualizace layoutu pomocí CSS Gridu uvnitř tlačítka */}
-                            <div className="gap-1 grid grid-cols-3 bg-muted p-2 rounded-md w-full aspect-video pointer-events-none">
+                            <div className="gap-1 grid grid-cols-12 bg-muted p-2 rounded-md w-full aspect-video pointer-events-none">
                                 {l.value === "default" && (
                                     <>
-                                        <div className="col-span-2 bg-primary/20 rounded-sm h-full" />
-                                        <div className="col-span-1 bg-primary/20 rounded-sm h-full" />
-                                        <div className="col-span-1 bg-primary/20 rounded-sm h-full" />
-                                        <div className="col-span-1 bg-primary/20 rounded-sm h-full" />
-                                        <div className="col-span-1 bg-primary/20 rounded-sm h-full" />
+                                        <div className="col-span-12 md:col-span-8 bg-primary/30 rounded-sm h-full" />
+                                        <div className="col-span-12 md:col-span-4 bg-primary/30 rounded-sm h-full" />
+                                        <div className="col-span-12 md:col-span-4 bg-primary/30 rounded-sm h-full" />
+                                        <div className="col-span-12 md:col-span-4 bg-primary/30 rounded-sm h-full" />
+                                        <div className="col-span-12 md:col-span-4 bg-primary/30 rounded-sm h-full" />
                                     </>
                                 )}
                                 {l.value === "focus" && (
                                     <>
-                                        <div className="col-span-1 bg-primary/20 rounded-sm h-full" />
-                                        <div className="col-span-1 bg-primary/20 rounded-sm h-full" />
-                                        <div className="col-span-1 bg-primary/20 rounded-sm h-full" />
-                                        <div className="col-span-2 row-span-2 bg-primary/20 rounded-sm h-full" />
-                                        <div className="col-span-1 row-span-2 bg-primary/20 rounded-sm h-full" />
+                                        <div className="col-span-12 md:col-span-6 bg-primary/30 rounded-sm h-full" />
+                                        <div className="col-span-12 md:col-span-6 bg-primary/30 rounded-sm h-full" />
+                                        <div className="col-span-12 md:col-span-8 row-span-2 bg-primary/30 border-2 border-primary/40 rounded-sm h-full" />
+                                        <div className="col-span-12 md:col-span-4 bg-primary/30 rounded-sm h-full" />
+                                        <div className="col-span-12 md:col-span-4 bg-primary/30 rounded-sm h-full" />
                                     </>
                                 )}
                                 {l.value === "calendar" && (
                                     <>
-                                        <div className="col-span-1 bg-primary/20 rounded-sm h-full" />
-                                        <div className="col-span-1 bg-primary/20 rounded-sm h-full" />
-                                        <div className="col-span-1 bg-primary/20 rounded-sm h-full" />
-                                        <div className="col-span-2 row-span-2 bg-primary/20 border-2 border-primary/30 rounded-sm h-full" />
-                                        <div className="col-span-1 bg-primary/20 rounded-sm h-full" />
+                                        <div className="col-span-12 md:col-span-8 bg-primary/30 rounded-sm h-full" />
+                                        <div className="col-span-12 md:col-span-4 bg-primary/30 rounded-sm h-full" />
+                                        <div className="col-span-12 md:col-span-4 bg-primary/30 rounded-sm h-full" />
+                                        <div className="col-span-12 md:col-span-8 row-span-2 bg-primary/30 border-2 border-primary/40 rounded-sm h-full" />
+                                        <div className="col-span-12 md:col-span-4 bg-primary/30 rounded-sm h-full" />
                                     </>
                                 )}
                             </div>
                             <div className="flex items-center gap-2">
-                                <l.icon className="w-4 h-4" />
+                                <l.icon className="size-4" />
                                 <span className="font-medium">{l.label}</span>
                             </div>
                             {layout === l.value && (
                                 <div className="top-2 right-2 absolute bg-background p-0.5 rounded-full text-primary">
-                                    <Check className="w-3 h-3" />
+                                    <Check className="size-3" />
                                 </div>
                             )}
                         </Button>

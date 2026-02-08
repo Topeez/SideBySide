@@ -27,7 +27,7 @@ export default function LoginButton({
     return (
         <ActionButton
             onClick={handleLogin}
-            className="rounded-full text-button-text"
+            className="bg-primary-foreground dark:bg-primary rounded-full text-button-text"
         >
             {children}
         </ActionButton>
