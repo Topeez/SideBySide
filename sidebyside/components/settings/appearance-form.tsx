@@ -1,11 +1,17 @@
 "use client";
 
 import { useThemeColor, ThemeColor } from "@/components/theme-color-provider";
+import { useDashboardLayout } from "@/components/layout-provider";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Check } from "lucide-react";
-import { updateTheme } from "@/app/actions/profile";
+import { Calendar, Check, LucideIcon } from "lucide-react";
+import {
+    updateTheme,
+    updateLayout,
+    DashboardLayoutType,
+} from "@/app/actions/profile";
 import { toast } from "sonner";
+import { Separator } from "../ui/separator";
 
 const colors: { value: ThemeColor; label: string; colorClass: string }[] = [
     { value: "default", label: "Výchozí (Sage)", colorClass: "bg-[#8fbc8f]" },
@@ -18,8 +24,19 @@ const colors: { value: ThemeColor; label: string; colorClass: string }[] = [
     { value: "slate", label: "Šedá", colorClass: "bg-slate-600" },
 ];
 
+const layouts: {
+    value: DashboardLayoutType;
+    label: string;
+    icon: LucideIcon;
+}[] = [
+    { value: "default", label: "Výchozí", icon: Check },
+    { value: "focus", label: "Fokus", icon: Check },
+    { value: "calendar", label: "Kalendář", icon: Calendar },
+];
+
 export function AppearanceForm() {
     const { themeColor, setThemeColor } = useThemeColor();
+    const { layout, setLayout } = useDashboardLayout();
 
     const handleThemeChange = async (newTheme: ThemeColor) => {
         // 1. Optimistický update (okamžitá změna v UI)
@@ -31,6 +48,16 @@ export function AppearanceForm() {
             toast.success("Vzhled byl aktualizován");
         } catch {
             toast.error("Nepodařilo se uložit vzhled");
+        }
+    };
+
+    const handleLayoutChange = async (newLayout: DashboardLayoutType) => {
+        setLayout(newLayout);
+        try {
+            await updateLayout(newLayout);
+            toast.success("Rozložení bylo aktualizováno");
+        } catch {
+            toast.error("Nepodařilo se uložit rozložení");
         }
     };
 
@@ -70,6 +97,73 @@ export function AppearanceForm() {
                         )}
                     </Button>
                 ))}
+            </div>
+
+            <Separator />
+
+            <div className="space-y-4">
+                <div>
+                    <h3 className="font-medium text-lg">
+                        Rozložení dashboardu
+                    </h3>
+                    <p className="text-muted-foreground text-sm">
+                        Vyber si, jak chceš mít uspořádané widgety.
+                    </p>
+                </div>
+                <div className="gap-4 grid grid-cols-1 md:grid-cols-3">
+                    {layouts.map((l) => (
+                        <Button
+                            key={l.value}
+                            variant="outline"
+                            className={cn(
+                                "relative flex flex-col gap-4 hover:bg-accent/50 p-4 h-auto",
+                                layout === l.value &&
+                                    "border-primary ring-1 ring-primary bg-accent/50",
+                            )}
+                            onClick={() => handleLayoutChange(l.value)}
+                        >
+                            {/* Vizualizace layoutu pomocí CSS Gridu uvnitř tlačítka */}
+                            <div className="gap-1 grid grid-cols-3 bg-muted p-2 rounded-md w-full aspect-video pointer-events-none">
+                                {l.value === "default" && (
+                                    <>
+                                        <div className="col-span-2 bg-primary/20 rounded-sm h-full" />
+                                        <div className="col-span-1 bg-primary/20 rounded-sm h-full" />
+                                        <div className="col-span-1 bg-primary/20 rounded-sm h-full" />
+                                        <div className="col-span-1 bg-primary/20 rounded-sm h-full" />
+                                        <div className="col-span-1 bg-primary/20 rounded-sm h-full" />
+                                    </>
+                                )}
+                                {l.value === "focus" && (
+                                    <>
+                                        <div className="col-span-1 bg-primary/20 rounded-sm h-full" />
+                                        <div className="col-span-1 bg-primary/20 rounded-sm h-full" />
+                                        <div className="col-span-1 bg-primary/20 rounded-sm h-full" />
+                                        <div className="col-span-2 row-span-2 bg-primary/20 rounded-sm h-full" />
+                                        <div className="col-span-1 row-span-2 bg-primary/20 rounded-sm h-full" />
+                                    </>
+                                )}
+                                {l.value === "calendar" && (
+                                    <>
+                                        <div className="col-span-1 bg-primary/20 rounded-sm h-full" />
+                                        <div className="col-span-1 bg-primary/20 rounded-sm h-full" />
+                                        <div className="col-span-1 bg-primary/20 rounded-sm h-full" />
+                                        <div className="col-span-2 row-span-2 bg-primary/20 border-2 border-primary/30 rounded-sm h-full" />
+                                        <div className="col-span-1 bg-primary/20 rounded-sm h-full" />
+                                    </>
+                                )}
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <l.icon className="w-4 h-4" />
+                                <span className="font-medium">{l.label}</span>
+                            </div>
+                            {layout === l.value && (
+                                <div className="top-2 right-2 absolute bg-background p-0.5 rounded-full text-primary">
+                                    <Check className="w-3 h-3" />
+                                </div>
+                            )}
+                        </Button>
+                    ))}
+                </div>
             </div>
         </div>
     );

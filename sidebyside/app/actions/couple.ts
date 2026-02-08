@@ -170,3 +170,37 @@ export async function toggleBucketItemStatus(itemId: string, newStatus: string) 
     await supabase.from("bucket_list_items").update({ status: newStatus }).eq("id", itemId);
     revalidatePath("/dashboard/couple");
 }
+
+export async function uncoupleUser(coupleId: string) {
+    const supabase = await createClient();
+    
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { success: false, message: "Nejste přihlášen" };
+
+    const { data: couple, error: fetchError } = await supabase
+        .from("couples")
+        .select("user1_id, user2_id")
+        .eq("id", coupleId)
+        .single();
+
+    if (fetchError || !couple) {
+        return { success: false, message: "Pár nenalezen." };
+    }
+
+    if (couple.user1_id !== user.id && couple.user2_id !== user.id) {
+        return { success: false, message: "Nemáte oprávnění k této akci." };
+    }
+
+    const { error: deleteError } = await supabase
+        .from("couples")
+        .delete()
+        .eq("id", coupleId);
+
+    if (deleteError) {
+        console.error("Uncouple error:", deleteError);
+        return { success: false, message: "Nepodařilo se zrušit propojení." };
+    }
+
+    revalidatePath("/", "layout");
+    return { success: true };
+}

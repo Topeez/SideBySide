@@ -4,6 +4,8 @@ import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
+export type DashboardLayoutType = "default" | "focus" | "calendar";
+
 // Definice schématu pro validaci (musí sedět s formulářem)
 const ProfileSchema = z.object({
   full_name: z.string().min(2, "Jméno musí mít alespoň 2 znaky"),
@@ -86,4 +88,33 @@ export async function updateTheme(theme: string) {
 
     revalidatePath("/dashboard");
     return { success: true };
+}
+
+
+export async function updateLayout(layout: DashboardLayoutType){
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if(!user) {
+    throw new Error("Nejste přihlášen");
+  } 
+
+  const { error } = await supabase
+  .from("profiles")
+  .update({ dashboard_layout: layout })
+  .eq("id", user.id);
+
+  if(error) throw new Error("Chyba při ukládání vzhledu");
+
+  revalidatePath("/dashboard");
+}
+
+export async function isValidLayout(value: string | null | undefined): Promise<DashboardLayoutType | undefined> {
+    if (value === null || value === undefined) {
+    return undefined;
+  }
+  if (["default", "focus", "calendar"].includes(value)) {
+    return value as DashboardLayoutType;
+  }
+  return undefined;
 }

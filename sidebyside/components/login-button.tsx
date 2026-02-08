@@ -1,8 +1,14 @@
 "use client";
 import { createClient } from "@/utils/supabase/client";
-import { Button } from "@/components/ui/button";
+import ActionButton from "./action-button";
 
-export default function LoginButton({ nextUrl }: { nextUrl?: string }) {
+export default function LoginButton({
+    nextUrl,
+    children,
+}: {
+    nextUrl?: string;
+    children?: React.ReactNode;
+}) {
     const supabase = createClient();
 
     const handleLogin = async () => {
@@ -19,8 +25,11 @@ export default function LoginButton({ nextUrl }: { nextUrl?: string }) {
     };
 
     return (
-        <Button onClick={handleLogin} className="text-button-text">
-            Přihlásit se přes Google
-        </Button>
+        <ActionButton
+            onClick={handleLogin}
+            className="rounded-full text-button-text"
+        >
+            {children}
+        </ActionButton>
     );
 }

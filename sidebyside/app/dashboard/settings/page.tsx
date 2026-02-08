@@ -122,10 +122,12 @@ export default async function SettingsPage() {
                         <Separator />
 
                         {couple ? (
-                            <RelationshipForm
-                                coupleId={couple.id}
-                                initialDate={couple.relationship_start}
-                            />
+                            <>
+                                <RelationshipForm
+                                    coupleId={couple.id}
+                                    initialDate={couple.relationship_start}
+                                />
+                            </>
                         ) : (
                             <div className="bg-yellow-50 p-4 rounded-md text-yellow-800 text-sm">
                                 Zatím nemáš spárovaný účet s partnerem. Funkce
@@ -197,7 +199,6 @@ export default async function SettingsPage() {
                                 </p>
                             </div>
 
-                            {/* Tady vložíme komponentu */}
                             <DeleteAccount />
                         </div>
                     </div>

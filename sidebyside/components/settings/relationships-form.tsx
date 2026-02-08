@@ -11,10 +11,11 @@ import {
 } from "@/components/ui/popover";
 import { format } from "date-fns";
 import { cs } from "date-fns/locale";
-import { CalendarIcon, Loader2 } from "lucide-react";
+import { CalendarIcon, HeartCrack, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import ActionButton from "../action-button";
+import { UnpairButton } from "./unpair-button";
 
 export function RelationshipForm({
     coupleId,
@@ -57,7 +58,7 @@ export function RelationshipForm({
                 </label>
                 <div className="flex justify-between items-center w-full">
                     <Popover>
-                        <PopoverTrigger asChild>
+                        <PopoverTrigger asChild className="max-w-3/4">
                             <Button
                                 variant={"outline"}
                                 className={cn(
@@ -73,10 +74,7 @@ export function RelationshipForm({
                                 )}
                             </Button>
                         </PopoverTrigger>
-                        <PopoverContent
-                            className="p-0 w-auto max-w-3/4"
-                            align="start"
-                        >
+                        <PopoverContent className="p-0 w-auto" align="start">
                             <Calendar
                                 mode="single"
                                 selected={date}
@@ -96,9 +94,29 @@ export function RelationshipForm({
                         Uložit
                     </ActionButton>
                 </div>
-                <p className="text-muted-foreground text-xs">
+                <p className="text-muted-foreground text-sm">
                     Zobrazí se na vašem dashboardu jako počítadlo dní.
                 </p>
+
+                <div className="pt-6 border-t">
+                    <h4 className="flex items-center gap-2 mb-2 font-semibold text-destructive">
+                        <HeartCrack className="size-4" /> Nebezpečná zóna
+                    </h4>
+                    <div className="bg-destructive/10 p-4 border border-destructive/20 rounded-lg">
+                        <div className="flex sm:flex-row flex-col justify-between items-start sm:items-center gap-4">
+                            <div className="text-sm">
+                                <p className="font-medium text-destructive-foreground">
+                                    Odpárovat partnera
+                                </p>
+                                <p className="mt-1 text-muted-foreground">
+                                    Pokud se rozhodnete jít každý svou cestou,
+                                    zde můžete ukončit sdílení dat.
+                                </p>
+                            </div>
+                            <UnpairButton coupleId={coupleId} />
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );

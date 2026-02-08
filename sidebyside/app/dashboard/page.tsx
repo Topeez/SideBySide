@@ -9,6 +9,7 @@ import { ClosestEvent } from "@/components/dashboard/closest-event";
 import { CoupleProfileWidget } from "@/components/dashboard/couple-profile-widget";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import Link from "next/link";
+import { DashboardGrid } from "@/components/dashboard/dashboard-grid";
 
 export default async function DashboardPage() {
     const supabase = await createClient();
@@ -93,114 +94,122 @@ export default async function DashboardPage() {
         events = allEventsData || [];
     }
 
+    const eventContent = couple ? (
+        <ClosestEvent
+            nextEvent={nextEvent}
+            hasCouple={!!couple}
+            coupleId={couple?.id}
+        />
+    ) : (
+        <Card className="col-span-12 md:col-span-8 bg-primary/15 border-primary h-full">
+            <CardContent>
+                <div className="mb-2 font-bold text-foreground text-2xl">
+                    Naplánujte si něco hezkého se svou polovičkou.
+                </div>
+                <p className="mb-6 text-muted-foreground">
+                    Ale nejprv si ji/ho musíš přidat!
+                </p>
+                <div className="flex items-center gap-2 scale-90 origin-left">
+                    <InviteButton
+                        userId={user.id}
+                        className="bg-primary hover:bg-primary-foreground"
+                    />
+                    <span className="text-muted-foreground">
+                        Pozvi svou polovičku
+                    </span>
+                </div>
+            </CardContent>
+        </Card>
+    );
+
+    const noteContent = couple ? (
+        <LoveNoteCard
+            initialNote={couple.love_note}
+            coupleId={couple.id}
+            authorId={couple.love_note_author_id}
+            currentUserId={user.id}
+        />
+    ) : (
+        <Card className="col-span-12 md:col-span-3 lg:col-span-4 bg-secondary/15 border-secondary border-dashed">
+            <CardHeader className="pb-2">
+                <CardTitle className="flex items-center gap-2 font-medium text-secondary text-sm">
+                    <Heart className="fill-secondary size-4" />
+                    Love Note
+                </CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-col justify-center h-24">
+                <p className="mb-3 text-muted-foreground text-xs">
+                    Tady si budete psát vzkazy.
+                </p>
+                <div className="flex items-center gap-2 scale-90 origin-left">
+                    <InviteButton userId={user.id} />
+                    <span className="text-muted-foreground">
+                        Pozvi svou polovičku
+                    </span>
+                </div>
+            </CardContent>
+        </Card>
+    );
+
+    const todoContent = couple ? (
+        <TodoList initialTodos={todos} coupleId={couple.id} />
+    ) : (
+        <Card className="col-span-12 md:col-span-4">
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-base">
+                    <ShoppingBag className="w-4 h-4" /> Úkoly
+                </CardTitle>
+            </CardHeader>
+            <CardContent>
+                <div className="py-6 text-muted-foreground text-sm text-center">
+                    Zatím jsi na to sám/sama.
+                </div>
+            </CardContent>
+        </Card>
+    );
+    const calendarContent = couple ? (
+        <CalendarWidget
+            events={events}
+            coupleId={couple.id}
+            userProfile={userProfile}
+            partnerProfile={partnerProfile}
+        />
+    ) : (
+        <Card className="h-full">
+            <CardHeader>
+                <CardTitle>Kalendář</CardTitle>
+            </CardHeader>
+            <CardContent className="flex justify-center items-center h-48 text-muted-foreground">
+                (Kalendář se aktivuje po spárování)
+            </CardContent>
+        </Card>
+    );
+
+    const profileContent = couple ? (
+        <CoupleProfileWidget
+            userProfile={userProfile}
+            partnerProfile={partnerProfile}
+            relationshipStart={couple?.relationship_start}
+        />
+    ) : (
+        // Placeholder, aby se nerozhodil grid, nebo null
+        <div className="hidden md:block flex justify-center items-center opacity-50 border border-dashed rounded-lg h-full text-muted-foreground text-xs">
+            Místo pro profil páru
+        </div>
+    );
+
     return (
         <div className="space-y-6 p-4 md:p-8 cs-container">
             {/* --- HEADER --- */}
             <DashboardHeader />
 
-            {/* --- BENTO GRID --- */}
-            <div className="gap-4 grid grid-cols-12">
-                {couple ? (
-                    <ClosestEvent
-                        nextEvent={nextEvent}
-                        hasCouple={!!couple}
-                        coupleId={couple?.id}
-                    />
-                ) : (
-                    <Card className="col-span-12 md:col-span-8 bg-primary/15 border-primary h-full">
-                        <CardContent>
-                            <div className="mb-2 font-bold text-foreground text-2xl">
-                                Naplánujte si něco hezkého se svou polovičkou.
-                            </div>
-                            <p className="mb-6 text-muted-foreground">
-                                Ale nejprv si ji/ho musíš přidat!
-                            </p>
-                            <div className="flex items-center gap-2 scale-90 origin-left">
-                                <InviteButton
-                                    userId={user.id}
-                                    className="bg-primary hover:bg-primary-foreground"
-                                />
-                                <span className="text-muted-foreground">
-                                    Pozvi svou polovičku
-                                </span>
-                            </div>
-                        </CardContent>
-                    </Card>
-                )}
-
-                {/* Love Note */}
-                {couple ? (
-                    <LoveNoteCard
-                        initialNote={couple.love_note}
-                        coupleId={couple.id}
-                        authorId={couple.love_note_author_id}
-                        currentUserId={user.id}
-                    />
-                ) : (
-                    <Card className="col-span-12 md:col-span-3 lg:col-span-4 bg-secondary/15 border-secondary border-dashed">
-                        <CardHeader className="pb-2">
-                            <CardTitle className="flex items-center gap-2 font-medium text-secondary text-sm">
-                                <Heart className="fill-secondary size-4" />
-                                Love Note
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="flex flex-col justify-center h-24">
-                            <p className="mb-3 text-muted-foreground text-xs">
-                                Tady si budete psát vzkazy.
-                            </p>
-                            <div className="flex items-center gap-2 scale-90 origin-left">
-                                <InviteButton userId={user.id} />
-                                <span className="text-muted-foreground">
-                                    Pozvi svou polovičku
-                                </span>
-                            </div>
-                        </CardContent>
-                    </Card>
-                )}
-
-                {couple ? (
-                    <TodoList initialTodos={todos} coupleId={couple.id} />
-                ) : (
-                    <Card className="col-span-12 md:col-span-4">
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2 text-base">
-                                <ShoppingBag className="w-4 h-4" /> Úkoly
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="py-6 text-muted-foreground text-sm text-center">
-                                Zatím jsi na to sám/sama.
-                            </div>
-                        </CardContent>
-                    </Card>
-                )}
-
-                {couple ? (
-                    <>
-                        <CalendarWidget
-                            events={events}
-                            coupleId={couple.id}
-                            userProfile={userProfile}
-                            partnerProfile={partnerProfile}
-                        />
-
-                        <CoupleProfileWidget
-                            userProfile={userProfile}
-                            partnerProfile={partnerProfile}
-                            relationshipStart={couple?.relationship_start}
-                        />
-                    </>
-                ) : (
-                    <Card className="col-span-12 md:col-span-4">
-                        <CardHeader>
-                            <CardTitle>Kalendář</CardTitle>
-                        </CardHeader>
-                        <CardContent className="flex justify-center items-center rounded-md h-48 text-muted-foreground">
-                            (Kalendář se aktivuje po spárování)
-                        </CardContent>
-                    </Card>
-                )}
-            </div>
+            <DashboardGrid
+                eventSlot={eventContent}
+                noteSlot={noteContent}
+                todoSlot={todoContent}
+                calendarSlot={calendarContent}
+                profileSlot={profileContent}
+            />
         </div>
     );
 }

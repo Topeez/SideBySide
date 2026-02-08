@@ -3,6 +3,9 @@ import { ReactNode } from "react";
 import { Calendar, Share2, CheckCircle2 } from "lucide-react";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
+import Hero from "@/components/hero";
+import FAQ from "@/components/faq";
+import HowItWorks from "@/components/how-it-works";
 
 export default function LandingPage() {
     return (
@@ -13,29 +16,7 @@ export default function LandingPage() {
                 {/* Off-white pozadí */}
                 <main className="flex-1">
                     {/* HERO SECTION */}
-                    <section className="px-4 md:py-44 pt-28 pb-12 w-full text-center">
-                        <div className="space-y-6 mx-auto max-w-3xl container">
-                            <h1 className="font-extrabold text-foreground text-4xl sm:text-5xl md:text-6xl tracking-tight">
-                                Konečně na{" "}
-                                <span className="text-secondary">
-                                    stejné vlně
-                                </span>
-                            </h1>
-                            <p className="mx-auto max-w-175 text-muted-foreground md:text-xl">
-                                Plánujte rande, výlety a povinnosti společně.
-                                Bez zmatků, bez &quot;já jsem ti to
-                                říkal/a&quot;, a na jednom místě.
-                            </p>
-                            <div className="flex justify-center gap-4 pt-4">
-                                <Link
-                                    href="/register"
-                                    className="bg-secondary hover:bg-secondary-foreground shadow-lg px-8 py-3 rounded-full font-medium text-white text-lg transition-all hover:-translate-y-1"
-                                >
-                                    Vytvořit společný plán
-                                </Link>
-                            </div>
-                        </div>
-                    </section>
+                    <Hero />
 
                     {/* FEATURES GRID */}
                     <section className="mx-auto px-4 py-16 max-w-5xl container">
@@ -64,28 +45,9 @@ export default function LandingPage() {
                         </div>
                     </section>
 
-                    {/* HOW IT WORKS (Zjednodušené) */}
-                    <section className="bg-background py-16 border-muted border-y">
-                        <div className="mx-auto px-4 max-w-2xl text-center container">
-                            <h2 className="mb-8 font-bold text-foreground text-2xl">
-                                Jak to funguje?
-                            </h2>
-                            <div className="space-y-4 text-left md:text-center">
-                                <Step
-                                    number="1"
-                                    text="Založíš si účet (stačí jeden z vás)."
-                                />
-                                <Step
-                                    number="2"
-                                    text="Pošleš zvací odkaz své polovičce."
-                                />
-                                <Step
-                                    number="3"
-                                    text="Propojíte kalendáře a začnete plánovat."
-                                />
-                            </div>
-                        </div>
-                    </section>
+                    <HowItWorks />
+
+                    <FAQ />
                 </main>
             </div>
             <Footer />
@@ -107,17 +69,6 @@ function FeatureCard({
             <div className="mb-4">{icon}</div>
             <h3 className="mb-2 font-bold text-foreground text-xl">{title}</h3>
             <p className="text-muted-foreground">{desc}</p>
-        </div>
-    );
-}
-
-function Step({ number, text }: { number: string; text: string }) {
-    return (
-        <div className="flex md:justify-center items-center gap-4 p-2">
-            <span className="flex justify-center items-center bg-[#E27D60]/20 rounded-full w-8 h-8 font-bold text-[#E27D60]">
-                {number}
-            </span>
-            <span className="font-medium text-foreground">{text}</span>
         </div>
     );
 }
