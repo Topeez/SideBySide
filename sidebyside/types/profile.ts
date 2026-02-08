@@ -19,4 +19,5 @@ export interface ProfileData {
   full_name: string;
   nickname?: string;
   avatar_url?: string;
+  couple_id?: string;
 }

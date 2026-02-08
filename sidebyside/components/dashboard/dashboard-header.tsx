@@ -52,6 +52,7 @@ export async function DashboardHeader() {
                     email={user?.email || ""}
                     avatar_url={user?.user_metadata.avatar_url}
                     full_name={""}
+                    couple_id={couple?.id}
                 />
             </div>
         </header>

@@ -24,6 +24,7 @@ export function UserNav({
     avatar_url,
     full_name,
     nickname,
+    couple_id,
 }: ProfileData) {
     const router = useRouter();
     const supabase = createClient();
@@ -115,13 +116,17 @@ export function UserNav({
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                    <Link href={`/dashboard/profile/${id}`}>
+                    <Link
+                        href={`/dashboard/profile/${id}`}
+                        className={` ${couple_id ? "cursor-pointer" : "cursor-disabled"}`}
+                    >
                         <DropdownMenuItem className="cursor-pointer">
                             <User className="mr-2 size-4" />
                             <span>O mně</span>
                             <DropdownMenuShortcut>⌥P</DropdownMenuShortcut>
                         </DropdownMenuItem>
                     </Link>
+
                     <Link href="/dashboard/settings">
                         <DropdownMenuItem className="cursor-pointer">
                             <Settings className="mr-2 size-4" />

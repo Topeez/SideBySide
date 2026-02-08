@@ -21,13 +21,10 @@ export function DashboardGrid({
     profileSlot,
 }: DashboardGridProps) {
     const { layout } = useDashboardLayout();
-    // Fallback na default, kdyby náhodou layout nebyl nastaven
     const config = layoutConfig[layout] || layoutConfig.default;
 
     return (
         <div className="gap-4 grid grid-cols-12 h-full">
-            {/* auto-rows-fr pomůže, aby se widgety roztahovaly stejně */}
-
             <div
                 className={cn(
                     "transition-all duration-300",

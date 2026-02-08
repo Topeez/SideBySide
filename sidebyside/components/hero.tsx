@@ -49,7 +49,7 @@ export default async function Hero() {
                 <h1 className="bg-clip-text bg-linear-to-b from-foreground mt-6 p-2 font-semibold text-transparent text-5xl md:text-6xl lg:text-7xl md:leading-[1.2] tracking-tighter to-accent-foreground">
                     SideBySide
                 </h1>
-                <p className="backdrop-blur-sm mt-6 p-4 rounded-2xl text-foreground md:text-lg">
+                <p className="backdrop-blur-xs mt-6 p-8 rounded-3xl font-sans text-foreground md:text-xl">
                     Plánujte společně, žijte lépe. Aplikace pro páry, která
                     sjednocuje sdílený kalendář, plány a vzpomínky na jedno
                     místo.
