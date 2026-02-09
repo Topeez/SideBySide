@@ -54,7 +54,7 @@ export default async function Hero() {
                 <div className="flex justify-center items-center gap-4 mt-12">
                     {user ? (
                         <Link href="/dashboard">
-                            <ActionButton className="gap-2 bg-primary-foreground dark:bg-primary p-6! rounded-full text-lg cursor-pointer">
+                            <ActionButton className="gap-2 bg-primary-foreground dark:bg-primary p-4! md:p-6! rounded-full text-md md:text-lg cursor-pointer">
                                 <LayoutDashboard className="size-4" />
                                 Přejít do aplikace
                             </ActionButton>
@@ -65,7 +65,7 @@ export default async function Hero() {
                         </LoginButton>
                     )}
                     <ActionButton
-                        className="bg-white/50 shadow-none backdrop-blur-sm p-6! border-background rounded-full text-foreground text-lg"
+                        className="bg-white/50 shadow-none backdrop-blur-sm p-4! md:p-6! border-background rounded-full text-foreground text-md md:text-lg"
                         variant="outline"
                         size="lg"
                     >

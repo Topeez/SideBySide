@@ -1,5 +1,6 @@
-import { Heart, LayoutDashboard } from "lucide-react";
+import { LayoutDashboard } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import LoginButton from "./login-button";
 import { createClient } from "@/utils/supabase/server";
 import ActionButton from "./action-button";
@@ -18,9 +19,11 @@ export default async function Header() {
                     href="/"
                     className="flex items-center gap-2 font-bold text-foreground text-xl"
                 >
-                    <Heart
-                        className="size-6 text-primary"
-                        fill="currentColor"
+                    <Image
+                        src="/android-chrome-192x192.png"
+                        width={30}
+                        height={30}
+                        alt="SideBySide logo"
                     />{" "}
                     SideBySide
                 </Link>

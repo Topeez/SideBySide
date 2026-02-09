@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { ReactNode } from "react";
 import { Calendar, Share2, CheckCircle2 } from "lucide-react";
 import Header from "@/components/header";
@@ -19,7 +18,7 @@ export default function LandingPage() {
                     <Hero />
 
                     {/* FEATURES GRID */}
-                    <section className="mx-auto px-4 py-16 max-w-5xl container">
+                    <section className="mx-auto px-4 py-16 max-w-5xl -translate-y-14">
                         <div className="gap-8 grid md:grid-cols-3">
                             <FeatureCard
                                 icon={
@@ -65,7 +64,7 @@ function FeatureCard({
     desc: string;
 }) {
     return (
-        <div className="flex flex-col items-center bg-card shadow-sm hover:shadow-md p-6 border border-muted rounded-2xl text-center transition-shadow">
+        <div className="flex flex-col items-center bg-card shadow-sm hover:shadow-md p-6 border border-muted rounded-2xl text-center transition-shadow even:-translate-y-8">
             <div className="mb-4">{icon}</div>
             <h2 className="mb-2 font-bold text-foreground text-xl">{title}</h2>
             <p className="text-muted-foreground">{desc}</p>
