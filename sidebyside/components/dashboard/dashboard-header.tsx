@@ -20,7 +20,7 @@ export async function DashboardHeader() {
         .from("couples")
         .select("*")
         .or(`user1_id.eq.${user?.id},user2_id.eq.${user?.id}`)
-        .single();
+        .maybeSingle();
 
     return (
         <header className="flex justify-between items-center mb-8 px-6 rounded-lg h-16">

@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { format } from "date-fns";
-import { cs, is } from "date-fns/locale";
+import { cs } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -19,7 +19,6 @@ import { getEventColor, getEventLabel } from "@/lib/event-types";
 import { deleteEvent } from "@/app/actions/events";
 import ActionButton from "../action-button";
 import { useDashboardLayout } from "../layout-provider";
-import { layoutConfig } from "@/config/dashboard-layouts";
 
 interface Profile {
     birth_date?: string | Date;
@@ -50,8 +49,6 @@ export function CalendarWidget({
     const { layout } = useDashboardLayout();
 
     const isCalendarLayout = layout === "calendar";
-
-    const wrapperClasses = layoutConfig[layout].calendar;
 
     const [date, setDate] = useState<Date | undefined>(new Date());
     const [isDialogOpen, setIsDialogOpen] = useState(false);

@@ -31,17 +31,18 @@ export default async function SettingsPage() {
         .eq("id", user.id)
         .single();
 
-    // Pokud profil neexistuje (divné, ale možné), můžeme zobrazit prázdný formulář nebo error
-    if (!profile) return <div>Profil nenalezen.</div>;
+    if (!profile)
+        return (
+            <div className="flex justify-center items-center text-xl cs-container">
+                Profil nenalezen.
+            </div>
+        );
 
     const { data: couple } = await supabase
         .from("couples")
         .select("*")
         .or(`user1_id.eq.${user.id},user2_id.eq.${user.id}`)
         .maybeSingle();
-
-    if (!couple)
-        return <div>Pro přístup k tomuto nastavení musíš být v páru.</div>;
 
     return (
         <div className="space-y-8 py-10 max-w-4xl cs-container">
@@ -130,7 +131,7 @@ export default async function SettingsPage() {
                                 />
                             </>
                         ) : (
-                            <div className="bg-yellow-50 p-4 rounded-md text-yellow-800 text-sm">
+                            <div className="bg-yellow-500/20 p-4 border border-amber-400 rounded-md text-yellow-400 text-sm">
                                 Zatím nemáš spárovaný účet s partnerem. Funkce
                                 vztahu budou dostupné až po spárování.
                             </div>

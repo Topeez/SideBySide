@@ -82,6 +82,9 @@ export function UserNav({
           ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatars/${avatar_url}`
           : undefined;
 
+    const hasCouple = !!couple_id;
+    const hasProfile = !!id;
+
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -90,7 +93,6 @@ export function UserNav({
                     className="relative shadow-md rounded-full size-10 cursor-pointer"
                 >
                     <Avatar className="border border-muted size-10">
-                        {/* Zobrazíme Image jen pokud máme URL */}
                         {fullAvatarUrl && (
                             <AvatarImage
                                 src={fullAvatarUrl}
@@ -118,24 +120,69 @@ export function UserNav({
                 <DropdownMenuGroup>
                     <Link
                         href={`/dashboard/profile/${id}`}
-                        className={` ${couple_id ? "cursor-pointer" : "cursor-disabled"}`}
+                        className={
+                            !hasProfile
+                                ? "pointer-events-none cursor-not-allowed!"
+                                : ""
+                        }
+                        aria-disabled={!hasProfile}
+                        tabIndex={!hasProfile ? -1 : undefined}
                     >
-                        <DropdownMenuItem className="cursor-pointer">
+                        <DropdownMenuItem
+                            className={
+                                !hasProfile
+                                    ? "pointer-events-none cursor-not-allowed!"
+                                    : ""
+                            }
+                            disabled={!hasProfile}
+                        >
                             <User className="mr-2 size-4" />
                             <span>O mně</span>
                             <DropdownMenuShortcut>⌥P</DropdownMenuShortcut>
                         </DropdownMenuItem>
                     </Link>
 
-                    <Link href="/dashboard/settings">
-                        <DropdownMenuItem className="cursor-pointer">
+                    <Link
+                        href="/dashboard/settings"
+                        className={
+                            !hasProfile
+                                ? "pointer-events-none cursor-not-allowed!"
+                                : ""
+                        }
+                        aria-disabled={!hasProfile}
+                        tabIndex={!hasProfile ? -1 : undefined}
+                    >
+                        <DropdownMenuItem
+                            className={
+                                !hasProfile
+                                    ? "pointer-events-none cursor-not-allowed!"
+                                    : ""
+                            }
+                            disabled={!hasProfile}
+                        >
                             <Settings className="mr-2 size-4" />
                             <span>Nastavení</span>
                             <DropdownMenuShortcut>⌥S</DropdownMenuShortcut>
                         </DropdownMenuItem>
                     </Link>
-                    <Link href="/dashboard/couple">
-                        <DropdownMenuItem className="cursor-pointer">
+                    <Link
+                        href="/dashboard/couple"
+                        className={
+                            !hasCouple
+                                ? "pointer-events-none cursor-not-allowed!"
+                                : ""
+                        }
+                        aria-disabled={!hasCouple}
+                        tabIndex={!hasCouple ? -1 : undefined}
+                    >
+                        <DropdownMenuItem
+                            className={
+                                !hasCouple
+                                    ? "pointer-events-none cursor-not-allowed!"
+                                    : ""
+                            }
+                            disabled={!hasCouple}
+                        >
                             <Heart className="mr-2 size-4 text-destructive" />
                             <span>Náš vztah</span>
                             <DropdownMenuShortcut>⌥C</DropdownMenuShortcut>

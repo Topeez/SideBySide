@@ -9,8 +9,7 @@ export interface Profile {
   ring_size: string | null;
   love_language: string | null;
   favorite_color: string | null;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: any | null;
+  [key: string]: string | null;
 }
 
 export interface ProfileData {

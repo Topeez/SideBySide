@@ -19,24 +19,21 @@ export default async function Hero() {
     } = await supabase.auth.getUser();
 
     return (
-        // Nastavíme relativní pozici pro kontejner
         <div className="relative flex justify-center items-center bg-background px-6 w-full min-h-screen overflow-hidden transform-3d">
-            {/* POZADÍ */}
             <div className="absolute inset-0 size-full">
                 <Squares
                     direction="diagonal"
                     speed={0.2}
                     squareSize={40}
-                    borderColor="--muted" /* gray-200 - velmi jemná */
-                    hoverFillColor="#fce7f3" /* pink-100 - efekt při najetí myší */
+                    borderColor="--muted"
+                    hoverFillColor="#fce7f3"
                 />
             </div>
 
-            {/* OBSAH - musí mít z-index, aby byl nad pozadím */}
             <div className="z-10 relative max-w-3xl text-center">
                 <Badge
                     asChild
-                    className="backdrop-blur-[10px] py-1 border-border rounded-full cursor-pointer" // Přidán blur pro lepší čitelnost
+                    className="backdrop-blur-[10px] py-1 border-border rounded-full cursor-pointer"
                     variant="outline"
                 >
                     <Link href="/changelog">
@@ -49,7 +46,7 @@ export default async function Hero() {
                 <h1 className="bg-clip-text bg-linear-to-b from-foreground mt-6 p-2 font-semibold text-transparent text-5xl md:text-6xl lg:text-7xl md:leading-[1.2] tracking-tighter to-accent-foreground">
                     SideBySide
                 </h1>
-                <p className="backdrop-blur-xs mt-6 p-8 rounded-3xl font-sans text-foreground md:text-xl">
+                <p className="mt-6 p-8 font-sans text-foreground md:text-xl">
                     Plánujte společně, žijte lépe. Aplikace pro páry, která
                     sjednocuje sdílený kalendář, plány a vzpomínky na jedno
                     místo.
