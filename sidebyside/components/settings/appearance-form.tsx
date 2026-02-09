@@ -104,7 +104,10 @@ export function AppearanceForm() {
             <div className="space-y-4">
                 <div>
                     <h3 className="font-medium text-lg">
-                        Rozložení dashboardu
+                        Rozložení dashboardu{" "}
+                        <span className="text-muted-foreground text-sm">
+                            (jen pro PC)
+                        </span>
                     </h3>
                     <p className="text-muted-foreground text-sm">
                         Vyber si, jak chceš mít uspořádané widgety.
@@ -125,29 +128,29 @@ export function AppearanceForm() {
                             <div className="gap-1 grid grid-cols-12 bg-muted p-2 rounded-md w-full aspect-video pointer-events-none">
                                 {l.value === "default" && (
                                     <>
-                                        <div className="col-span-12 md:col-span-8 bg-primary/30 rounded-sm h-full" />
-                                        <div className="col-span-12 md:col-span-4 bg-primary/30 rounded-sm h-full" />
-                                        <div className="col-span-12 md:col-span-4 bg-primary/30 rounded-sm h-full" />
-                                        <div className="col-span-12 md:col-span-4 bg-primary/30 rounded-sm h-full" />
-                                        <div className="col-span-12 md:col-span-4 bg-primary/30 rounded-sm h-full" />
+                                        <div className="col-span-8 bg-primary/30 rounded-sm h-full" />
+                                        <div className="col-span-4 bg-primary/30 rounded-sm h-full" />
+                                        <div className="col-span-4 bg-primary/30 rounded-sm h-full" />
+                                        <div className="col-span-4 bg-primary/30 rounded-sm h-full" />
+                                        <div className="col-span-4 bg-primary/30 rounded-sm h-full" />
                                     </>
                                 )}
                                 {l.value === "focus" && (
                                     <>
-                                        <div className="col-span-12 md:col-span-6 bg-primary/30 rounded-sm h-full" />
-                                        <div className="col-span-12 md:col-span-6 bg-primary/30 rounded-sm h-full" />
-                                        <div className="col-span-12 md:col-span-8 row-span-2 bg-primary/30 border-2 border-primary/40 rounded-sm h-full" />
-                                        <div className="col-span-12 md:col-span-4 bg-primary/30 rounded-sm h-full" />
-                                        <div className="col-span-12 md:col-span-4 bg-primary/30 rounded-sm h-full" />
+                                        <div className="col-span-6 bg-primary/30 rounded-sm h-full" />
+                                        <div className="col-span-6 bg-primary/30 rounded-sm h-full" />
+                                        <div className="col-span-8 row-span-2 bg-primary/30 border-2 border-primary/40 rounded-sm h-full" />
+                                        <div className="col-span-4 bg-primary/30 rounded-sm h-full" />
+                                        <div className="col-span-4 bg-primary/30 rounded-sm h-full" />
                                     </>
                                 )}
                                 {l.value === "calendar" && (
                                     <>
-                                        <div className="col-span-12 md:col-span-8 bg-primary/30 rounded-sm h-full" />
-                                        <div className="col-span-12 md:col-span-4 bg-primary/30 rounded-sm h-full" />
-                                        <div className="col-span-12 md:col-span-4 bg-primary/30 rounded-sm h-full" />
-                                        <div className="col-span-12 md:col-span-8 row-span-2 bg-primary/30 border-2 border-primary/40 rounded-sm h-full" />
-                                        <div className="col-span-12 md:col-span-4 bg-primary/30 rounded-sm h-full" />
+                                        <div className="col-span-8 bg-primary/30 rounded-sm h-full" />
+                                        <div className="col-span-4 bg-primary/30 rounded-sm h-full" />
+                                        <div className="col-span-4 bg-primary/30 rounded-sm h-full" />
+                                        <div className="col-span-8 row-span-2 bg-primary/30 border-2 border-primary/40 rounded-sm h-full" />
+                                        <div className="col-span-4 bg-primary/30 rounded-sm h-full" />
                                     </>
                                 )}
                             </div>

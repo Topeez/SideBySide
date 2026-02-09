@@ -93,8 +93,8 @@ export default async function SettingsPage() {
                     value="profile"
                     className="mt-6 p-6 border rounded-lg"
                 >
-                    <div className="space-y-6">
-                        <div>
+                    <div className="flex flex-col items-center space-y-6">
+                        <div className="self-start">
                             <h3 className="font-medium text-lg">
                                 Osobní údaje
                             </h3>

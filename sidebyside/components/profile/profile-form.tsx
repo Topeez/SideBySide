@@ -28,7 +28,7 @@ export function ProfileForm({ profile }: { profile: Profile }) {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-8 max-w-2xl">
+        <form onSubmit={handleSubmit} className="space-y-8 w-full max-w-3xl">
             <div className="gap-4 grid md:grid-cols-2">
                 <div className="space-y-2">
                     <Label htmlFor="full_name">Celé jméno</Label>
