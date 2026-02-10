@@ -1,26 +1,9 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { z } from "zod";
+import { PasswordSchema } from "@/lib/schemas";
 
-export const PasswordSchema = z
-  .object({
-    password: z
-      .string()
-      .min(12, { message: "Heslo musí mít alespoň 12 znaků" }),
-    confirmPassword: z
-      .string()
-      .min(1, { message: "Potvrzení hesla je povinné" }),
-  })
-  .superRefine(({ confirmPassword, password }, ctx) => {
-    if (confirmPassword !== password) {
-      ctx.addIssue({
-        code: "custom",
-        message: "Hesla se neshodují",
-        path: ["confirmPassword"],
-      });
-    }
-  });
+
 export async function updatePassword(prevState: null, formData: FormData) {
   const supabase = await createClient();
 

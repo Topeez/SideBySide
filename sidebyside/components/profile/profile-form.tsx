@@ -87,7 +87,7 @@ export function ProfileForm({ profile }: { profile: Profile }) {
                         >
                             <CalendarIcon className="mr-2 size-4" />
                             {birthDate ? (
-                                format(birthDate, "PPP", { locale: cs }) // "10. února 2026"
+                                format(birthDate, "PPP", { locale: cs })
                             ) : (
                                 <span>Vyberte datum</span>
                             )}
