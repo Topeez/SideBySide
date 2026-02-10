@@ -9,7 +9,8 @@ export interface Profile {
   ring_size: string | null;
   love_language: string | null;
   favorite_color: string | null;
-  [key: string]: string | null;
+  [key: string]: string | Date | null;
+  birth_date: Date | null;
 }
 
 export interface ProfileData {

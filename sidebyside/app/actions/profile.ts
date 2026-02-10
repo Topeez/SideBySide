@@ -17,6 +17,7 @@ const ProfileSchema = z.object({
   ring_size: z.string().optional(),
   love_language: z.string().optional(),
   favorite_color: z.string().optional(),
+  birth_date: z.date().optional(),
 });
 
 export async function updateProfile(prevState: unknown, formData: FormData) {
@@ -36,6 +37,7 @@ export async function updateProfile(prevState: unknown, formData: FormData) {
     ring_size: formData.get("ring_size") || undefined,
     love_language: formData.get("love_language") || undefined,
     favorite_color: formData.get("favorite_color") || undefined,
+    birth_date: formData.get("birth_date") ? new Date(formData.get("birth_date") as string) : undefined
   };
 
   // Validace

@@ -10,7 +10,7 @@ import ActionButton from "../action-button";
 
 export function PasswordForm() {
     const [isPending, startTransition] = useTransition();
-    const formRef = useRef<HTMLFormElement>(null); // Ref pro reset formuláře
+    const formRef = useRef<HTMLFormElement>(null);
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -46,7 +46,7 @@ export function PasswordForm() {
                     id="password"
                     name="password"
                     type="password"
-                    placeholder="Minimálně 6 znaků"
+                    placeholder="Minimálně 12 znaků"
                     required
                 />
             </div>
@@ -66,7 +66,7 @@ export function PasswordForm() {
             <div className="flex justify-end pt-2">
                 <ActionButton type="submit" disabled={isPending}>
                     {isPending && (
-                        <Loader2 className="mr-2 w-4 h-4 animate-spin" />
+                        <Loader2 className="mr-2 size-4 animate-spin" />
                     )}
                     Změnit heslo
                 </ActionButton>

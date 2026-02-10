@@ -60,8 +60,8 @@ export default async function CouplePage() {
         .order("created_at", { ascending: false });
 
     return (
-        <div className="gap-4 py-4 cs-container">
-            <div className="flex justify-between items-center mb-4 w-full">
+        <div className="gap-4 py-8 cs-container">
+            <div className="flex justify-between items-center mb-8 w-full">
                 <span className="font-bold text-2xl sm:text-3xl">Vztah</span>
                 <div className="flex items-center gap-2">
                     <Link href="/dashboard" aria-label="dashboard link">

@@ -14,7 +14,7 @@ export function PageSkeleton({
     cards,
 }: SkeletonProps) {
     return (
-        <div className="space-y-6 p-4 md:p-8 cs-container">
+        <div className="space-y-6 p-4 md:p-8">
             {/* 1. HEADER SKELETON */}
             <div className="flex justify-between items-center mb-8 px-6">
                 <div className="space-y-2">

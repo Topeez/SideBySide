@@ -3,15 +3,25 @@
 import { createClient } from "@/utils/supabase/server";
 import { z } from "zod";
 
-const PasswordSchema = z.object({
-  password: z.string().min(6, "Heslo musí mít alespoň 6 znaků"),
-  confirmPassword: z.string().min(6, "Heslo musí mít alespoň 6 znaků"),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Hesla se neshodují",
-  path: ["confirmPassword"],
-});
-
-export async function updatePassword(prevState: unknown, formData: FormData) {
+export const PasswordSchema = z
+  .object({
+    password: z
+      .string()
+      .min(12, { message: "Heslo musí mít alespoň 12 znaků" }),
+    confirmPassword: z
+      .string()
+      .min(1, { message: "Potvrzení hesla je povinné" }),
+  })
+  .superRefine(({ confirmPassword, password }, ctx) => {
+    if (confirmPassword !== password) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Hesla se neshodují",
+        path: ["confirmPassword"],
+      });
+    }
+  });
+export async function updatePassword(prevState: null, formData: FormData) {
   const supabase = await createClient();
 
   // 1. Validace inputů

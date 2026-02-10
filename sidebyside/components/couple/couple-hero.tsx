@@ -9,6 +9,7 @@ import { updateCoverPhoto } from "@/app/actions/couple";
 import { useRef, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import imageCompression from "browser-image-compression";
 
 interface CoupleHeroProps {
     couple: {
@@ -45,17 +46,41 @@ export default function CoupleHero({ couple, user1, user2 }: CoupleHeroProps) {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        if (file.size > 5 * 1024 * 1024) {
-            toast.error("Obrázek je příliš velký (max 5MB).");
+        if (!file.type.startsWith("image/")) {
+            toast.error("Vyberte prosím obrázek.");
             return;
         }
 
         setIsUploading(true);
-        const formData = new FormData();
-        formData.append("cover", file);
 
         try {
+            // 1. Nastavení možností komprese
+            const options = {
+                maxSizeMB: 1, // Cílová velikost (1MB je bohatě dost pro cover)
+                maxWidthOrHeight: 1920, // Zmenší rozlišení (např. 4K fotky zmenší na FullHD)
+                useWebWorker: true, // Použije Web Worker pro plynulost (nezasekne UI)
+                fileType: "image/webp", // Převede na WebP (moderní, efektivnější formát)
+            };
+
+            // 2. Samotná komprese
+            toast.info("Optimalizuji obrázek..."); // Volitelné info pro uživatele
+            const compressedFile = await imageCompression(file, options);
+
+            // Debug info (abys viděl ten rozdíl v konzoli)
+            console.log(
+                `Původní velikost: ${(file.size / 1024 / 1024).toFixed(2)} MB`,
+            );
+            console.log(
+                `Nová velikost: ${(compressedFile.size / 1024 / 1024).toFixed(2)} MB`,
+            );
+
+            // 3. Vytvoření FormData s komprimovaným souborem
+            const formData = new FormData();
+            formData.append("cover", compressedFile);
+
+            // 4. Odeslání na server (stejná funkce jako předtím)
             await updateCoverPhoto(couple.id, formData);
+
             toast.success("Pozadí aktualizováno!");
         } catch (error) {
             console.error(error);

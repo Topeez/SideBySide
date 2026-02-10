@@ -19,11 +19,8 @@ import { getEventColor, getEventLabel } from "@/lib/event-types";
 import { deleteEvent } from "@/app/actions/events";
 import ActionButton from "../action-button";
 import { useDashboardLayout } from "../layout-provider";
-
-interface Profile {
-    birth_date?: string | Date;
-    nickname?: string;
-}
+import { toast } from "sonner";
+import { Profile } from "@/types/profile";
 
 interface CalendarWidgetProps {
     events: Event[];
@@ -97,10 +94,31 @@ export function CalendarWidget({
     // 2. Mapa událostí
     const eventsMap = useMemo(() => {
         const map: Record<string, CalendarItem[]> = {};
+
         allCalendarItems.forEach((event) => {
-            const dateKey = format(new Date(event.start_time), "yyyy-MM-dd");
-            if (!map[dateKey]) map[dateKey] = [];
-            map[dateKey].push(event);
+            const startDate = new Date(event.start_time);
+            // Pokud end_time neexistuje, bereme to jako jednodenní akci (konec = začátek)
+            const endDate = event.end_time
+                ? new Date(event.end_time)
+                : new Date(event.start_time);
+
+            const current = new Date(startDate);
+            current.setHours(0, 0, 0, 0);
+
+            const end = new Date(endDate);
+            end.setHours(0, 0, 0, 0);
+
+            while (current <= end) {
+                const dateKey = format(current, "yyyy-MM-dd");
+                if (!map[dateKey]) map[dateKey] = [];
+
+                // Přidáme event do mapy pro tento den
+                // Můžeme sem přidat příznak, jestli je to začátek/konec/střed (pro stylování), ale zatím stačí jen přidat
+                map[dateKey].push(event);
+
+                // Posun o 1 den
+                current.setDate(current.getDate() + 1);
+            }
         });
         return map;
     }, [allCalendarItems]);
@@ -176,17 +194,31 @@ export function CalendarWidget({
                                 </span>
 
                                 {hasEvents && (
-                                    <div className="flex flex-col gap-1 mt-1 px-1 w-full">
+                                    <div
+                                        className={cn(
+                                            "flex gap-1 mt-1 px-1 w-full",
+                                            // MOBILE: flex-col (čárky pod sebou)
+                                            "flex-col",
+                                            // DESKTOP: flex-row (tečky vedle sebe), centrované, zalamovací
+                                            "md:flex-row md:flex-wrap md:justify-center md:content-start",
+                                        )}
+                                    >
                                         {dayEvents
-                                            .slice(0, 3)
+                                            .slice(0, isCalendarLayout ? 8 : 4) // Zobrazíme max 4-8 akcí
                                             .map((event, i) => (
                                                 <div
                                                     key={i}
-                                                    className="shadow-sm rounded-sm w-full h-1.5"
+                                                    className={cn(
+                                                        "shadow-sm transition-all",
+                                                        // MOBILE: Čárka přes celou šířku
+                                                        "w-full h-1.5 rounded-sm",
+                                                        // DESKTOP: Tečka (přebije width/height i radius)
+                                                        "md:size-2 md:rounded-full md:w-2 md:h-2",
+                                                    )}
                                                     style={{
                                                         backgroundColor:
                                                             event.is_birthday
-                                                                ? "#FFD70"
+                                                                ? "#FFD700"
                                                                 : getEventColor(
                                                                       event.type,
                                                                   ),
@@ -194,11 +226,17 @@ export function CalendarWidget({
                                                     title={event.title}
                                                 />
                                             ))}
-                                        {dayEvents.length > 3 && (
-                                            <div className="flex justify-center gap-0.5 w-full h-1">
-                                                <span className="bg-muted-foreground/40 rounded-full size-full" />
-                                                <span className="bg-muted-foreground/40 rounded-full size-full" />
-                                            </div>
+
+                                        {/* Indikátor, že je toho víc (jen jednoduchá tečka/čárka navíc šedivě) */}
+                                        {dayEvents.length >
+                                            (isCalendarLayout ? 8 : 4) && (
+                                            <div
+                                                className={cn(
+                                                    "bg-muted-foreground/30",
+                                                    "w-full h-1.5 rounded-sm", // Mobile
+                                                    "md:size-2 md:rounded-full md:w-2 md:h-2", // Desktop
+                                                )}
+                                            />
                                         )}
                                     </div>
                                 )}
@@ -275,6 +313,9 @@ export function CalendarWidget({
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     deleteEvent(event.id);
+                                                    toast.success(
+                                                        "Úspěšně smazáno.",
+                                                    );
                                                 }}
                                             />
                                         </div>

@@ -35,7 +35,22 @@ export default async function DashboardPage() {
         .or(`user1_id.eq.${user.id},user2_id.eq.${user.id}`)
         .single();
 
-    // 2. Načteme Profily (NOVÉ) - potřebujeme je pro widget i kalendář
+    let noteToDisplay = couple.love_note || "";
+
+    if (couple.love_note_updated_at) {
+        const lastUpdate = new Date(couple.love_note_updated_at);
+        const now = new Date();
+        const diffInHours =
+            (now.getTime() - lastUpdate.getTime()) / (1000 * 60 * 60);
+
+        // Pokud je starší než 24 hodin, vymažeme ji (jen pro zobrazení)
+        if (diffInHours > 24) {
+            noteToDisplay = "";
+            // Volitelně: Můžeš sem poslat i informaci, že "Včerejší vzkaz vypršel"
+        }
+    }
+
+    // 2. Načteme Profily
     let userProfile = null;
     let partnerProfile = null;
 
@@ -124,7 +139,7 @@ export default async function DashboardPage() {
 
     const noteContent = couple ? (
         <LoveNoteCard
-            initialNote={couple.love_note}
+            initialNote={noteToDisplay}
             coupleId={couple.id}
             authorId={couple.love_note_author_id}
             currentUserId={user.id}
@@ -199,7 +214,7 @@ export default async function DashboardPage() {
     );
 
     return (
-        <div className="space-y-6 p-4 md:p-8 cs-container">
+        <div className="space-y-6 mx-auto p-4 md:p-8">
             {/* --- HEADER --- */}
             <DashboardHeader />
 

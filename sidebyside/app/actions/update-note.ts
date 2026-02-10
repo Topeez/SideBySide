@@ -17,9 +17,10 @@ export async function updateLoveNote(formData: FormData) {
 
   const { error } = await supabase
     .from('couples')
-    .update({ 
+    .update({
         love_note: note,
-        love_note_author_id: user.id 
+        love_note_author_id: user.id,
+        love_note_updated_at: new Date().toISOString(),
     })
     .eq('id', coupleId);
 

@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Heart, Pencil } from "lucide-react";
 import { useState } from "react";
-import { updateLoveNote } from "@/app/actions/update-note"; // Import akce
+import { updateLoveNote } from "@/app/actions/update-note";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import ActionButton from "../action-button";

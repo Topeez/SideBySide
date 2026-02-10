@@ -5,25 +5,37 @@ import { revalidatePath } from "next/cache";
 import { sendNotificationToUser } from "@/app/actions/push";
 
 export async function createEvent(formData: FormData) {
-  const title = formData.get("title") as string;
+ const title = formData.get("title") as string;
   const location = formData.get("location") as string;
   const coupleId = formData.get("coupleId") as string;
-  const type = formData.get("type") as string; 
-  const dateBase = formData.get("dateBase") as string;
+  const type = formData.get("type") as string;
+  
+  // Změna: Čteme From a To
+  const dateFrom = formData.get("dateFrom") as string;
+  const dateTo = formData.get("dateTo") as string;
+  
   const startTimeStr = formData.get("startTime") as string;
   const endTimeStr = formData.get("endTime") as string;
 
-  if (!title || !dateBase || !startTimeStr) return;
+  if (!title || !dateFrom || !startTimeStr) return;
 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return;
 
-  const startIso = new Date(`${dateBase}T${startTimeStr}`).toISOString();
+  // 1. Start Time = Datum OD + Čas OD
+  const startIso = new Date(`${dateFrom}T${startTimeStr}`).toISOString();
   
+  // 2. End Time logic
   let endIso = null;
+  
+  // Pokud uživatel zadal čas konce, použijeme ho.
+  // Pokud je vybráno 'dateTo' (vícedenní akce), použijeme 'dateTo'. Jinak 'dateFrom'.
   if (endTimeStr) {
-      endIso = new Date(`${dateBase}T${endTimeStr}`).toISOString();
+      const endDateBase = dateTo || dateFrom; 
+      endIso = new Date(`${endDateBase}T${endTimeStr}`).toISOString();
+  } else if (dateTo && dateTo !== dateFrom) {
+      endIso = new Date(`${dateTo}T00:00:00`).toISOString();
   }
 
   const { error } = await supabase.from("events").insert({
@@ -38,7 +50,8 @@ export async function createEvent(formData: FormData) {
 
   if (error) {
     console.error("Chyba při insertu events:", error);
-    return;
+    // Měl bys vyhodit chybu, aby ji frontend zachytil v try/catch
+    throw new Error("Database insert failed"); 
   }
 
   try {
@@ -56,9 +69,12 @@ export async function createEvent(formData: FormData) {
 
           if (partnerId) {
               const fullName = user.user_metadata.full_name || "Partner";
-              const message = `Kdy: ${dateBase} v ${startTimeStr}`;
+              const dateDisplay = dateTo && dateTo !== dateFrom 
+                  ? `${dateFrom} - ${dateTo}` 
+                  : dateFrom;
+                  
+              const message = `Kdy: ${dateDisplay} v ${startTimeStr}`;
 
-              // 2. Pošleme notifikaci
               await sendNotificationToUser(
                   partnerId, 
                   `Nová akce: ${title} 📅`, 
