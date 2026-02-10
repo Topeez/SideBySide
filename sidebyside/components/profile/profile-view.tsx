@@ -78,7 +78,11 @@ export function ProfileView({ profile, isEditable }: ProfileViewProps) {
                 <Card className="inset-shadow-muted inset-shadow-xs flex flex-col justify-center items-center md:col-span-2 md:row-span-2 bg-linear-to-br from-background to-muted/50 shadow-lg p-6 border-2 border-none text-center">
                     <Avatar className="shadow-xl mb-4 border-4 border-background w-32 h-32">
                         <AvatarImage
-                            src={profile.avatar_url || ""}
+                            src={
+                                typeof profile.avatar_url === "string"
+                                    ? profile.avatar_url
+                                    : profile.avatar_url?.toISOString()
+                            }
                             className="object-cover"
                             referrerPolicy="no-referrer"
                             alt="your avatar image"
