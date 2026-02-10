@@ -87,7 +87,10 @@ export function CalendarWidget({
             }
         };
         addBirthday(userProfile, "Moje narozeniny 🎂");
-        addBirthday(partnerProfile, "Partnerovy narozeniny 🎉");
+        addBirthday(
+            partnerProfile,
+            partnerProfile?.nickname + " má narozeniny 🎉",
+        );
         return items;
     }, [events, userProfile, partnerProfile, coupleId]);
 
