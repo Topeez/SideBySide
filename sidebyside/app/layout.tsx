@@ -43,13 +43,13 @@ export const metadata: Metadata = {
         type: "website",
         locale: "cs_CZ",
         url: "https://side-by-side-nu.vercel.app",
-        title: "SideBySide - Plánujte společně, žijte lépe",
+        title: "SideBySide - Sdílený kalendář, úkoly a plánování pro páry",
         description:
-            "Sdílený kalendář, úkoly a nástěnka pro páry. Udržujte svůj vztah organizovaný a plný zážitků.",
+            "SideBySide je aplikace pro páry, která zjednodušuje společné plánování. Sdílejte kalendář, nákupní seznamy, úkoly a uchovávejte vzpomínky na jednom místě. Zaregistrujte se zdarma.",
         siteName: "SideBySide",
         images: [
             {
-                url: "/og.png", // Musíš vytvořit obrázek public/og-image.jpg (1200x630px)
+                url: "/og.png",
                 width: 1200,
                 height: 630,
                 alt: "SideBySide Aplikace Náhled",
@@ -65,7 +65,6 @@ export const metadata: Metadata = {
         images: ["/android-chrome-192x192.png"], // Stejný obrázek
     },
 
-    // Ikony (pokud je nemáš automaticky v /app složce)
     icons: {
         icon: "/favicon.ico",
         shortcut: "/favicon-16x16.png",
