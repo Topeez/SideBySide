@@ -34,7 +34,6 @@ export async function saveSubscription(sub: PushSubscriptionJSON) {
 }
 
 export async function sendNotificationToUser(userId: string, title: string, body: string, url: string = "/dashboard") {
-  console.log(`Sending push to User ${userId}`);
     const supabase = createAdminClient();
     
     const { data: subscriptions } = await supabase
@@ -42,7 +41,6 @@ export async function sendNotificationToUser(userId: string, title: string, body
         .select("*")
         .eq("user_id", userId);
 
-    console.log(`Found ${subscriptions?.length} subscriptions`);  
     if (!subscriptions || subscriptions.length === 0) return;
 
     const payload = JSON.stringify({ title, body, url });
@@ -56,18 +54,15 @@ export async function sendNotificationToUser(userId: string, title: string, body
                     auth: sub.auth
                 }
             }, payload);
-        } catch (error: unknown) { // V catch je error vždy unknown
-            // 1. Zkontrolujeme, jestli je to objekt a má statusCode
+        } catch (error: unknown) {
             if (isWebPushError(error)) {
                 console.error("WebPush Error Code:", error.statusCode);
 
-                // 410 Gone / 404 Not Found -> Odběr už neexistuje, smazat z DB
                 if (error.statusCode === 410 || error.statusCode === 404) {
-                    console.log(`Deleting expired subscription for user ${userId}`);
                     await supabase.from("push_subscriptions").delete().eq("id", sub.id);
                 }
             } else {
-                // Jiná, nečekaná chyba
+
                 console.error("Unknown error sending push:", error);
             }
         }
@@ -76,7 +71,6 @@ export async function sendNotificationToUser(userId: string, title: string, body
     await Promise.all(promises);
 }
 
-// Type Guard funkce - ověří, zda je error typu WebPushError
 function isWebPushError(error: unknown): error is WebPushError {
     return (
         typeof error === 'object' &&
