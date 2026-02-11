@@ -49,7 +49,7 @@ export const metadata: Metadata = {
         siteName: "SideBySide",
         images: [
             {
-                url: "/android-chrome-192x192.png", // Musíš vytvořit obrázek public/og-image.jpg (1200x630px)
+                url: "/og.png", // Musíš vytvořit obrázek public/og-image.jpg (1200x630px)
                 width: 1200,
                 height: 630,
                 alt: "SideBySide Aplikace Náhled",
@@ -93,8 +93,6 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="cs" suppressHydrationWarning>
-            {" "}
-            {/* Změněno na 'cs' */}
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-background text-foreground`}
             >
