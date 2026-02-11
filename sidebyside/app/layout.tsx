@@ -96,7 +96,7 @@ export default function RootLayout({
                 className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-background text-foreground`}
             >
                 <main>{children}</main>
-                <Toaster /> {/* Pokud používáš notifikace */}
+                <Toaster />
             </body>
         </html>
     );
