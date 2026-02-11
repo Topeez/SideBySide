@@ -190,7 +190,7 @@ export default async function DashboardPage() {
             partnerProfile={partnerProfile}
         />
     ) : (
-        <Card className="h-full">
+        <Card className="bg-card h-full">
             <CardHeader>
                 <CardTitle>Kalendář</CardTitle>
             </CardHeader>
@@ -207,14 +207,13 @@ export default async function DashboardPage() {
             relationshipStart={couple?.relationship_start}
         />
     ) : (
-        // Placeholder, aby se nerozhodil grid, nebo null
         <div className="hidden md:block flex justify-center items-center opacity-50 border border-dashed rounded-lg h-full text-muted-foreground text-xs">
             Místo pro profil páru
         </div>
     );
 
     return (
-        <div className="space-y-6 mx-auto p-4 md:p-8">
+        <div className="mx-auto p-4 md:p-8">
             {/* --- HEADER --- */}
             <DashboardHeader />
 

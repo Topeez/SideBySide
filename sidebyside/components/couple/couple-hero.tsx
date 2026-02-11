@@ -132,7 +132,7 @@ export default function CoupleHero({ couple, user1, user2 }: CoupleHeroProps) {
             </Button>
 
             {/* 2. Obsah */}
-            <div className="z-10 relative flex flex-col justify-center items-center px-4 py-16 text-white text-center">
+            <div className="z-10 relative flex flex-col justify-center items-center gap-4 px-4 py-16 text-white text-center">
                 {/* Avatary (překrývající se) */}
                 <div className="flex justify-center items-center -space-x-4 mb-6">
                     <Avatar className="shadow-lg border-4 border-background/50 size-20">
@@ -168,16 +168,16 @@ export default function CoupleHero({ couple, user1, user2 }: CoupleHeroProps) {
                     {user2.nickname.split(" ")[0]}
                 </h1>
 
-                <div className="flex items-center gap-3 mb-8">
+                <div className="flex items-center gap-3 mt-8">
                     <Badge
                         variant="secondary"
-                        className="bg-white/20 hover:bg-white/30 backdrop-blur-md px-3 py-1 border-none text-white text-sm"
+                        className="bg-white/20 hover:bg-white/30 backdrop-blur-md px-3 py-1 border-none text-md text-white"
                     >
                         Spolu {daysTogether} dní
                     </Badge>
                     <Badge
                         variant="outline"
-                        className="px-3 py-1 border-white/40 text-white text-sm"
+                        className="px-3 py-1 border-white/40 text-md text-white"
                     >
                         Od {new Date(startDate).toLocaleDateString("cs-CZ")}
                     </Badge>

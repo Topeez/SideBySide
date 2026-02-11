@@ -105,10 +105,10 @@ export function AddEventDialog({
                         <Label>Kdy?</Label>
                         <Popover>
                             <PopoverTrigger asChild>
-                                <Button
+                                <ActionButton
                                     variant={"outline"}
                                     className={cn(
-                                        "justify-start w-full font-normal text-left",
+                                        "justify-center w-full font-normal text-foreground text-center",
                                         !date && "text-muted-foreground",
                                     )}
                                 >
@@ -134,7 +134,7 @@ export function AddEventDialog({
                                     ) : (
                                         <span>Vyberte datum</span>
                                     )}
-                                </Button>
+                                </ActionButton>
                             </PopoverTrigger>
                             <PopoverContent
                                 className="p-0 w-auto"
@@ -243,7 +243,7 @@ export function AddEventDialog({
                                     const Icon = config.icon;
 
                                     return (
-                                        <button
+                                        <ActionButton
                                             key={key}
                                             type="button"
                                             onClick={() =>
@@ -252,14 +252,14 @@ export function AddEventDialog({
                                                 )
                                             }
                                             className={cn(
-                                                "flex flex-col justify-center items-center gap-1 p-2 border-2 rounded-lg transition-all",
+                                                "inset-shadow-muted flex flex-col justify-center items-center gap-1 hover:bg-primary/10 shadow-lg p-8! rounded-lg transition-all",
                                                 isSelected
-                                                    ? "border-primary bg-primary/10 text-primary"
-                                                    : "border-transparent bg-muted hover:bg-muted/80 text-muted-foreground",
+                                                    ? "border-primary inset-shadow-primary/50! bg-primary/10 text-primary"
+                                                    : "border-transparent  bg-muted hover:bg-muted/80 text-muted-foreground",
                                             )}
                                         >
                                             <Icon
-                                                className="w-5 h-5"
+                                                className="size-5"
                                                 style={{
                                                     color: isSelected
                                                         ? "currentColor"
@@ -269,7 +269,7 @@ export function AddEventDialog({
                                             <span className="font-medium text-xs">
                                                 {config.label}
                                             </span>
-                                        </button>
+                                        </ActionButton>
                                     );
                                 },
                             )}

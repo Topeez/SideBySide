@@ -24,7 +24,7 @@ export function CoupleProfileWidget({
         : null;
 
     return (
-        <Card className="@container relative inset-shadow-muted inset-shadow-xs flex flex-col justify-between col-span-12 lg:col-span-4 shadow-lg border-none h-full overflow-hidden">
+        <Card className="@container relative inset-shadow-muted inset-shadow-xs flex flex-col justify-between shadow-lg border-none h-full overflow-hidden">
             <CardHeader>
                 <CardTitle className="text-lg">My dva</CardTitle>
             </CardHeader>
@@ -89,19 +89,18 @@ export function CoupleProfileWidget({
                         </span>
                     </div>
                 </div>
-
-                <div className="mt-auto pt-4">
-                    <Link href={`/dashboard/profile/${userProfile?.id}`}>
-                        <ActionButton
-                            variant="outline"
-                            className="gap-2 w-full text-foregrou d"
-                        >
-                            <Settings2 className="size-4" />
-                            Upravit profil
-                        </ActionButton>
-                    </Link>
-                </div>
             </CardContent>
+            <div className="mx-auto px-4 md:px-0 w-full max-w-lg">
+                <Link href={`/dashboard/profile/${userProfile?.id}`}>
+                    <ActionButton
+                        variant="outline"
+                        className="gap-2 w-full text-foregroud"
+                    >
+                        <Settings2 className="size-4" />
+                        Upravit profil
+                    </ActionButton>
+                </Link>
+            </div>
         </Card>
     );
 }

@@ -5,10 +5,10 @@ import { revalidatePath } from "next/cache";
 import { sendNotificationToUser } from "@/app/actions/push";
 
 export async function updateLoveNote(formData: FormData) {
-  const note = formData.get("note") as string;
+  const note = formData.get("note") as string || "";
   const coupleId = formData.get("coupleId") as string;
 
-  if (!coupleId || !note) return;
+  if (!coupleId) return;
 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -29,7 +29,8 @@ export async function updateLoveNote(formData: FormData) {
       return;
   }
 
-  try {
+  if(note.trim().length > 0 || note.trim().length > 1) {
+      try {
 
       const { data: couple } = await supabase
           .from("couples")
@@ -53,8 +54,9 @@ export async function updateLoveNote(formData: FormData) {
               );
           }
       }
-  } catch (pushError) {
-      console.error("Push notification error:", pushError);
+    } catch (pushError) {
+        console.error("Push notification error:", pushError);
+    }
   }
 
   revalidatePath('/dashboard');

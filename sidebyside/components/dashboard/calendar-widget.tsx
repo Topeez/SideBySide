@@ -115,11 +115,8 @@ export function CalendarWidget({
                 const dateKey = format(current, "yyyy-MM-dd");
                 if (!map[dateKey]) map[dateKey] = [];
 
-                // Přidáme event do mapy pro tento den
-                // Můžeme sem přidat příznak, jestli je to začátek/konec/střed (pro stylování), ale zatím stačí jen přidat
                 map[dateKey].push(event);
 
-                // Posun o 1 den
                 current.setDate(current.getDate() + 1);
             }
         });
@@ -142,14 +139,14 @@ export function CalendarWidget({
     return (
         <div
             suppressHydrationWarning
-            className="inset-shadow-muted inset-shadow-xs flex flex-col space-y-4 col-span-12 md:col-span-6 lg:col-span-4 bg-background shadow-lg p-4 border border-none rounded-xl h-full"
+            className="inset-shadow-muted inset-shadow-xs flex flex-col space-y-4 col-span-12 md:col-span-6 lg:col-span-4 bg-card shadow-lg p-4 border border-none rounded-xl h-full"
         >
             <Calendar
                 mode="single"
                 selected={date}
                 onSelect={handleDateSelect}
                 locale={cs}
-                className="p-0 size-full"
+                className="bg-card p-0 size-full"
                 classNames={{
                     month: cn(
                         "flex flex-col items-center space-y-4 w-full",
@@ -200,22 +197,18 @@ export function CalendarWidget({
                                     <div
                                         className={cn(
                                             "flex gap-1 mt-1 px-1 w-full",
-                                            // MOBILE: flex-col (čárky pod sebou)
                                             "flex-col",
-                                            // DESKTOP: flex-row (tečky vedle sebe), centrované, zalamovací
                                             "md:flex-row md:flex-wrap md:justify-center md:content-start",
                                         )}
                                     >
                                         {dayEvents
-                                            .slice(0, isCalendarLayout ? 8 : 4) // Zobrazíme max 4-8 akcí
+                                            .slice(0, isCalendarLayout ? 8 : 4)
                                             .map((event, i) => (
                                                 <div
                                                     key={i}
                                                     className={cn(
                                                         "shadow-sm transition-all",
-                                                        // MOBILE: Čárka přes celou šířku
                                                         "w-full h-1.5 rounded-sm",
-                                                        // DESKTOP: Tečka (přebije width/height i radius)
                                                         "md:size-2 md:rounded-full md:w-2 md:h-2",
                                                     )}
                                                     style={{
@@ -250,7 +243,7 @@ export function CalendarWidget({
             />
 
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogContent className="sm:max-w-md">
+                <DialogContent className="sm:max-w-lg">
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2 capitalize">
                             {date
