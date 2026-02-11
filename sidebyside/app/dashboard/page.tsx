@@ -10,6 +10,7 @@ import { CoupleProfileWidget } from "@/components/dashboard/couple-profile-widge
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import Link from "next/link";
 import { DashboardGrid } from "@/components/dashboard/dashboard-grid";
+import { OnboardingChecklist } from "@/components/onboarding-checklist";
 
 export default async function DashboardPage() {
     const supabase = await createClient();
@@ -35,9 +36,9 @@ export default async function DashboardPage() {
         .or(`user1_id.eq.${user.id},user2_id.eq.${user.id}`)
         .single();
 
-    let noteToDisplay = couple.love_note || "";
+    let noteToDisplay = couple?.love_note || "";
 
-    if (couple.love_note_updated_at) {
+    if (couple?.love_note_updated_at) {
         const lastUpdate = new Date(couple.love_note_updated_at);
         const now = new Date();
         const diffInHours =
@@ -48,6 +49,8 @@ export default async function DashboardPage() {
             noteToDisplay = "";
             // Volitelně: Můžeš sem poslat i informaci, že "Včerejší vzkaz vypršel"
         }
+    } else {
+        noteToDisplay = "";
     }
 
     // 2. Načteme Profily
@@ -172,7 +175,7 @@ export default async function DashboardPage() {
         <Card className="col-span-12 md:col-span-4">
             <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-base">
-                    <ShoppingBag className="w-4 h-4" /> Úkoly
+                    <ShoppingBag className="size-4" /> Úkoly
                 </CardTitle>
             </CardHeader>
             <CardContent>
@@ -207,7 +210,7 @@ export default async function DashboardPage() {
             relationshipStart={couple?.relationship_start}
         />
     ) : (
-        <div className="hidden md:block flex justify-center items-center opacity-50 border border-dashed rounded-lg h-full text-muted-foreground text-xs">
+        <div className="flex justify-center items-center opacity-50 border border-dashed rounded-lg h-full text-muted-foreground text-xs">
             Místo pro profil páru
         </div>
     );
@@ -216,6 +219,15 @@ export default async function DashboardPage() {
         <div className="mx-auto p-4 md:p-8">
             {/* --- HEADER --- */}
             <DashboardHeader />
+
+            {userProfile && (
+                <div className="mb-6">
+                    <OnboardingChecklist
+                        userProfile={{ ...userProfile, couple_id: couple?.id }}
+                        eventsCount={events.length}
+                    />
+                </div>
+            )}
 
             <DashboardGrid
                 eventSlot={eventContent}

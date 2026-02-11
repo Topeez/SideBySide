@@ -9,6 +9,10 @@ import { UserNav } from "@/components/dashboard/user-nav";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { LayoutDashboard } from "lucide-react";
+import InviteButton from "@/components/dashboard/invite-button";
+import { Card, CardHeader } from "@/components/ui/card";
+import { toast } from "sonner";
+import { ToastNotifier } from "@/components/toast-notifier";
 
 export default async function CouplePage() {
     const supabase = await createClient();
@@ -30,10 +34,33 @@ export default async function CouplePage() {
         .single();
 
     if (error || !couple) {
-        console.error("Couple fetch error:", error);
         return (
-            <div className="p-8 text-center">
-                Jejda, nemůžeme najít tvůj pár. Zkus se znovu přihlásit.
+            <div className="flex justify-center items-center h-screen cs-container">
+                <ToastNotifier
+                    message="Nemůžeme najít tvůj pár."
+                    type="error"
+                />
+
+                <Card className="p-6">
+                    <CardHeader className="font-bold text-xl">
+                        Jejda, nemůžeme najít tvůj pár.
+                    </CardHeader>
+                    <div className="flex flex-col items-center gap-4 mt-4">
+                        <p className="text-muted-foreground">
+                            Abyste mohli vidět tuto stránku, musíte být
+                            spárovaní.
+                        </p>
+                        <div className="flex items-center gap-2 p-2 border rounded-lg">
+                            <span className="text-sm">
+                                Pozvi svou polovičku:
+                            </span>
+                            <InviteButton userId={user?.id || ""} />
+                        </div>
+                        <Link href="/dashboard">
+                            <Button variant="outline">Zpět na Dashboard</Button>
+                        </Link>
+                    </div>
+                </Card>
             </div>
         );
     }

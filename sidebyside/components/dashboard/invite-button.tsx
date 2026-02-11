@@ -25,13 +25,7 @@ export default function InviteButton({
         toast.success("Odkaz zkopírován!", {
             description: "Pošli ho své polovičce a začněte plánovat.",
             duration: 3000,
-            icon: <Copy className="size-4" />,
-            style: {
-                backgroundColor: "var(--popover)",
-                color: "var(--normal-text)",
-                border: "1px solid var(--border)",
-                borderRadius: "var(--radius)",
-            },
+            icon: <Copy className="size-4 text-primary" />,
         });
 
         setTimeout(() => setCopied(false), 2000);
