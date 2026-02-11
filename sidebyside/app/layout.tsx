@@ -21,11 +21,11 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
     title: {
-        default: "SideBySide - Plánujte společně",
+        default: "SideBySide - Sdílený kalendář a plánování pro páry",
         template: "%s | SideBySide",
     },
     description:
-        "SideBySide je aplikace pro páry, které chtějí sdílet kalendář, úkoly, nákupní seznamy a společné vzpomínky na jednom místě.",
+        "Zjednodušte si společný život. SideBySide je aplikace pro páry, která nabízí sdílený kalendář, úkoly, nákupní seznamy a prostor pro vaše vzpomínky. Zaregistrujte se zdarma.",
     applicationName: "SideBySide",
     authors: [{ name: "Topeeez", url: "https://topeeez.cz" }],
     keywords: [
@@ -45,11 +45,11 @@ export const metadata: Metadata = {
         url: "https://side-by-side-nu.vercel.app",
         title: "SideBySide - Sdílený kalendář, úkoly a plánování pro páry",
         description:
-            "SideBySide je aplikace pro páry, která zjednodušuje společné plánování. Sdílejte kalendář, nákupní seznamy, úkoly a uchovávejte vzpomínky na jednom místě. Zaregistrujte se zdarma.",
+            "Zjednodušte si společný život. SideBySide je aplikace pro páry, která nabízí sdílený kalendář, úkoly, nákupní seznamy a prostor pro vaše vzpomínky. Zaregistrujte se zdarma.",
         siteName: "SideBySide",
         images: [
             {
-                url: "/og.png",
+                url: "/og-image.png",
                 width: 1200,
                 height: 630,
                 alt: "SideBySide Aplikace Náhled",
