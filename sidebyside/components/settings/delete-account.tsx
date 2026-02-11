@@ -23,9 +23,6 @@ export function DeleteAccount() {
     const handleDelete = () => {
         startTransition(async () => {
             const result = await deleteAccount();
-            // Pokud se to povede, funkce deleteAccount provede redirect,
-            // takže kód dál už se v podstatě nespustí.
-            // Pokud se vrátí výsledek, znamená to chybu.
             if (result && !result.success) {
                 toast.error(result.message);
             }

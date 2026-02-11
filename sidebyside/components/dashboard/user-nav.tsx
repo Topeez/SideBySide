@@ -17,7 +17,7 @@ import Link from "next/link";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import { ProfileData } from "@/types/profile";
-import { useCallback, useEffect } from "react";
+import { useKeyboardNavigation } from "@/hooks/use-keyboard-navigation";
 export function UserNav({
     id,
     email,
@@ -29,43 +29,12 @@ export function UserNav({
     const router = useRouter();
     const supabase = createClient();
 
-    const handleSignOut = useCallback(async () => {
+    useKeyboardNavigation({ userId: id });
+
+    const handleSignOut = async () => {
         await supabase.auth.signOut();
         router.push("/");
-    }, [router, supabase.auth]);
-
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            const target = e.target as HTMLElement;
-            if (
-                target.tagName === "INPUT" ||
-                target.tagName === "TEXTAREA" ||
-                target.isContentEditable
-            ) {
-                return;
-            }
-
-            if (e.altKey && e.code === "KeyP") {
-                e.preventDefault();
-                router.push(`/dashboard/profile/${id}`);
-            }
-            if (e.altKey && e.code === "KeyS") {
-                e.preventDefault();
-                router.push("/dashboard/settings");
-            }
-            if (e.altKey && e.code === "KeyC") {
-                e.preventDefault();
-                router.push("/dashboard/couple");
-            }
-            if (e.altKey && e.code === "KeyQ") {
-                e.preventDefault();
-                handleSignOut();
-            }
-        };
-
-        window.addEventListener("keydown", handleKeyDown);
-        return () => window.removeEventListener("keydown", handleKeyDown);
-    }, [id, router, handleSignOut]);
+    };
 
     const initials = full_name
         ? full_name

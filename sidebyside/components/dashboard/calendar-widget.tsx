@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { format } from "date-fns";
 import { cs } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -44,84 +44,73 @@ export function CalendarWidget({
     partnerProfile,
 }: CalendarWidgetProps) {
     const { layout } = useDashboardLayout();
-
     const isCalendarLayout = layout === "calendar";
-
     const [date, setDate] = useState<Date | undefined>(new Date());
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     // 1. Transformace dat (Eventy + Narozeniny)
-    const allCalendarItems = useMemo(() => {
-        // Převedeme DB eventy a zajistíme DEFAULT BARVU
-        const items: CalendarItem[] = events.map((e) => ({
-            ...e,
-            couple_id: (e as unknown as CalendarItem).couple_id || coupleId,
-            created_at:
-                (e as unknown as CalendarItem).created_at ||
-                new Date().toISOString(),
-            color: e.color || "#E27D60", // Důležité: Fallback barva pro DB eventy
-        }));
+    const items: CalendarItem[] = events.map((e) => ({
+        ...e,
+        couple_id: (e as unknown as CalendarItem).couple_id || coupleId,
+        created_at:
+            (e as unknown as CalendarItem).created_at ||
+            new Date().toISOString(),
+        color: e.color || "#E27D60",
+    }));
 
-        const addBirthday = (
-            profile: Profile | null | undefined,
-            title: string,
-        ) => {
-            if (profile?.birth_date) {
-                const bdayDate = new Date(profile.birth_date);
-                const currentYear = new Date().getFullYear();
-                const nextBday = new Date(
-                    currentYear,
-                    bdayDate.getMonth(),
-                    bdayDate.getDate(),
-                );
-                items.push({
-                    id: `bday-${title}-${currentYear}`,
-                    title: title,
-                    start_time: nextBday.toISOString(),
-                    end_time: null,
-                    location: "Oslava?",
-                    is_birthday: true,
-                    couple_id: coupleId,
-                    created_at: new Date().toISOString(),
-                });
-            }
-        };
-        addBirthday(userProfile, "Moje narozeniny 🎂");
-        addBirthday(
-            partnerProfile,
-            partnerProfile?.nickname + " má narozeniny 🎉",
-        );
-        return items;
-    }, [events, userProfile, partnerProfile, coupleId]);
+    const addBirthday = (
+        profile: Profile | null | undefined,
+        title: string,
+    ) => {
+        if (profile?.birth_date) {
+            const bdayDate = new Date(profile.birth_date);
+            const currentYear = new Date().getFullYear();
+            const nextBday = new Date(
+                currentYear,
+                bdayDate.getMonth(),
+                bdayDate.getDate(),
+            );
+            items.push({
+                id: `bday-${title}-${currentYear}`,
+                title: title,
+                start_time: nextBday.toISOString(),
+                end_time: null,
+                location: "Oslava?",
+                is_birthday: true,
+                couple_id: coupleId,
+                created_at: new Date().toISOString(),
+            });
+        }
+    };
+
+    addBirthday(userProfile, "Moje narozeniny 🎂");
+    addBirthday(
+        partnerProfile,
+        `${partnerProfile?.nickname || "Partner"} má narozeniny 🎉`,
+    );
 
     // 2. Mapa událostí
-    const eventsMap = useMemo(() => {
-        const map: Record<string, CalendarItem[]> = {};
+    const eventsMap: Record<string, CalendarItem[]> = {};
 
-        allCalendarItems.forEach((event) => {
-            const startDate = new Date(event.start_time);
-            // Pokud end_time neexistuje, bereme to jako jednodenní akci (konec = začátek)
-            const endDate = event.end_time
-                ? new Date(event.end_time)
-                : new Date(event.start_time);
+    items.forEach((event) => {
+        const startDate = new Date(event.start_time);
+        const endDate = event.end_time
+            ? new Date(event.end_time)
+            : new Date(event.start_time);
 
-            const current = new Date(startDate);
-            current.setHours(0, 0, 0, 0);
+        const current = new Date(startDate);
+        current.setHours(0, 0, 0, 0);
 
-            const end = new Date(endDate);
-            end.setHours(0, 0, 0, 0);
+        const end = new Date(endDate);
+        end.setHours(0, 0, 0, 0);
 
-            while (current <= end) {
-                const dateKey = format(current, "yyyy-MM-dd");
-                if (!map[dateKey]) map[dateKey] = [];
-
-                map[dateKey].push(event);
-
-                current.setDate(current.getDate() + 1);
-            }
-        });
-        return map;
-    }, [allCalendarItems]);
+        while (current <= end) {
+            const dateKey = format(current, "yyyy-MM-dd");
+            if (!eventsMap[dateKey]) eventsMap[dateKey] = [];
+            eventsMap[dateKey].push(event);
+            current.setDate(current.getDate() + 1);
+        }
+    });
 
     // 3. Handlery
     const handleDateSelect = (selectedDate: Date | undefined) => {
@@ -222,15 +211,13 @@ export function CalendarWidget({
                                                     title={event.title}
                                                 />
                                             ))}
-
-                                        {/* Indikátor, že je toho víc (jen jednoduchá tečka/čárka navíc šedivě) */}
                                         {dayEvents.length >
                                             (isCalendarLayout ? 8 : 4) && (
                                             <div
                                                 className={cn(
                                                     "bg-muted-foreground/30",
-                                                    "w-full h-1.5 rounded-sm", // Mobile
-                                                    "md:size-2 md:rounded-full md:w-2 md:h-2", // Desktop
+                                                    "w-full h-1.5 rounded-sm",
+                                                    "md:size-2 md:rounded-full md:w-2 md:h-2",
                                                 )}
                                             />
                                         )}
@@ -283,11 +270,7 @@ export function CalendarWidget({
                                         key={event.id}
                                         className="group flex flex-col gap-1 hover:bg-muted/50 p-3 border rounded-lg transition-all"
                                         style={{
-                                            borderLeft: `4px solid ${
-                                                event.is_birthday
-                                                    ? "#FFD700"
-                                                    : getEventColor(event.type)
-                                            }`,
+                                            borderLeft: `4px solid ${event.is_birthday ? "#FFD700" : getEventColor(event.type)}`,
                                         }}
                                     >
                                         <div className="flex justify-between items-center">
@@ -310,7 +293,7 @@ export function CalendarWidget({
                                                     e.stopPropagation();
                                                     deleteEvent(event.id);
                                                     toast.success(
-                                                        "Úspěšně smazáno.",
+                                                        "Úspěšně smazáno.",
                                                     );
                                                 }}
                                             />

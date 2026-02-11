@@ -57,12 +57,11 @@ export const metadata: Metadata = {
         ],
     },
 
-    // Twitter (X) Card
     twitter: {
         card: "summary_large_image",
         title: "SideBySide - Aplikace pro páry",
         description: "Plánujte společně, žijte lépe. Kalendář a úkoly pro dva.",
-        images: ["/android-chrome-192x192.png"], // Stejný obrázek
+        images: ["/android-chrome-192x192.png"],
     },
 
     icons: {
@@ -71,7 +70,7 @@ export const metadata: Metadata = {
         apple: "/apple-touch-icon.png",
     },
 
-    // Pro roboty (Google)
+    // boboti od googlu
     robots: {
         index: true,
         follow: true,

@@ -21,7 +21,7 @@ export function PasswordForm() {
 
             if (result?.success) {
                 toast.success(result.message);
-                formRef.current?.reset(); // Vyčistit políčka po úspěchu
+                formRef.current?.reset();
             } else {
                 // Pokud je chyba specifická pro validaci
                 if (result?.errors?.confirmPassword) {
