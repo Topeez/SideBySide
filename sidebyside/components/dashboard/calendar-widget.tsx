@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useOptimistic, startTransition } from "react";
 import { format } from "date-fns";
 import { cs } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -15,8 +15,8 @@ import {
 import { AddEventDialog } from "./add-event-dialog";
 import { Plus, MapPin, Gift, Trash2 } from "lucide-react";
 import { Event } from "@/types/event";
-import { getEventColor, getEventLabel } from "@/lib/event-types";
-import { deleteEvent } from "@/app/actions/events";
+import { getEventColor, getEventLabel, EventType } from "@/lib/event-types"; // Ujisti se, že máš EventType exportovaný
+import { deleteEvent, createEvent } from "@/app/actions/events";
 import ActionButton from "../action-button";
 import { useDashboardLayout } from "../layout-provider";
 import { toast } from "sonner";
@@ -31,12 +31,16 @@ interface CalendarWidgetProps {
 
 type CalendarItem = Event & {
     is_birthday?: boolean;
-    couple_id: string;
+    // Přepisujeme typy, aby odpovídaly Eventu, ale byly povinné tam, kde potřebujeme jistotu
+    couple_id: string; // Tady chceme string (ne null)
     created_at: string;
-    description?: string;
-    type?: string;
-};
 
+    // Změna: Povolit null, stejně jako v Event
+    description?: string | null;
+    type?: string | null;
+
+    isOptimistic?: boolean; // Tady to může zůstat boolean | undefined
+};
 export function CalendarWidget({
     events = [],
     coupleId,
@@ -48,8 +52,100 @@ export function CalendarWidget({
     const [date, setDate] = useState<Date | undefined>(new Date());
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-    // 1. Transformace dat (Eventy + Narozeniny)
-    const items: CalendarItem[] = events.map((e) => ({
+    // --- 1. OPTIMISTIC UI LOGIKA ---
+
+    // Definice reduceru pro useOptimistic
+    // Akce může být buď přidání (ADD) nebo smazání (DELETE)
+    type OptimisticAction =
+        | { type: "ADD"; event: Event }
+        | { type: "DELETE"; id: string };
+
+    const [optimisticEvents, updateOptimisticEvents] = useOptimistic(
+        events,
+        (state, action: OptimisticAction) => {
+            if (action.type === "ADD") {
+                return [...state, { ...action.event, isOptimistic: true }];
+            }
+            if (action.type === "DELETE") {
+                return state.filter((e) => e.id !== action.id);
+            }
+            return state;
+        },
+    );
+
+    // Funkce pro přidání (předáme ji do Dialogu)
+    const handleAddEvent = async (formData: FormData) => {
+        // A. Přečteme data pro Optimistic Update
+        const title = formData.get("title") as string;
+        const dateFrom = formData.get("dateFrom") as string;
+        const startTimeStr = formData.get("startTime") as string;
+        const type = formData.get("type") as string;
+        const location = formData.get("location") as string;
+        const endTimeStr = formData.get("endTime") as string;
+        const dateTo = formData.get("dateTo") as string;
+
+        // Validace (stejná jako na serveru)
+        if (!title || !dateFrom || !startTimeStr) return;
+
+        // Výpočet časů (zjednodušená verze pro UI)
+        const startIso = new Date(`${dateFrom}T${startTimeStr}`).toISOString();
+        let endIso = null;
+        if (endTimeStr) {
+            const endDateBase = dateTo || dateFrom;
+            endIso = new Date(`${endDateBase}T${endTimeStr}`).toISOString();
+        } else if (dateTo && dateTo !== dateFrom) {
+            endIso = new Date(`${dateTo}T00:00:00`).toISOString();
+        }
+
+        const newEvent: Event = {
+            id: Math.random().toString(), // Dočasné ID
+            title,
+            start_time: startIso,
+            end_time: endIso,
+            location,
+            couple_id: coupleId,
+            created_at: new Date().toISOString(),
+            type: type || "date",
+            description: null,
+            color: null,
+            creator_id: "me",
+        };
+
+        // B. OKAMŽITĚ aktualizujeme UI
+        startTransition(() => {
+            updateOptimisticEvents({ type: "ADD", event: newEvent });
+        });
+
+        // C. Voláme Server Action na pozadí
+        try {
+            await createEvent(formData);
+        } catch {
+            toast.error("Nepodařilo se vytvořit událost.");
+            // React automaticky revertne stav při revalidaci nebo chybě
+        }
+    };
+
+    // Funkce pro smazání
+    const handleDeleteEvent = async (eventId: string) => {
+        // A. OKAMŽITĚ smažeme z UI
+        startTransition(() => {
+            updateOptimisticEvents({ type: "DELETE", id: eventId });
+        });
+
+        // B. Voláme Server Action
+        try {
+            await deleteEvent(eventId);
+            toast.success("Smazáno.");
+        } catch {
+            toast.error("Nepodařilo se smazat událost.");
+        }
+    };
+
+    // --- KONEC OPTIMISTIC LOGIKY ---
+
+    // 2. Transformace dat (Eventy + Narozeniny)
+    // Používáme optimisticEvents místo events!
+    const items: CalendarItem[] = optimisticEvents.map((e) => ({
         ...e,
         couple_id: (e as unknown as CalendarItem).couple_id || coupleId,
         created_at:
@@ -89,7 +185,7 @@ export function CalendarWidget({
         `${partnerProfile?.nickname || "Partner"} má narozeniny 🎉`,
     );
 
-    // 2. Mapa událostí
+    // 3. Mapa událostí
     const eventsMap: Record<string, CalendarItem[]> = {};
 
     items.forEach((event) => {
@@ -112,7 +208,7 @@ export function CalendarWidget({
         }
     });
 
-    // 3. Handlery
+    // 4. Handlery
     const handleDateSelect = (selectedDate: Date | undefined) => {
         setDate(selectedDate);
         if (selectedDate) {
@@ -199,13 +295,16 @@ export function CalendarWidget({
                                                         "shadow-sm transition-all",
                                                         "w-full h-1.5 rounded-sm",
                                                         "md:size-2 md:rounded-full md:w-2 md:h-2",
+                                                        event.isOptimistic &&
+                                                            "opacity-50",
                                                     )}
                                                     style={{
                                                         backgroundColor:
                                                             event.is_birthday
                                                                 ? "#FFD700"
                                                                 : getEventColor(
-                                                                      event.type,
+                                                                      event.type ??
+                                                                          undefined,
                                                                   ),
                                                     }}
                                                     title={event.title}
@@ -268,9 +367,14 @@ export function CalendarWidget({
                                 return (
                                     <div
                                         key={event.id}
-                                        className="group flex flex-col gap-1 hover:bg-muted/50 p-3 border rounded-lg transition-all"
+                                        className={cn(
+                                            "group flex flex-col gap-1 hover:bg-muted/50 p-3 border rounded-lg transition-all",
+                                            event.isOptimistic &&
+                                                "opacity-60 grayscale-[0.5]",
+                                        )}
                                         style={{
-                                            borderLeft: `4px solid ${event.is_birthday ? "#FFD700" : getEventColor(event.type)}`,
+                                            // Oprava: event.type může být null, převedeme na undefined
+                                            borderLeft: `4px solid ${event.is_birthday ? "#FFD700" : getEventColor(event.type ?? undefined)}`,
                                         }}
                                     >
                                         <div className="flex justify-between items-center">
@@ -280,21 +384,27 @@ export function CalendarWidget({
                                             <span className="block mb-1 font-bold text-muted-foreground text-xs uppercase tracking-wider">
                                                 {event.is_birthday
                                                     ? "Narozeniny"
-                                                    : getEventLabel(event.type)}
+                                                    : // Oprava: event.type může být null
+                                                      getEventLabel(
+                                                          event.type ??
+                                                              undefined,
+                                                      )}
                                             </span>
-                                            <span className="bg-muted px-1.5 py-0.5 rounded font-mono text-[10px] text-muted-foreground">
-                                                {event.is_birthday
-                                                    ? "CELÝ DEN"
-                                                    : `${start}${end ? ` - ${end}` : ""}`}
-                                            </span>
+
+                                            {/* Smazání - voláme naši wrapper funkci */}
                                             <Trash2
-                                                className="size-4 hover:text-destructive transition-colors cursor-pointer"
+                                                className={cn(
+                                                    "size-4 hover:text-destructive transition-colors cursor-pointer",
+                                                    event.isOptimistic &&
+                                                        "invisible", // Nemazat, dokud se neuloží
+                                                )}
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    deleteEvent(event.id);
-                                                    toast.success(
-                                                        "Úspěšně smazáno.",
-                                                    );
+                                                    if (!event.is_birthday) {
+                                                        handleDeleteEvent(
+                                                            event.id,
+                                                        );
+                                                    }
                                                 }}
                                             />
                                         </div>
@@ -328,7 +438,12 @@ export function CalendarWidget({
                     </div>
 
                     <div className="flex justify-end mt-2 pt-2 border-t">
-                        <AddEventDialog coupleId={coupleId} defaultDate={date}>
+                        {/* Předáváme onAddEvent */}
+                        <AddEventDialog
+                            coupleId={coupleId}
+                            defaultDate={date}
+                            onAddEvent={handleAddEvent}
+                        >
                             <ActionButton>
                                 <Plus className="size-4" />
                                 Naplánovat akci

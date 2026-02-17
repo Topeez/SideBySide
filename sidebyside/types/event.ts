@@ -5,6 +5,12 @@ export type Event = {
     end_time?: string | null;
     location?: string | null;
     color?: string | null;
+    couple_id?: string | null;
+    created_at: string;
+    is_birthday?: boolean;
+    description?: string | null;
+    type?: string | null;
+    creator_id?: string | null;
 };
 
 export interface ClosestEventProps {

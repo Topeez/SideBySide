@@ -10,9 +10,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, Clock, MapPin, Loader2, CalendarIcon } from "lucide-react";
+import { Plus, Clock, MapPin, CalendarIcon } from "lucide-react";
 import { createEvent } from "@/app/actions/events";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { EVENT_TYPES, EventType } from "@/lib/event-types";
 import { cn } from "@/lib/utils";
 import ActionButton from "../action-button";
@@ -27,42 +27,68 @@ import { format } from "date-fns";
 import { cs } from "date-fns/locale";
 import { DateRange } from "react-day-picker";
 
-interface AddEventDialogProps {
+export interface AddEventDialogProps {
     coupleId: string;
     defaultDate?: Date;
     children?: React.ReactNode;
+    onAddEvent?: (formData: FormData) => Promise<void>;
 }
 
 export function AddEventDialog({
     coupleId,
     defaultDate,
     children,
+    onAddEvent,
 }: AddEventDialogProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [location, setLocation] = useState("");
-    const [isSaving, setIsSaving] = useState(false);
 
-    // Defaultní hodnota: pokud je defaultDate, nastavíme ho jako "from"
-    const [date, setDate] = useState<DateRange | undefined>({
+    const [date, setDate] = useState<DateRange | undefined>(() => ({
         from: defaultDate || new Date(),
-        to: defaultDate || new Date(), // Ze začátku to = from (jednodenní)
-    });
+        to: defaultDate || undefined,
+    }));
+
+    useEffect(() => {
+        if (isOpen && defaultDate) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setDate((prevDate) => {
+                if (prevDate?.from?.getTime() === defaultDate.getTime()) {
+                    return prevDate;
+                }
+
+                return {
+                    from: defaultDate,
+                    to: undefined,
+                };
+            });
+        }
+    }, [isOpen, defaultDate]);
 
     const [selectedType, setSelectedType] = useState<EventType>("date");
     const iconClasses =
         "top-2.5 left-2.5 absolute size-4 text-muted-foreground";
 
     const handleSubmit = async (formData: FormData) => {
-        setIsSaving(true);
-        try {
-            await createEvent(formData);
-            setIsOpen(false);
-            toast.success("Událost vytvořena.");
-        } catch {
-            toast.error("Nepodařilo se vytvořit událost.");
-        } finally {
-            setIsSaving(false);
+        if (!date?.from) {
+            toast.error("Vyberte prosím datum.");
+            return;
         }
+
+        setIsOpen(false);
+
+        const promise = onAddEvent
+            ? onAddEvent(formData)
+            : createEvent(formData);
+
+        toast.promise(promise, {
+            loading: "Ukládám událost…",
+            success: "Událost vytvořena.",
+            error: "Nepodařilo se vytvořit událost.",
+        });
+
+        // Reset
+        setLocation("");
+        setSelectedType("date");
     };
 
     return (
@@ -74,7 +100,7 @@ export function AddEventDialog({
                     </ActionButton>
                 )}
             </DialogTrigger>
-            <DialogContent className="sm:max-w-106.25">
+            <DialogContent className="sm:max-w-md">
                 <DialogHeader>
                     <DialogTitle>Nová událost</DialogTitle>
                 </DialogHeader>
@@ -105,10 +131,11 @@ export function AddEventDialog({
                         <Label>Kdy?</Label>
                         <Popover>
                             <PopoverTrigger asChild>
-                                <ActionButton
+                                <Button
+                                    type="button"
                                     variant={"outline"}
                                     className={cn(
-                                        "justify-center w-full font-normal text-foreground text-center",
+                                        "justify-center w-full font-normal text-center",
                                         !date && "text-muted-foreground",
                                     )}
                                 >
@@ -134,11 +161,11 @@ export function AddEventDialog({
                                     ) : (
                                         <span>Vyberte datum</span>
                                     )}
-                                </ActionButton>
+                                </Button>
                             </PopoverTrigger>
                             <PopoverContent
                                 className="p-0 w-auto"
-                                align="start"
+                                align="center"
                             >
                                 <Calendar
                                     autoFocus
@@ -158,7 +185,7 @@ export function AddEventDialog({
                         <Input
                             id="title"
                             name="title"
-                            placeholder="Večeře, Kino, Víkend..."
+                            placeholder="Večeře, Kino..."
                             required
                             autoFocus
                         />
@@ -168,7 +195,7 @@ export function AddEventDialog({
                         <div className="flex-1 space-y-1">
                             <Label htmlFor="startTime">Začátek</Label>
                             <div className="relative">
-                                <Clock className={`${iconClasses}`} />
+                                <Clock className={iconClasses} />
                                 <Input
                                     id="startTime"
                                     name="startTime"
@@ -178,24 +205,10 @@ export function AddEventDialog({
                                     required
                                 />
                             </div>
-                            <p className="text-[10px] text-muted-foreground">
-                                Platí pro{" "}
-                                {date?.from
-                                    ? format(date.from, "d.M.")
-                                    : "začátek"}
-                            </p>
                         </div>
                         <div className="flex-1 space-y-1">
                             <Label htmlFor="endTime">Konec</Label>
                             <Input id="endTime" name="endTime" type="time" />
-                            <p className="text-[10px] text-muted-foreground">
-                                Platí pro{" "}
-                                {date?.to
-                                    ? format(date.to, "d.M.")
-                                    : date?.from
-                                      ? format(date.from, "d.M.")
-                                      : "konec"}
-                            </p>
                         </div>
                     </div>
 
@@ -203,7 +216,7 @@ export function AddEventDialog({
                         <Label htmlFor="location">Kde?</Label>
                         <div className="flex gap-2">
                             <div className="relative flex-1">
-                                <MapPin className={`${iconClasses}`} />
+                                <MapPin className={iconClasses} />
                                 <Input
                                     id="location"
                                     name="location"
@@ -220,13 +233,12 @@ export function AddEventDialog({
                                     type="button"
                                     variant="outline"
                                     size="icon"
-                                    title="Otevřít v mapách"
-                                    onClick={() => {
+                                    onClick={() =>
                                         window.open(
-                                            `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`,
+                                            `https://maps.google.com/?q=${location}`,
                                             "_blank",
-                                        );
-                                    }}
+                                        )
+                                    }
                                 >
                                     <MapPin className="size-4" />
                                 </Button>
@@ -241,7 +253,6 @@ export function AddEventDialog({
                                 ([key, config]) => {
                                     const isSelected = selectedType === key;
                                     const Icon = config.icon;
-
                                     return (
                                         <ActionButton
                                             key={key}
@@ -276,19 +287,8 @@ export function AddEventDialog({
                         </div>
                     </div>
 
-                    <ActionButton
-                        type="submit"
-                        disabled={isSaving}
-                        className="w-full"
-                    >
-                        {isSaving ? (
-                            <>
-                                <Loader2 className="mr-2 size-4 animate-spin" />
-                                Ukládám...
-                            </>
-                        ) : (
-                            <span>Uložit</span>
-                        )}
+                    <ActionButton type="submit" className="w-full">
+                        Uložit
                     </ActionButton>
                 </form>
             </DialogContent>
