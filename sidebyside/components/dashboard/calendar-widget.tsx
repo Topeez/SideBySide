@@ -15,7 +15,7 @@ import {
 import { AddEventDialog } from "./add-event-dialog";
 import { Plus, MapPin, Gift, Trash2 } from "lucide-react";
 import { Event } from "@/types/event";
-import { getEventColor, getEventLabel, EventType } from "@/lib/event-types"; // Ujisti se, že máš EventType exportovaný
+import { getEventColor, getEventLabel } from "@/lib/event-types";
 import { deleteEvent, createEvent } from "@/app/actions/events";
 import ActionButton from "../action-button";
 import { useDashboardLayout } from "../layout-provider";
@@ -54,8 +54,6 @@ export function CalendarWidget({
 
     // --- 1. OPTIMISTIC UI LOGIKA ---
 
-    // Definice reduceru pro useOptimistic
-    // Akce může být buď přidání (ADD) nebo smazání (DELETE)
     type OptimisticAction =
         | { type: "ADD"; event: Event }
         | { type: "DELETE"; id: string };
@@ -135,7 +133,7 @@ export function CalendarWidget({
         // B. Voláme Server Action
         try {
             await deleteEvent(eventId);
-            toast.success("Smazáno.");
+            toast.success("Událost smazána.");
         } catch {
             toast.error("Nepodařilo se smazat událost.");
         }
@@ -143,8 +141,6 @@ export function CalendarWidget({
 
     // --- KONEC OPTIMISTIC LOGIKY ---
 
-    // 2. Transformace dat (Eventy + Narozeniny)
-    // Používáme optimisticEvents místo events!
     const items: CalendarItem[] = optimisticEvents.map((e) => ({
         ...e,
         couple_id: (e as unknown as CalendarItem).couple_id || coupleId,
@@ -346,7 +342,7 @@ export function CalendarWidget({
                         </DialogDescription>
                     </DialogHeader>
 
-                    <div className="space-y-3 px-1 py-4 max-h-[60vh] overflow-y-auto custom-scrollbar">
+                    <div className="space-y-3 py-4 max-h-[60vh] overflow-y-auto custom-scrollbar">
                         {selectedDateEvents.length > 0 ? (
                             selectedDateEvents.map((event) => {
                                 const start = new Date(
@@ -373,7 +369,6 @@ export function CalendarWidget({
                                                 "opacity-60 grayscale-[0.5]",
                                         )}
                                         style={{
-                                            // Oprava: event.type může být null, převedeme na undefined
                                             borderLeft: `4px solid ${event.is_birthday ? "#FFD700" : getEventColor(event.type ?? undefined)}`,
                                         }}
                                     >
@@ -384,11 +379,15 @@ export function CalendarWidget({
                                             <span className="block mb-1 font-bold text-muted-foreground text-xs uppercase tracking-wider">
                                                 {event.is_birthday
                                                     ? "Narozeniny"
-                                                    : // Oprava: event.type může být null
-                                                      getEventLabel(
+                                                    : getEventLabel(
                                                           event.type ??
                                                               undefined,
                                                       )}
+                                            </span>
+                                            <span className="bg-muted px-1.5 py-0.5 rounded font-mono text-[10px] text-muted-foreground">
+                                                {event.is_birthday
+                                                    ? "CELÝ DEN"
+                                                    : `${start}${end ? ` - ${end}` : ""}`}
                                             </span>
 
                                             {/* Smazání - voláme naši wrapper funkci */}
@@ -396,7 +395,7 @@ export function CalendarWidget({
                                                 className={cn(
                                                     "size-4 hover:text-destructive transition-colors cursor-pointer",
                                                     event.isOptimistic &&
-                                                        "invisible", // Nemazat, dokud se neuloží
+                                                        "invisible",
                                                 )}
                                                 onClick={(e) => {
                                                     e.stopPropagation();

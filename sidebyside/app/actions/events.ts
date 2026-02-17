@@ -5,12 +5,11 @@ import { revalidatePath } from "next/cache";
 import { sendNotificationToUser } from "@/app/actions/push";
 
 export async function createEvent(formData: FormData) {
- const title = formData.get("title") as string;
+  const title = formData.get("title") as string;
   const location = formData.get("location") as string;
   const coupleId = formData.get("coupleId") as string;
   const type = formData.get("type") as string;
   
-  // Změna: Čteme From a To
   const dateFrom = formData.get("dateFrom") as string;
   const dateTo = formData.get("dateTo") as string;
   
@@ -23,14 +22,10 @@ export async function createEvent(formData: FormData) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return;
 
-  // 1. Start Time = Datum OD + Čas OD
   const startIso = new Date(`${dateFrom}T${startTimeStr}`).toISOString();
   
-  // 2. End Time logic
   let endIso = null;
   
-  // Pokud uživatel zadal čas konce, použijeme ho.
-  // Pokud je vybráno 'dateTo' (vícedenní akce), použijeme 'dateTo'. Jinak 'dateFrom'.
   if (endTimeStr) {
       const endDateBase = dateTo || dateFrom; 
       endIso = new Date(`${endDateBase}T${endTimeStr}`).toISOString();
@@ -50,12 +45,10 @@ export async function createEvent(formData: FormData) {
 
   if (error) {
     console.error("Chyba při insertu events:", error);
-    // Měl bys vyhodit chybu, aby ji frontend zachytil v try/catch
     throw new Error("Database insert failed"); 
   }
 
   try {
-      // 1. Zjistíme partnera
       const { data: couple } = await supabase
         .from("couples")
           .select("user1_id, user2_id")
@@ -64,7 +57,6 @@ export async function createEvent(formData: FormData) {
           
 
       if (couple) {
-          // Kdo je ten druhý?
           const partnerId = couple.user1_id === user.id ? couple.user2_id : couple.user1_id;
 
           if (partnerId) {
@@ -84,7 +76,6 @@ export async function createEvent(formData: FormData) {
           }
       }
   } catch (pushError) {
-      // Push notifikace nesmí shodit celou akci, takže jen logujeme
       console.error("Failed to send push notification:", pushError);
   }
 
