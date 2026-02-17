@@ -2,36 +2,39 @@
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { Trash2, Plus, Loader2 } from "lucide-react";
+import { Trash2, Plus } from "lucide-react";
 import { createTodo, toggleTodo, deleteTodo } from "@/app/actions/todos";
-import { useRef, useTransition } from "react";
+import { useRef, useOptimistic, startTransition } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ShoppingBag } from "lucide-react";
 import ActionButton from "../action-button";
+import { toast } from "sonner";
 
 type Todo = {
     id: string;
     title: string;
     is_completed: boolean;
+    is_optimistic?: boolean;
 };
 
-function TodoItem({ todo }: { todo: Todo }) {
-    const [isDeleting, startDeleteTransition] = useTransition();
-    const [isToggling, startToggleTransition] = useTransition();
-
+function TodoItem({
+    todo,
+    onToggle,
+    onDelete,
+}: {
+    todo: Todo;
+    onToggle: (id: string, checked: boolean) => void;
+    onDelete: (id: string) => void;
+}) {
     return (
         <div className="group flex items-center gap-3">
             <Checkbox
                 checked={todo.is_completed}
-                disabled={isToggling || isDeleting}
+                // Při kliku voláme optimistický update HNED
                 onCheckedChange={(checked) => {
-                    startToggleTransition(async () => {
-                        await toggleTodo(todo.id, checked as boolean);
-                    });
+                    onToggle(todo.id, checked as boolean);
                 }}
-                className={`data-[state=checked]:bg-primary data-[state=checked]:border-primary-foreground data-[state=checked]:text-white ${
-                    isToggling ? "opacity-50 cursor-wait" : ""
-                }`}
+                className="data-[state=checked]:bg-primary data-[state=checked]:border-primary-foreground data-[state=checked]:text-white"
             />
 
             <span
@@ -39,29 +42,17 @@ function TodoItem({ todo }: { todo: Todo }) {
                     todo.is_completed
                         ? "line-through text-muted-foreground"
                         : ""
-                } ${isDeleting ? "opacity-40" : ""}`}
+                }`}
             >
                 {todo.title}
             </span>
 
             <button
-                onClick={() => {
-                    startDeleteTransition(async () => {
-                        await deleteTodo(todo.id);
-                    });
-                }}
-                disabled={isDeleting || isToggling}
-                className={`p-1 text-muted-foreground hover:text-destructive transition-all ${
-                    isDeleting
-                        ? "opacity-100"
-                        : "opacity-0 group-hover:opacity-100"
-                }`}
+                onClick={() => onDelete(todo.id)}
+                className="opacity-0 group-hover:opacity-100 p-1 text-muted-foreground hover:text-destructive transition-all"
+                disabled={todo.is_optimistic}
             >
-                {isDeleting ? (
-                    <Loader2 className="size-4.5 text-destructive animate-spin" />
-                ) : (
-                    <Trash2 className="size-4.5" />
-                )}
+                <Trash2 className="size-4.5" />
             </button>
         </div>
     );
@@ -75,16 +66,89 @@ export function TodoList({
     coupleId: string;
 }) {
     const formRef = useRef<HTMLFormElement>(null);
-    const [isCreating, startCreateTransition] = useTransition();
 
+    const [optimisticTodos, addOptimisticTodo] = useOptimistic(
+        initialTodos,
+        (
+            state,
+            newTodo:
+                | Todo
+                | { type: "delete"; id: string }
+                | { type: "toggle"; id: string; checked: boolean },
+        ) => {
+            // Reducer logika pro různé akce
+
+            // A. Přidání
+            if ("title" in newTodo) {
+                return [...state, newTodo];
+            }
+
+            // B. Smazání
+            if ("type" in newTodo && newTodo.type === "delete") {
+                return state.filter((t) => t.id !== newTodo.id);
+            }
+
+            // C. Toggle
+            if ("type" in newTodo && newTodo.type === "toggle") {
+                return state.map((t) =>
+                    t.id === newTodo.id
+                        ? { ...t, is_completed: newTodo.checked }
+                        : t,
+                );
+            }
+
+            return state;
+        },
+    );
+
+    // --- Akce pro Přidání ---
     const handleSubmit = async (formData: FormData) => {
-        const title = formData.get("title");
+        const title = formData.get("title") as string;
         if (!title) return;
 
-        startCreateTransition(async () => {
-            await createTodo(formData);
-            formRef.current?.reset();
+        // 1. Optimistic Update (OKAMŽITĚ)
+        const optimisticId = Math.random().toString();
+        startTransition(() => {
+            addOptimisticTodo({
+                id: optimisticId,
+                title: title,
+                is_completed: false,
+                is_optimistic: true,
+            });
         });
+
+        // Vyčistíme input
+        formRef.current?.reset();
+
+        // 2. Server Action (s Error Handlingem)
+        try {
+            await createTodo(formData);
+        } catch {
+            // 3. Pokud to selže
+            toast.error("Nepodařilo se vytvořit úkol.");
+            // React automaticky vrátí UI zpět (rollback), protože revalidatePath neproběhne
+            // nebo prostě proto, že optimistic state žije jen po dobu trvání akce.
+        }
+    };
+
+    const handleToggle = async (id: string, checked: boolean) => {
+        startTransition(() => {
+            addOptimisticTodo({ type: "toggle", id, checked });
+        });
+
+        // 2. Server
+        await toggleTodo(id, checked);
+    };
+
+    // --- Akce pro Delete ---
+    const handleDelete = async (id: string) => {
+        // 1. Okamžitě smažeme z UI
+        startTransition(() => {
+            addOptimisticTodo({ type: "delete", id });
+        });
+
+        // 2. Server
+        await deleteTodo(id);
     };
 
     return (
@@ -96,45 +160,43 @@ export function TodoList({
                 </CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col flex-1 gap-4">
-                {/* Seznam úkolů */}
+                {/* Renderujeme OPTIMISTIC todos, ne initialTodos */}
                 <div className="flex-1 space-y-3 pr-1 min-h-37.5 max-h-75 overflow-y-auto custom-scrollbar">
-                    {initialTodos.length === 0 ? (
+                    {optimisticTodos.length === 0 ? (
                         <p className="py-8 text-muted-foreground text-sm text-center italic">
                             Zatím tu nic není. Co je potřeba udělat?
                         </p>
                     ) : (
-                        initialTodos.map((todo) => (
-                            <TodoItem key={todo.id} todo={todo} />
+                        optimisticTodos.map((todo) => (
+                            <TodoItem
+                                key={todo.id}
+                                todo={todo}
+                                onToggle={handleToggle}
+                                onDelete={handleDelete}
+                            />
                         ))
                     )}
                 </div>
 
-                {/* Formulář přidání */}
                 <form
                     ref={formRef}
                     action={handleSubmit}
                     className="flex gap-2 mt-auto pt-2 border-muted border-t"
                 >
-                    {coupleId && (
-                        <input type="hidden" name="coupleId" value={coupleId} />
-                    )}
+                    <input type="hidden" name="coupleId" value={coupleId} />
                     <Input
                         name="title"
                         placeholder="Nový úkol..."
                         className="inset-shadow-muted inset-shadow-xs bg-muted border-none h-9 text-sm"
                         autoComplete="off"
-                        disabled={isCreating}
+                        required
                     />
                     <ActionButton
                         type="submit"
                         size="icon"
                         className="bg-secondary hover:bg-secondary-foreground size-9 shrink-0"
                     >
-                        {isCreating ? (
-                            <Loader2 className="size-4 animate-spin" />
-                        ) : (
-                            <Plus className="size-4" />
-                        )}
+                        <Plus className="size-4" />
                     </ActionButton>
                 </form>
             </CardContent>
