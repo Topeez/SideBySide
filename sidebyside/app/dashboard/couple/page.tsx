@@ -105,6 +105,7 @@ export default async function CouplePage() {
                     <UserNav
                         id={user?.id || ""}
                         email={user?.email || ""}
+                        couple_id={couple.id || ""}
                         avatar_url={user?.user_metadata.avatar_url}
                         full_name={user?.user_metadata.full_name || ""}
                     />

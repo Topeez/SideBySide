@@ -72,6 +72,7 @@ export default async function SettingsPage() {
                         id={user?.id || ""}
                         email={user?.email || ""}
                         avatar_url={user?.user_metadata.avatar_url || ""}
+                        couple_id={couple?.id || ""}
                         full_name={user?.user_metadata.full_name || ""}
                     />
                 </div>

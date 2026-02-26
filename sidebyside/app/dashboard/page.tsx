@@ -190,6 +190,7 @@ export default async function DashboardPage() {
             events={events}
             coupleId={couple.id}
             userProfile={userProfile}
+            relationshipStart={couple?.relationship_start}
             partnerProfile={partnerProfile}
         />
     ) : (

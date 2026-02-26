@@ -1,7 +1,14 @@
 "use client";
 
 import { useState, useOptimistic, startTransition } from "react";
-import { format } from "date-fns";
+import {
+    format,
+    addYears,
+    setYear,
+    startOfDay,
+    isBefore,
+    differenceInYears,
+} from "date-fns";
 import { cs } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
@@ -13,7 +20,7 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { AddEventDialog } from "./add-event-dialog";
-import { Plus, MapPin, Gift, Trash2 } from "lucide-react";
+import { Plus, MapPin, Gift, Trash2, Heart } from "lucide-react";
 import { Event } from "@/types/event";
 import { getEventColor, getEventLabel } from "@/lib/event-types";
 import { deleteEvent, createEvent } from "@/app/actions/events";
@@ -25,25 +32,25 @@ import { Profile } from "@/types/profile";
 interface CalendarWidgetProps {
     events: Event[];
     coupleId: string;
+    relationshipStart?: string | Date | null;
     userProfile?: Profile | null;
     partnerProfile?: Profile | null;
 }
 
 type CalendarItem = Event & {
     is_birthday?: boolean;
-    // Přepisujeme typy, aby odpovídaly Eventu, ale byly povinné tam, kde potřebujeme jistotu
-    couple_id: string; // Tady chceme string (ne null)
+    is_anniversary?: boolean;
+    couple_id: string;
     created_at: string;
-
-    // Změna: Povolit null, stejně jako v Event
     description?: string | null;
     type?: string | null;
-
-    isOptimistic?: boolean; // Tady to může zůstat boolean | undefined
+    isOptimistic?: boolean;
 };
+
 export function CalendarWidget({
     events = [],
     coupleId,
+    relationshipStart,
     userProfile,
     partnerProfile,
 }: CalendarWidgetProps) {
@@ -52,8 +59,6 @@ export function CalendarWidget({
     const [date, setDate] = useState<Date | undefined>(new Date());
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-    // --- 1. OPTIMISTIC UI LOGIKA ---
-
     type OptimisticAction =
         | { type: "ADD"; event: Event }
         | { type: "DELETE"; id: string };
@@ -61,19 +66,15 @@ export function CalendarWidget({
     const [optimisticEvents, updateOptimisticEvents] = useOptimistic(
         events,
         (state, action: OptimisticAction) => {
-            if (action.type === "ADD") {
+            if (action.type === "ADD")
                 return [...state, { ...action.event, isOptimistic: true }];
-            }
-            if (action.type === "DELETE") {
+            if (action.type === "DELETE")
                 return state.filter((e) => e.id !== action.id);
-            }
             return state;
         },
     );
 
-    // Funkce pro přidání (předáme ji do Dialogu)
     const handleAddEvent = async (formData: FormData) => {
-        // A. Přečteme data pro Optimistic Update
         const title = formData.get("title") as string;
         const dateFrom = formData.get("dateFrom") as string;
         const startTimeStr = formData.get("startTime") as string;
@@ -82,12 +83,11 @@ export function CalendarWidget({
         const endTimeStr = formData.get("endTime") as string;
         const dateTo = formData.get("dateTo") as string;
 
-        // Validace (stejná jako na serveru)
         if (!title || !dateFrom || !startTimeStr) return;
 
-        // Výpočet časů (zjednodušená verze pro UI)
         const startIso = new Date(`${dateFrom}T${startTimeStr}`).toISOString();
-        let endIso = null;
+        let endIso: string | null = null;
+
         if (endTimeStr) {
             const endDateBase = dateTo || dateFrom;
             endIso = new Date(`${endDateBase}T${endTimeStr}`).toISOString();
@@ -96,7 +96,7 @@ export function CalendarWidget({
         }
 
         const newEvent: Event = {
-            id: Math.random().toString(), // Dočasné ID
+            id: Math.random().toString(),
             title,
             start_time: startIso,
             end_time: endIso,
@@ -109,28 +109,21 @@ export function CalendarWidget({
             creator_id: "me",
         };
 
-        // B. OKAMŽITĚ aktualizujeme UI
-        startTransition(() => {
-            updateOptimisticEvents({ type: "ADD", event: newEvent });
-        });
+        startTransition(() =>
+            updateOptimisticEvents({ type: "ADD", event: newEvent }),
+        );
 
-        // C. Voláme Server Action na pozadí
         try {
             await createEvent(formData);
         } catch {
             toast.error("Nepodařilo se vytvořit událost.");
-            // React automaticky revertne stav při revalidaci nebo chybě
         }
     };
 
-    // Funkce pro smazání
     const handleDeleteEvent = async (eventId: string) => {
-        // A. OKAMŽITĚ smažeme z UI
-        startTransition(() => {
-            updateOptimisticEvents({ type: "DELETE", id: eventId });
-        });
-
-        // B. Voláme Server Action
+        startTransition(() =>
+            updateOptimisticEvents({ type: "DELETE", id: eventId }),
+        );
         try {
             await deleteEvent(eventId);
             toast.success("Událost smazána.");
@@ -138,8 +131,6 @@ export function CalendarWidget({
             toast.error("Nepodařilo se smazat událost.");
         }
     };
-
-    // --- KONEC OPTIMISTIC LOGIKY ---
 
     const items: CalendarItem[] = optimisticEvents.map((e) => ({
         ...e,
@@ -164,7 +155,7 @@ export function CalendarWidget({
             );
             items.push({
                 id: `bday-${title}-${currentYear}`,
-                title: title,
+                title,
                 start_time: nextBday.toISOString(),
                 end_time: null,
                 location: "Oslava?",
@@ -181,9 +172,37 @@ export function CalendarWidget({
         `${partnerProfile?.nickname || "Partner"} má narozeniny 🎉`,
     );
 
-    // 3. Mapa událostí
-    const eventsMap: Record<string, CalendarItem[]> = {};
+    const addAnniversary = (start: string | Date | null | undefined) => {
+        if (!start) return;
 
+        const startDate = startOfDay(new Date(start));
+        if (Number.isNaN(startDate.getTime())) return;
+
+        const today = startOfDay(new Date());
+        const candidate = startOfDay(setYear(startDate, today.getFullYear()));
+        const next = isBefore(candidate, today)
+            ? addYears(candidate, 1)
+            : candidate;
+
+        const years = differenceInYears(next, startDate);
+
+        items.push({
+            id: `anniv-${format(next, "yyyy")}`,
+            title: years > 0 ? `Výročí ${years}. rok ❤️` : "Výročí ❤️",
+            start_time: next.toISOString(),
+            end_time: null,
+            location: "Oslava?",
+            is_anniversary: true,
+            couple_id: coupleId,
+            created_at: new Date().toISOString(),
+            type: "other",
+            color: "#FF4D6D",
+        });
+    };
+
+    addAnniversary(relationshipStart);
+
+    const eventsMap: Record<string, CalendarItem[]> = {};
     items.forEach((event) => {
         const startDate = new Date(event.start_time);
         const endDate = event.end_time
@@ -204,12 +223,9 @@ export function CalendarWidget({
         }
     });
 
-    // 4. Handlery
     const handleDateSelect = (selectedDate: Date | undefined) => {
         setDate(selectedDate);
-        if (selectedDate) {
-            setIsDialogOpen(true);
-        }
+        if (selectedDate) setIsDialogOpen(true);
     };
 
     const selectedDateKey = date ? format(date, "yyyy-MM-dd") : null;
@@ -258,8 +274,8 @@ export function CalendarWidget({
                     ),
                 }}
                 formatters={{
-                    formatDay: (date) => {
-                        const dateKey = format(date, "yyyy-MM-dd");
+                    formatDay: (d) => {
+                        const dateKey = format(d, "yyyy-MM-dd");
                         const dayEvents = eventsMap[dateKey] || [];
                         const hasEvents = dayEvents.length > 0;
 
@@ -271,7 +287,7 @@ export function CalendarWidget({
                                         isCalendarLayout && "md:text-2xl ",
                                     )}
                                 >
-                                    {date.getDate()}
+                                    {d.getDate()}
                                 </span>
 
                                 {hasEvents && (
@@ -298,14 +314,17 @@ export function CalendarWidget({
                                                         backgroundColor:
                                                             event.is_birthday
                                                                 ? "#FFD700"
-                                                                : getEventColor(
-                                                                      event.type ??
-                                                                          undefined,
-                                                                  ),
+                                                                : event.is_anniversary
+                                                                  ? "#FF4D6D"
+                                                                  : getEventColor(
+                                                                        event.type ??
+                                                                            undefined,
+                                                                    ),
                                                     }}
                                                     title={event.title}
                                                 />
                                             ))}
+
                                         {dayEvents.length >
                                             (isCalendarLayout ? 8 : 4) && (
                                             <div
@@ -360,6 +379,18 @@ export function CalendarWidget({
                                       })
                                     : null;
 
+                                const label = event.is_birthday
+                                    ? "Narozeniny"
+                                    : event.is_anniversary
+                                      ? "Výročí"
+                                      : getEventLabel(event.type ?? undefined);
+
+                                const leftColor = event.is_birthday
+                                    ? "#FFD700"
+                                    : event.is_anniversary
+                                      ? "#FF4D6D"
+                                      : getEventColor(event.type ?? undefined);
+
                                 return (
                                     <div
                                         key={event.id}
@@ -369,49 +400,52 @@ export function CalendarWidget({
                                                 "opacity-60 grayscale-[0.5]",
                                         )}
                                         style={{
-                                            borderLeft: `4px solid ${event.is_birthday ? "#FFD700" : getEventColor(event.type ?? undefined)}`,
+                                            borderLeft: `4px solid ${leftColor}`,
                                         }}
                                     >
                                         <div className="flex justify-between items-center">
                                             <h3 className="font-semibold group-hover:text-primary text-sm transition-colors">
                                                 {event.title}
                                             </h3>
+
                                             <span className="block mb-1 font-bold text-muted-foreground text-xs uppercase tracking-wider">
-                                                {event.is_birthday
-                                                    ? "Narozeniny"
-                                                    : getEventLabel(
-                                                          event.type ??
-                                                              undefined,
-                                                      )}
+                                                {label}
                                             </span>
+
                                             <span className="bg-muted px-1.5 py-0.5 rounded font-mono text-[10px] text-muted-foreground">
-                                                {event.is_birthday
+                                                {event.is_birthday ||
+                                                event.is_anniversary
                                                     ? "CELÝ DEN"
                                                     : `${start}${end ? ` - ${end}` : ""}`}
                                             </span>
 
-                                            {/* Smazání - voláme naši wrapper funkci */}
                                             <Trash2
                                                 className={cn(
                                                     "size-4 hover:text-destructive transition-colors cursor-pointer",
-                                                    event.isOptimistic &&
+                                                    (event.isOptimistic ||
+                                                        event.is_birthday ||
+                                                        event.is_anniversary) &&
                                                         "invisible",
                                                 )}
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    if (!event.is_birthday) {
+                                                    if (
+                                                        !event.is_birthday &&
+                                                        !event.is_anniversary
+                                                    )
                                                         handleDeleteEvent(
                                                             event.id,
                                                         );
-                                                    }
                                                 }}
                                             />
                                         </div>
+
                                         {event.description && (
                                             <p className="text-muted-foreground text-xs line-clamp-1">
                                                 {event.description}
                                             </p>
                                         )}
+
                                         <div className="flex items-center gap-2 mt-1 text-muted-foreground text-xs">
                                             {event.location && (
                                                 <>
@@ -421,6 +455,9 @@ export function CalendarWidget({
                                             )}
                                             {event.is_birthday && (
                                                 <Gift className="size-3 text-yellow-600" />
+                                            )}
+                                            {event.is_anniversary && (
+                                                <Heart className="size-3 text-rose-500" />
                                             )}
                                         </div>
                                     </div>
@@ -437,7 +474,6 @@ export function CalendarWidget({
                     </div>
 
                     <div className="flex justify-end mt-2 pt-2 border-t">
-                        {/* Předáváme onAddEvent */}
                         <AddEventDialog
                             coupleId={coupleId}
                             defaultDate={date}
