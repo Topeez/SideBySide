@@ -3,7 +3,7 @@ import { UserNav } from "./user-nav";
 import { ThemeToggleWrapper } from "../theme-switcher-wrapper";
 import Link from "next/link";
 import { House } from "lucide-react";
-import { NotificationsBell } from "./notifications-bell";
+import { NotificationsBell } from "./notifications/notifications-bell";
 import { Button } from "../ui/button";
 
 export async function DashboardHeader() {
@@ -26,7 +26,7 @@ export async function DashboardHeader() {
         <header className="flex justify-between items-center mb-8 px-6 rounded-lg h-16">
             <div>
                 <h1 className="font-bold text-foreground text-md sm:text-2xl">
-                    Ahoj, {userName}! 👋
+                    Ahoj, {userName}!
                 </h1>
                 <p className="hidden sm:block text-muted-foreground text-xs md:text-sm">
                     {couple

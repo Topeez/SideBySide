@@ -3,8 +3,8 @@ import { ShoppingBag, Heart } from "lucide-react";
 import { createClient } from "@/utils/supabase/server";
 import InviteButton from "@/components/dashboard/invite-button";
 import { LoveNoteCard } from "@/components/dashboard/love-note-card";
-import { TodoList } from "@/components/dashboard/todo-list";
-import { CalendarWidget } from "@/components/dashboard/calendar-widget";
+import { TodoList } from "@/components/dashboard/todo/todo-list";
+import { CalendarWidget } from "@/components/dashboard/calendar/calendar-widget";
 import { ClosestEvent } from "@/components/dashboard/closest-event";
 import { CoupleProfileWidget } from "@/components/dashboard/couple-profile-widget";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
@@ -170,7 +170,7 @@ export default async function DashboardPage() {
     );
 
     const todoContent = couple ? (
-        <TodoList initialTodos={todos} coupleId={couple.id} />
+        <TodoList todos={todos} coupleId={couple.id} />
     ) : (
         <Card className="col-span-12 md:col-span-4">
             <CardHeader>

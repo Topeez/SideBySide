@@ -36,7 +36,7 @@ export default async function DashboardLayout({
 
     return (
         <section>
-            <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+            <ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange={false} enableSystem>
                 <ThemeColorProvider initialTheme={initialTheme}>
                     <Toaster />
                     <DashboardLayoutProvider initialLayout={initialLayout}>

@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CalendarDays, MapPin, Plus } from "lucide-react";
 import { ClosestEventProps } from "@/types/event";
-import { AddEventDialog } from "./add-event-dialog";
+import { AddEventDialog } from "./calendar/add-event-dialog";
 import ActionButton from "../action-button";
 
 export function ClosestEvent({

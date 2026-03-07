@@ -15,7 +15,7 @@ import { createEvent } from "@/app/actions/events";
 import { useState, useEffect } from "react";
 import { EVENT_TYPES, EventType } from "@/lib/event-types";
 import { cn } from "@/lib/utils";
-import ActionButton from "../action-button";
+import ActionButton from "../../action-button";
 import { toast } from "sonner";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -266,7 +266,7 @@ export function AddEventDialog({
                                                 "inset-shadow-muted flex flex-col justify-center items-center gap-1 hover:bg-primary/10 shadow-lg p-8! rounded-lg transition-all",
                                                 isSelected
                                                     ? "border-primary inset-shadow-primary/50! bg-primary/10 text-primary"
-                                                    : "border-transparent  bg-muted hover:bg-muted/80 text-muted-foreground",
+                                                    : "border-transparent  bg-muted/30 hover:bg-muted/80 text-muted-foreground",
                                             )}
                                         >
                                             <Icon
