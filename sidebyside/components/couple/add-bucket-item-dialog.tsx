@@ -11,7 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createBucketItem } from "@/app/actions/couple";
-import { Plus, ImageOff, CalendarIcon } from "lucide-react";
+import { Plus, ImageOff, CalendarIcon, CalendarClock, Construction, Check } from "lucide-react";
 import {
     Select,
     SelectContent,
@@ -131,13 +131,13 @@ export function AddBucketItemDialog({ coupleId }: { coupleId: string }) {
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="planned">
-                                    Plánujeme 📅
+                                    Plánujeme <CalendarClock className="text-destructive"/>
                                 </SelectItem>
                                 <SelectItem value="in_progress">
-                                    Pracujeme na tom 🚧
+                                    Pracujeme na tom <Construction className="text-amber-400"/>
                                 </SelectItem>
                                 <SelectItem value="completed">
-                                    Splněno ✅
+                                    Splněno <Check className="text-green-400"/>
                                 </SelectItem>
                             </SelectContent>
                         </Select>
@@ -146,7 +146,6 @@ export function AddBucketItemDialog({ coupleId }: { coupleId: string }) {
                     <div className="gap-2 grid">
                         <Label>Cílové datum (volitelné)</Label>
 
-                        {/* Tlačítko, které otevírá kalendář */}
                         <Popover>
                             <PopoverTrigger asChild>
                                 <Button
@@ -172,13 +171,12 @@ export function AddBucketItemDialog({ coupleId }: { coupleId: string }) {
                                     mode="single"
                                     selected={date}
                                     onSelect={setDate}
-                                    initialFocus
-                                    locale={cs} // Čeština v kalendáři
+                                    autoFocus
+                                    locale={cs}
                                 />
                             </PopoverContent>
                         </Popover>
 
-                        {/* DŮLEŽITÉ: Skrytý input, který pošle datum do Server Action */}
                         <input
                             type="hidden"
                             name="target_date"

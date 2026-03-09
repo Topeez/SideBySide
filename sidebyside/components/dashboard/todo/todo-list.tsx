@@ -23,7 +23,7 @@ export function TodoList({ todos = [], coupleId }: TodoListProps) {
     } = useTodos(todos, coupleId);
 
     return (
-        <Card className="col-span-12 md:col-span-6 lg:col-span-4 shadow-lg h-full">
+        <Card className="inset-shadow-muted inset-shadow-xs col-span-12 md:col-span-6 lg:col-span-4 bg-card shadow-lg border-none rounded-xl h-full">
             <CardHeader className="pb-3">
                 <div className="flex justify-between items-center">
                     <CardTitle className="flex items-center gap-2 text-base">

@@ -55,7 +55,7 @@ export function CalendarWidget({
     return (
         <div
             suppressHydrationWarning
-            className="inset-shadow-muted inset-shadow-xs flex flex-col space-y-4 col-span-12 md:col-span-6 lg:col-span-4 bg-card shadow-lg p-4 border border-none rounded-xl h-full"
+            className="inset-shadow-muted inset-shadow-xs flex flex-col space-y-4 col-span-12 md:col-span-6 lg:col-span-4 bg-card shadow-lg p-4 border-none rounded-xl h-full"
         >
             <Calendar
                 mode="single"
