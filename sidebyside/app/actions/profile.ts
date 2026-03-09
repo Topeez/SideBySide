@@ -161,3 +161,12 @@ export async function updateNotificationPreferences(prefs: Record<string, boolea
     if (error) return { success: false };
     return { success: true };
 }
+
+export async function updateFont(font: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    await supabase.from("profiles").update({ font }).eq("id", user.id);
+    revalidatePath("/dashboard");
+}

@@ -9,9 +9,12 @@ import {
     updateTheme,
     updateLayout,
     DashboardLayoutType,
+    updateFont,
 } from "@/app/actions/profile";
 import { toast } from "sonner";
 import { Separator } from "../ui/separator";
+import { useFont, FontFamily } from "@/components/font-provider";
+import ActionButton from "../action-button";
 
 const colors: { value: ThemeColor; label: string; colorClass: string }[] = [
     { value: "default", label: "Výchozí (Sage)", colorClass: "bg-[#8fbc8f]" },
@@ -22,6 +25,13 @@ const colors: { value: ThemeColor; label: string; colorClass: string }[] = [
     { value: "green", label: "Zelená", colorClass: "bg-emerald-500" },
     { value: "yellow", label: "Žlutá", colorClass: "bg-amber-500" },
     { value: "slate", label: "Šedá", colorClass: "bg-slate-600" },
+];
+
+const fonts: { value: FontFamily; label: string; preview: string }[] = [
+    { value: "geist",    label: "Geist",    preview: "Aa" },
+    { value: "inter",    label: "Inter",    preview: "Aa" },
+    { value: "nunito",   label: "Nunito",   preview: "Aa" },
+    { value: "playfair", label: "Playfair", preview: "Aa" },
 ];
 
 const layouts: {
@@ -50,6 +60,17 @@ export function AppearanceForm() {
             toast.error("Nepodařilo se uložit vzhled");
         }
     };
+    const { font, setFont } = useFont();
+
+    const handleFontChange = async (newFont: FontFamily) => {
+        setFont(newFont);
+        try {
+            await updateFont(newFont);
+            toast.success("Font byl změněn");
+        } catch {
+            toast.error("Nepodařilo se uložit font");
+        }
+    };
 
     const handleLayoutChange = async (newLayout: DashboardLayoutType) => {
         setLayout(newLayout);
@@ -72,7 +93,7 @@ export function AppearanceForm() {
 
             <div className="gap-4 grid grid-cols-2 md:grid-cols-4 pt-2">
                 {colors.map((color) => (
-                    <Button
+                    <ActionButton
                         key={color.value}
                         variant="outline"
                         className={cn(
@@ -95,11 +116,48 @@ export function AppearanceForm() {
                                 <Check className="size-3" />
                             </div>
                         )}
-                    </Button>
+                    </ActionButton>
                 ))}
             </div>
 
             <Separator />
+
+            <div className="space-y-4">
+                <div>
+                    <h3 className="font-medium text-lg">Písmo</h3>
+                    <p className="text-muted-foreground text-sm">Vyber styl písma pro dashboard.</p>
+                </div>
+                <div className="gap-3 grid grid-cols-2 md:grid-cols-4">
+                    {fonts.map((f) => (
+                        <ActionButton
+                            key={f.value}
+                            variant="outline"
+                            onClick={() => handleFontChange(f.value)}
+                            className={cn(
+                                "relative flex flex-col gap-2 py-4 h-auto",
+                                "hover:bg-accent/50 transition-all",
+                                font === f.value && "border-primary ring-1 ring-primary bg-accent/50"
+                            )}
+                        >
+                            <span
+                                className="font-bold text-2xl"
+                                style={{ fontFamily: `var(--font-${f.value === "geist" ? "geist-sans" : f.value})` }}
+                            >
+                                {f.preview}
+                            </span>
+                            <span className="font-medium text-sm">{f.label}</span>
+                            {font === f.value && (
+                                <div className="top-2 right-2 absolute bg-background p-0.5 rounded-full text-primary">
+                                    <Check className="size-3" />
+                                </div>
+                            )}
+                        
+                        </ActionButton>
+                    ))}
+                </div>
+            </div>
+
+            <Separator/>
 
             <div className="space-y-4">
                 <div>

@@ -16,6 +16,7 @@ import { LayoutDashboard } from "lucide-react";
 import { AppearanceForm } from "@/components/settings/appearance-form";
 import { PushNotificationManager } from "@/components/push-notification-manager";
 import { NotificationPreferences } from "@/components/settings/notification-preferences";
+import { PartnerCard } from "@/components/settings/partner-card";
 export default async function SettingsPage() {
     const supabase = await createClient();
 
@@ -44,6 +45,22 @@ export default async function SettingsPage() {
         .select("*")
         .or(`user1_id.eq.${user.id},user2_id.eq.${user.id}`)
         .maybeSingle();
+
+    let partnerProfile = null;
+
+    if (couple) {
+        const partnerId = couple.user1_id === user.id
+            ? couple.user2_id
+            : couple.user1_id;
+
+        const { data } = await supabase
+            .from("profiles")
+            .select("nickname, full_name, avatar_url, bio, birth_date, love_language")
+            .eq("id", partnerId)
+            .single();
+
+        partnerProfile = data;
+    }
 
     return (
         <div className="space-y-8 py-10 max-w-4xl cs-container">
@@ -110,15 +127,10 @@ export default async function SettingsPage() {
                     </div>
                 </TabsContent>
 
-                <TabsContent
-                    value="relationship"
-                    className="mt-6 p-6 border rounded-lg"
-                >
+                <TabsContent value="relationship" className="mt-6 p-6 border rounded-lg">
                     <div className="space-y-6">
                         <div>
-                            <h3 className="font-medium text-lg">
-                                Nastavení vztahu
-                            </h3>
+                            <h3 className="font-medium text-lg">Nastavení vztahu</h3>
                             <p className="text-muted-foreground text-sm">
                                 Společná data, která se zobrazují oběma.
                             </p>
@@ -126,16 +138,24 @@ export default async function SettingsPage() {
                         <Separator />
 
                         {couple ? (
-                            <>
+                            <div className="space-y-6">
+                                {partnerProfile && (
+                                    <div className="space-y-2">
+                                        <p className="font-medium text-sm">Tvůj partner</p>
+                                        <PartnerCard {...partnerProfile} />
+                                    </div>
+                                )}
+
+                                <Separator />
+
                                 <RelationshipForm
                                     coupleId={couple.id}
                                     initialDate={couple.relationship_start}
                                 />
-                            </>
+                            </div>
                         ) : (
                             <div className="bg-yellow-500/20 p-4 border border-amber-400 rounded-md text-yellow-400 text-sm">
-                                Zatím nemáš spárovaný účet s partnerem. Funkce
-                                vztahu budou dostupné až po spárování.
+                                Zatím nemáš spárovaný účet s partnerem.
                             </div>
                         )}
                     </div>

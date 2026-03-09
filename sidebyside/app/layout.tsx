@@ -1,17 +1,13 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
+import { Geist, Geist_Mono, Playfair_Display, Nunito, Inter } from "next/font/google";
 
-const geistSans = Geist({
-    variable: "--font-geist-sans",
-    subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-    variable: "--font-geist-mono",
-    subsets: ["latin"],
-});
+const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
+const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
+const playfair = Playfair_Display({ variable: "--font-playfair", subsets: ["latin"] });
+const nunito = Nunito({ variable: "--font-nunito", subsets: ["latin"] });
+const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
 
 export const viewport: Viewport = {
     themeColor: "#E27D60",
@@ -90,10 +86,10 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="cs" suppressHydrationWarning>
-            <body
-                className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-background text-foreground`}
-            >
+        <html lang="cs" suppressHydrationWarning
+            className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} ${nunito.variable} ${inter.variable}`}
+        >
+            <body className="bg-background min-h-screen text-foreground antialiased">
                 <main>{children}</main>
                 <Toaster />
             </body>
