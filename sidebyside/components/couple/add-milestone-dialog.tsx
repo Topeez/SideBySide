@@ -104,7 +104,8 @@ export function AddMilestoneDialog({ coupleId }: { coupleId: string }) {
                                     mode="single"
                                     selected={date}
                                     onSelect={setDate}
-                                    initialFocus
+                                    autoFocus
+                                    locale={cs}
                                 />
                             </PopoverContent>
                         </Popover>
