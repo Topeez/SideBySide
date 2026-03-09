@@ -1,10 +1,8 @@
 import { createClient } from "@/utils/supabase/server";
 import { UserNav } from "./user-nav";
 import { ThemeToggleWrapper } from "../theme-switcher-wrapper";
-import Link from "next/link";
 import { House } from "lucide-react";
 import { NotificationsBell } from "./notifications/notifications-bell";
-import { Button } from "../ui/button";
 import { MoodCheckIn } from "./mood-check-in";
 import { MoodCheckInProps } from "@/types/mood";
 
@@ -74,12 +72,15 @@ export async function DashboardHeader() {
                 </p>
             </div>
             <div className="flex items-center gap-1 sm:gap-2 md:gap-4">
-                    <Link href="/" className="hidden sm:flex">
-                        <Button variant="ghost" size="icon" aria-label="back to home link"
-                            className="bg-accent shadow-md border border-muted rounded-full text-muted-foreground hover:text-foreground cursor-pointer">
-                            <House size={5} />
-                        </Button>
-                    </Link>
+                    {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+                    <a
+                      href="/"
+                      aria-label="back to home link"
+                      className="hidden sm:flex bg-accent hover:bg-accent dark:hover:bg-accent/50 shadow-md p-2 border border-muted rounded-full text-muted-foreground transition-colors hover:text-accent-foreground cursor-pointer"
+                    >
+                      <House size={18} />
+                    </a>
+
                     <div className="hidden sm:flex">
                         <ThemeToggleWrapper />
                     </div>

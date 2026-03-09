@@ -17,6 +17,7 @@ import { AppearanceForm } from "@/components/settings/appearance-form";
 import { PushNotificationManager } from "@/components/push-notification-manager";
 import { NotificationPreferences } from "@/components/settings/notification-preferences";
 import { PartnerCard } from "@/components/settings/partner-card";
+import { ChangeEmailForm } from "@/components/settings/change-email-form";
 export default async function SettingsPage() {
     const supabase = await createClient();
 
@@ -177,22 +178,15 @@ export default async function SettingsPage() {
                     {/* Sekce Email (jen pro čtení) */}
                     <div className="space-y-4 p-6 border rounded-lg">
                         <div>
-                            <h3 className="font-medium text-lg">
-                                Přihlašovací údaje
-                            </h3>
-                            <p className="text-muted-foreground text-sm">
-                                Tvůj email pro přihlášení.
-                            </p>
+                            <h3 className="font-medium text-lg">Přihlašovací údaje</h3>
+                            <p className="text-muted-foreground text-sm">Tvůj email pro přihlášení.</p>
                         </div>
                         <div className="space-y-2">
-                            <Label>Email</Label>
-                            {/* Email vytáhneš z user objektu nahoře v page.tsx */}
-                            <Input
-                                value={user.email}
-                                disabled
-                                className="bg-muted max-w-lg"
-                            />
+                            <Label>Aktuální email</Label>
+                            <Input value={user.email} disabled className="bg-muted max-w-lg" />
                         </div>
+                        <Separator />
+                        <ChangeEmailForm /> 
                     </div>
 
                     {/* Sekce Heslo */}
