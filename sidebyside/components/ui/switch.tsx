@@ -1,56 +1,35 @@
-"use client";
+"use client"
 
-import { Switch as SwitchPrimitive } from "radix-ui";
-import * as React from "react";
+import * as React from "react"
+import { Switch as SwitchPrimitive } from "radix-ui"
 
-import { cn } from "@/lib/utils";
-import { MoonIcon, SunMediumIcon } from "lucide-react";
+import { cn } from "@/lib/utils"
 
-const Switch = React.forwardRef<
-    React.ElementRef<typeof SwitchPrimitive.Root>,
-    React.ComponentPropsWithoutRef<typeof SwitchPrimitive.Root> & {
-        icon?: React.ReactNode;
-        thumbClassName?: string;
-    }
->(({ className, icon, thumbClassName, ...props }, ref) => (
+function Switch({
+  className,
+  size = "default",
+  ...props
+}: React.ComponentProps<typeof SwitchPrimitive.Root> & {
+  size?: "sm" | "default"
+}) {
+  return (
     <SwitchPrimitive.Root
-        className={cn(
-            "peer inline-flex items-center data-[state=checked]:bg-primary data-[state=unchecked]:bg-input disabled:opacity-50 shadow-xs border-2 border-transparent rounded-full focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background w-9 h-5 transition-colors cursor-pointer disabled:cursor-not-allowed shrink-0",
-            className,
-        )}
-        {...props}
-        ref={ref}
+      data-slot="switch"
+      data-size={size}
+      className={cn(
+        "peer group/switch inline-flex shrink-0 items-center rounded-full border border-transparent shadow-xs transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-[1.15rem] data-[size=default]:w-8 data-[size=sm]:h-3.5 data-[size=sm]:w-6 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input dark:data-[state=unchecked]:bg-input/80",
+        className
+      )}
+      {...props}
     >
-        <SwitchPrimitive.Thumb
-            className={cn(
-                "flex justify-center items-center bg-background shadow-lg rounded-full ring-0 w-4 h-4 transition-transform data-[state=checked]:translate-x-4 data-[state=unchecked]:translate-x-0 pointer-events-none",
-                thumbClassName,
-            )}
-        >
-            {icon ? icon : null}
-        </SwitchPrimitive.Thumb>
+      <SwitchPrimitive.Thumb
+        data-slot="switch-thumb"
+        className={cn(
+          "pointer-events-none block rounded-full bg-background ring-0 transition-transform group-data-[size=default]/switch:size-4 group-data-[size=sm]/switch:size-3 data-[state=checked]:translate-x-[calc(100%-2px)] data-[state=unchecked]:translate-x-0 dark:data-[state=checked]:bg-primary-foreground dark:data-[state=unchecked]:bg-foreground"
+        )}
+      />
     </SwitchPrimitive.Root>
-));
-Switch.displayName = SwitchPrimitive.Root.displayName;
+  )
+}
 
-const SwitchCustomizationDemo = () => {
-    const [isDarkMode, setIsDarkMode] = React.useState(false);
-
-    return (
-        <Switch
-            icon={
-                isDarkMode ? (
-                    <MoonIcon className="w-4 h-4" />
-                ) : (
-                    <SunMediumIcon className="w-4 h-4" />
-                )
-            }
-            checked={isDarkMode}
-            onCheckedChange={setIsDarkMode}
-            className="w-12 h-7"
-            thumbClassName="h-6 w-6 data-[state=checked]:translate-x-5"
-        />
-    );
-};
-
-export default SwitchCustomizationDemo;
+export { Switch }

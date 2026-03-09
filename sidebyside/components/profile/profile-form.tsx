@@ -3,35 +3,80 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { updateProfile } from "@/app/actions/profile";
-import { useState, useTransition } from "react";
+import { updateProfile, updateAvatar } from "@/app/actions/profile";
+import { useState, useTransition, useRef } from "react";
 import { toast } from "sonner";
-import { Loader2, CalendarIcon } from "lucide-react";
+import { Loader2, CalendarIcon, Camera } from "lucide-react";
 import { Profile } from "@/types/profile";
 import ActionButton from "../action-button";
-import { Button } from "@/components/ui/button";
+
 import { Calendar } from "@/components/ui/calendar";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { cs } from "date-fns/locale";
+import imageCompression from "browser-image-compression";
 
 export function ProfileForm({ profile }: { profile: Profile }) {
     const [isPending, startTransition] = useTransition();
-
-    // Stav pro datum narození
     const [birthDate, setBirthDate] = useState<Date | undefined>(
         profile.birth_date ? new Date(profile.birth_date) : undefined,
     );
 
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [isUploading, setIsUploading] = useState(false);
+    const [avatarUrl, setAvatarUrl] = useState<string | undefined>(
+        (profile.avatar_url as string) || undefined
+    );
+
+    const initials = profile.full_name
+        ?.split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2) ?? "JA";
+
+    const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        if (!file.type.startsWith("image/")) {
+            toast.error("Vyberte prosím obrázek.");
+            return;
+        }
+
+        setIsUploading(true);
+        try {
+            const compressed = await imageCompression(file, {
+                maxSizeMB: 0.5,
+                maxWidthOrHeight: 400,
+                useWebWorker: true,
+                fileType: "image/webp",
+            });
+
+            const formData = new FormData();
+            formData.append("avatar", compressed);
+
+            const result = await updateAvatar(formData);
+            if (result?.success && result.url) {
+                setAvatarUrl(result.url);
+                toast.success("Avatar aktualizován!");
+            } else {
+                toast.error("Nepodařilo se nahrát avatar.");
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error("Chyba při nahrávání.");
+        } finally {
+            setIsUploading(false);
+            if (fileInputRef.current) fileInputRef.current.value = "";
+        }
+    };
+
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
-
         startTransition(async () => {
             const result = await updateProfile(null, formData);
             if (result?.success) {
@@ -44,6 +89,47 @@ export function ProfileForm({ profile }: { profile: Profile }) {
 
     return (
         <form onSubmit={handleSubmit} className="space-y-8 w-full max-w-3xl">
+            <div className="flex items-center gap-6">
+                <div className="relative">
+                    <Avatar className="border-2 border-muted size-20">
+                        <AvatarImage src={avatarUrl} className="object-cover" />
+                        <AvatarFallback className="text-xl">{initials}</AvatarFallback>
+                    </Avatar>
+                    <ActionButton
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={isUploading}
+                        className="right-0 bottom-0 absolute flex justify-center items-center bg-primary hover:opacity-90 disabled:opacity-50 shadow-md rounded-full size-7 text-primary-foreground transition-opacity"
+                    >
+                        {isUploading
+                            ? <Loader2 className="size-3.5 animate-spin" />
+                            : <Camera className="size-3.5" />
+                        }
+                    </ActionButton>
+                    <Input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleAvatarChange}
+                    />
+                </div>
+                <div>
+                    <p className="font-medium text-sm">Profilová fotka</p>
+                    <p className="text-muted-foreground text-xs">
+                        JPG, PNG nebo WebP. Max 5 MB.
+                    </p>
+                    <ActionButton
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={isUploading}
+                        className="disabled:opacity-50 mt-1 text-foreground text-xs"
+                    >
+                        Změnit fotku
+                    </ActionButton>
+                </div>
+            </div>
+
             {/* Osobní údaje grid */}
             <div className="gap-4 grid md:grid-cols-2">
                 <div className="space-y-2">
@@ -66,32 +152,27 @@ export function ProfileForm({ profile }: { profile: Profile }) {
                 </div>
             </div>
 
-            {/* Datum narození s Popover Kalendářem */}
+            {/* Datum narození */}
             <div className="flex flex-col space-y-2">
-                <Label htmlFor="birth_date">Datum narození</Label>
-
+                <Label>Datum narození</Label>
                 <input
                     type="hidden"
                     name="birth_date"
                     value={birthDate ? format(birthDate, "yyyy-MM-dd") : ""}
                 />
-
                 <Popover>
                     <PopoverTrigger asChild>
-                        <Button
-                            variant={"outline"}
+                        <ActionButton
+                            type="button"
+                            variant="outline"
                             className={cn(
                                 "justify-start w-full md:w-70 font-normal text-left",
                                 !birthDate && "text-muted-foreground",
                             )}
                         >
                             <CalendarIcon className="mr-2 size-4" />
-                            {birthDate ? (
-                                format(birthDate, "PPP", { locale: cs })
-                            ) : (
-                                <span>Vyberte datum</span>
-                            )}
-                        </Button>
+                            {birthDate ? format(birthDate, "PPP", { locale: cs }) : <span>Vyberte datum</span>}
+                        </ActionButton>
                     </PopoverTrigger>
                     <PopoverContent className="p-0 w-auto" align="start">
                         <Calendar
@@ -99,10 +180,7 @@ export function ProfileForm({ profile }: { profile: Profile }) {
                             selected={birthDate}
                             onSelect={setBirthDate}
                             locale={cs}
-                            disabled={(date) =>
-                                date > new Date() ||
-                                date < new Date("1900-01-01")
-                            }
+                            disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
                             captionLayout="dropdown"
                             startMonth={new Date(1940, 0)}
                             endMonth={new Date()}
@@ -126,12 +204,9 @@ export function ProfileForm({ profile }: { profile: Profile }) {
                 />
             </div>
 
-            {/* Tlačítko */}
             <div className="flex justify-center pt-4">
                 <ActionButton type="submit" disabled={isPending}>
-                    {isPending && (
-                        <Loader2 className="mr-2 size-4 animate-spin" />
-                    )}
+                    {isPending && <Loader2 className="mr-2 size-4 animate-spin" />}
                     Uložit změny
                 </ActionButton>
             </div>

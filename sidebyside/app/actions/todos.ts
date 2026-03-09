@@ -43,7 +43,8 @@ export async function createTodo(formData: FormData) {
                   partnerId,
                   "Nový úkol 📝",
                   `${fullName} přidal(a): ${title}`,
-                  "/dashboard"
+                  "/dashboard",
+                  "todo"
               );
           }
       }
@@ -90,7 +91,8 @@ export async function toggleTodo(todoId: string, isCompleted: boolean) {
                       partnerId,
                       "Úkol splněn! ✅",
                       `${fullName} splnil(a): ${todo.title}`,
-                      "/dashboard"
+                      "/dashboard",
+                      "todo"
                   );
               }
           }

@@ -71,7 +71,8 @@ export async function createEvent(formData: FormData) {
                   partnerId, 
                   `Nová akce: ${title} 📅`, 
                   `${fullName} přidal(a) novou událost. ${message}`,
-                  "/dashboard"
+                  "/dashboard",
+                  "event"
               );
           }
       }

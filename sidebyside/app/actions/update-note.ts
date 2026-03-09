@@ -50,7 +50,8 @@ export async function updateLoveNote(formData: FormData) {
                   partnerId, 
                   "Nový vzkaz ❤️", 
                   `${fullName} ti nechal(a) vzkaz: "${preview}"`,
-                  "/dashboard"
+                  "/dashboard",
+                  "love_note"
               );
           }
       }

@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { LayoutDashboard } from "lucide-react";
 import { AppearanceForm } from "@/components/settings/appearance-form";
 import { PushNotificationManager } from "@/components/push-notification-manager";
+import { NotificationPreferences } from "@/components/settings/notification-preferences";
 export default async function SettingsPage() {
     const supabase = await createClient();
 
@@ -71,7 +72,7 @@ export default async function SettingsPage() {
                     <UserNav
                         id={user?.id || ""}
                         email={user?.email || ""}
-                        avatar_url={user?.user_metadata.avatar_url || ""}
+                        avatar_url={profile.avatar_url || ""}
                         couple_id={couple?.id || ""}
                         full_name={user?.user_metadata.full_name || ""}
                     />
@@ -188,6 +189,13 @@ export default async function SettingsPage() {
 
                     <div className="space-y-4 p-6 border rounded-lg">
                         <PushNotificationManager />
+
+                        <div className="pt-4 border-t">
+                            <p className="mb-3 font-medium text-sm">Typy oznámení</p>
+                            <NotificationPreferences
+                                initialPrefs={profile.notification_preferences ?? {}}
+                            />
+                        </div>
                     </div>
 
                     {/* Danger Zone */}

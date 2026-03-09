@@ -82,7 +82,8 @@ export async function createMilestone(formData: FormData) {
                     partnerId,
                     "Nový milník! 🏆",
                     `${fullName} přidal vzpomínku: ${title}`,
-                    "/dashboard/couple"
+                    "/dashboard/couple",
+                    "milestone"
                 );
             }
         }
@@ -139,7 +140,8 @@ export async function createBucketItem(formData: FormData) {
                     partnerId,
                     "Nový sen do Bucket Listu ✨",
                     `${fullName} přidal: ${title}`,
-                    "/dashboard/couple"
+                    "/dashboard/couple",
+                    "bucket_item"
                 );
             }
         }

@@ -27,8 +27,11 @@ export default async function Hero() {
                     squareSize={40}
                     borderColor="--muted"
                     hoverFillColor="#fce7f3"
+
                 />
             </div>
+
+            <div className="right-0 bottom-0 left-0 z-10 absolute bg-linear-to-t from-background to-transparent w-full h-32"></div>
 
             <div className="z-10 relative max-w-3xl text-center">
                 <Badge

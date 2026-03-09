@@ -33,9 +33,20 @@ export async function saveSubscription(sub: PushSubscriptionJSON) {
   return { success: true };
 }
 
-export async function sendNotificationToUser(userId: string, title: string, body: string, url: string = "/dashboard") {
+export async function sendNotificationToUser(userId: string, title: string, body: string, url: string = "/dashboard", type?: string) {
     const supabase = createAdminClient();
     
+    if (type) {
+        const { data: profile } = await supabase
+            .from("profiles")
+            .select("notification_preferences")
+            .eq("id", userId)
+            .single();
+
+        const prefs = profile?.notification_preferences ?? {};
+        if (prefs[type] === false) return;
+    }
+
     const { data: subscriptions } = await supabase
         .from("push_subscriptions")
         .select("*")

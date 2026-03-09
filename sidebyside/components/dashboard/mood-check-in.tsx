@@ -15,11 +15,12 @@ import { cn } from "@/lib/utils";
 import { MoodCheckInProps } from "@/types/mood";
 import { Smile } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import ActionButton from "../action-button";
 
 const MOODS = [
   { emoji: "🥰", label: "Zamilovaně" },
-  { emoji: "😄", label: "Skvěle" },
-  { emoji: "🙂", label: "Dobře" },
+  { emoji: "😁", label: "Skvěle" },
+  { emoji: "😀", label: "Dobře" },
   { emoji: "😐", label: "Ujde to" },
   { emoji: "😔", label: "Smutně" },
   { emoji: "😤", label: "Naštvaně" },
@@ -126,31 +127,31 @@ export function MoodCheckIn({
 
           <div className="gap-2 grid grid-cols-4 pt-2">
             {MOODS.map((mood) => (
-              <button
+              <ActionButton
                 key={mood.emoji}
                 onClick={() => handleSelect(mood.emoji)}
                 disabled={isLoading}
-                title={mood.label}
+                aria-label={mood.label}
                 className={cn(
-                  "flex flex-col items-center gap-1 p-3 rounded-xl text-2xl",
-                  "border border-transparent hover:bg-muted hover:border-border transition-all",
-                  "disabled:opacity-50",
-                  currentMood === mood.emoji && "border-primary bg-primary/10"
+                            "inset-shadow-muted flex flex-col justify-center items-center gap-2! hover:bg-primary/10 shadow-lg p-8! rounded-lg text-2xl transition-all",
+                            currentMood === mood.emoji
+                                ? "border-primary inset-shadow-primary/50! bg-primary/10 text-primary"
+                                : "border-transparent  bg-muted/30 hover:bg-muted/80 text-muted-foreground",
                 )}
               >
                 {mood.emoji}
                 <span className="text-[10px] text-muted-foreground">{mood.label}</span>
-              </button>
+              </ActionButton>
             ))}
           </div>
 
           {currentMood && (
-            <button
+            <ActionButton
               onClick={() => { setCurrentMood(null); setOpen(false); }}
-              className="mt-1 w-full text-muted-foreground text-xs text-center hover:underline"
+              className="inset-shadow-black bg-destructive hover:bg-red-500 mt-2 w-full text-sm text-center"
             >
               Vymazat náladu
-            </button>
+            </ActionButton>
           )}
         </DialogContent>
       </Dialog>

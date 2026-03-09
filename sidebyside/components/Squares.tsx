@@ -209,12 +209,13 @@ const Squares: React.FC<SquaresProps> = ({
     return (
         <canvas
             ref={canvasRef}
-            className="block border-none w-full h-full"
+            className="block border-none size-full"
             style={{
                 transform: "translateZ(0)",
                 willChange: "transform",
             }}
-        ></canvas>
+        >
+        </canvas>
     );
 };
 

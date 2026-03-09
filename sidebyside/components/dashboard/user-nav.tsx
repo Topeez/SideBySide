@@ -45,11 +45,7 @@ export function UserNav({
               .slice(0, 2)
         : "JA";
 
-    const fullAvatarUrl = avatar_url?.startsWith("http")
-        ? avatar_url
-        : avatar_url
-          ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatars/${avatar_url}`
-          : undefined;
+    const fullAvatarUrl = avatar_url?.startsWith("http") ? avatar_url : undefined;
 
     const hasCouple = !!couple_id;
     const hasProfile = !!id;

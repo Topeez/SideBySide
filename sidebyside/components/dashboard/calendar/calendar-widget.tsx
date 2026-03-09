@@ -55,7 +55,7 @@ export function CalendarWidget({
     return (
         <div
             suppressHydrationWarning
-            className="inset-shadow-muted inset-shadow-xs flex flex-col space-y-4 col-span-12 md:col-span-6 lg:col-span-4 bg-card shadow-lg p-4 border-none rounded-xl h-full"
+            className="inset-shadow-muted inset-shadow-xs flex flex-col space-y-4 bg-card shadow-lg p-2 md:p-4 border-none rounded-xl h-full"
         >
             <Calendar
                 mode="single"
@@ -70,9 +70,10 @@ export function CalendarWidget({
                     weekday: cn("rounded-xl w-full font-normal text-muted-foreground text-sm", isCalendarLayout && "md:text-xl"),
                     week: "flex w-full mt-2",
                     day: cn(
-                        "flex flex-col justify-start items-center hover:bg-transparent! m-1 sm:m-4 md:m-2 p-0 size-full font-normal text-foreground transition-colors",
-                        isCalendarLayout && "md:m-4 md:p-2 lg:p-4",
-                        "rounded-xl!",
+                      "flex flex-col justify-start items-center hover:bg-transparent! p-0 size-full font-normal text-foreground transition-colors",
+                      "m-0.5 sm:m-1 lg:m-2",
+                      isCalendarLayout && "lg:m-4",
+                      "rounded-xl!",
                     ),
                     selected: "text-foreground",
                     today: "text-primary font-bold rounded-xl",

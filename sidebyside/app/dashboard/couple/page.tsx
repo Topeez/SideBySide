@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import { LayoutDashboard } from "lucide-react";
 import InviteButton from "@/components/dashboard/invite-button";
 import { Card, CardHeader } from "@/components/ui/card";
-import { toast } from "sonner";
 import { ToastNotifier } from "@/components/toast-notifier";
 
 export default async function CouplePage() {
@@ -20,7 +19,6 @@ export default async function CouplePage() {
         data: { user },
     } = await supabase.auth.getUser();
 
-    // Najdeme pár, kde jsem buď user1 nebo user2
     const { data: couple, error } = await supabase
         .from("couples")
         .select(
@@ -78,13 +76,25 @@ export default async function CouplePage() {
         .eq("couple_id", couple.id)
         .order("date", { ascending: true });
 
-    // 4. Načtení Bucket Listu
     const { data: bucketList } = await supabase
         .from("bucket_list_items")
         .select("*")
         .eq("couple_id", couple.id)
         .order("status", { ascending: false })
         .order("created_at", { ascending: false });
+    
+    const { data: profile } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user?.id)
+        .single();
+
+    if (!profile)
+        return (
+            <div className="flex justify-center items-center text-xl cs-container">
+                Profil nenalezen.
+            </div>
+        );
 
     return (
         <div className="gap-4 py-8 cs-container">
@@ -106,7 +116,7 @@ export default async function CouplePage() {
                         id={user?.id || ""}
                         email={user?.email || ""}
                         couple_id={couple.id || ""}
-                        avatar_url={user?.user_metadata.avatar_url}
+                        avatar_url={profile.avatar_url || ""}
                         full_name={user?.user_metadata.full_name || ""}
                     />
                 </div>

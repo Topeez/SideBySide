@@ -18,6 +18,19 @@ export async function DashboardHeader() {
 
     const userName = user?.user_metadata.name || "Návštěvníku";
 
+    const { data: profile } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user?.id)
+        .single();
+
+    if (!profile)
+        return (
+            <div className="flex justify-center items-center text-xl cs-container">
+                Profil nenalezen.
+            </div>
+        );
+
     const { data: couple } = await supabase
         .from("couples")
         .select("*")
@@ -84,7 +97,7 @@ export async function DashboardHeader() {
                 <UserNav
                     id={user?.id || ""}
                     email={user?.email || ""}
-                    avatar_url={user?.user_metadata.avatar_url}
+                    avatar_url={profile?.avatar_url}
                     full_name={""}
                     couple_id={couple?.id}
                 />

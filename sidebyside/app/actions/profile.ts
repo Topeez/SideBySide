@@ -3,10 +3,9 @@
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import { ProfileSchema } from "@/lib/schemas";
+import { v4 as uuidv4 } from 'uuid';
 
 export type DashboardLayoutType = "default" | "focus" | "calendar";
-
-// Definice schématu pro validaci (musí sedět s formulářem)
 
 
 export async function updateProfile(prevState: unknown, formData: FormData) {
@@ -81,7 +80,6 @@ export async function updateTheme(theme: string) {
     return { success: true };
 }
 
-
 export async function updateLayout(layout: DashboardLayoutType){
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -108,4 +106,58 @@ export async function isValidLayout(value: string | null | undefined): Promise<D
     return value as DashboardLayoutType;
   }
   return undefined;
+}
+
+export async function updateAvatar(formData: FormData) {
+    const file = formData.get("avatar") as File;
+    if (!file) return { success: false };
+
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { success: false };
+
+    const fileName = `${user.id}/${uuidv4()}.webp`;
+
+    const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(fileName, file, { upsert: true });
+
+    if (uploadError) {
+        console.error("Avatar upload error:", uploadError);
+        return { success: false };
+    }
+
+    const { data: { publicUrl } } = supabase.storage
+        .from("avatars")
+        .getPublicUrl(fileName);
+
+    await supabase
+        .from("profiles")
+        .update({ avatar_url: publicUrl })
+        .eq("id", user.id);
+
+
+    await supabase.auth.updateUser({
+        data: { avatar_url: publicUrl }
+    });
+
+    revalidatePath("/dashboard/settings");
+    revalidatePath("/dashboard");
+    revalidatePath("/dashboard/couple");
+    revalidatePath("/dashboard/profile");  
+    return { success: true, url: publicUrl };
+}
+
+export async function updateNotificationPreferences(prefs: Record<string, boolean>) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { success: false };
+
+    const { error } = await supabase
+        .from("profiles")
+        .update({ notification_preferences: prefs })
+        .eq("id", user.id);
+
+    if (error) return { success: false };
+    return { success: true };
 }
