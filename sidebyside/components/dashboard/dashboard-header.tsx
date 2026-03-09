@@ -5,6 +5,8 @@ import Link from "next/link";
 import { House } from "lucide-react";
 import { NotificationsBell } from "./notifications/notifications-bell";
 import { Button } from "../ui/button";
+import { MoodCheckIn } from "./mood-check-in";
+import { MoodCheckInProps } from "@/types/mood";
 
 export async function DashboardHeader() {
     const supabase = await createClient();
@@ -22,6 +24,30 @@ export async function DashboardHeader() {
         .or(`user1_id.eq.${user?.id},user2_id.eq.${user?.id}`)
         .maybeSingle();
 
+    let moodProps: MoodCheckInProps | null = null;
+
+    if (couple) {
+        const partnerId =
+            couple.user1_id === user.id ? couple.user2_id : couple.user1_id;
+
+        const [{ data: myData }, { data: partnerData }] = await Promise.all([
+            supabase.from("profiles").select("nickname, avatar_url").eq("id", user.id).single(),
+            supabase.from("profiles").select("nickname, avatar_url").eq("id", partnerId).single(),
+        ]);
+
+        const isUser1 = couple.user1_id === user.id;
+        moodProps = {
+            myMood: (isUser1 ? couple.user1_mood : couple.user2_mood) ?? null,
+            myMoodUpdatedAt: (isUser1 ? couple.user1_mood_updated_at : couple.user2_mood_updated_at) ?? null,
+            partnerMood: (isUser1 ? couple.user2_mood : couple.user1_mood) ?? null,
+            partnerMoodUpdatedAt: (isUser1 ? couple.user2_mood_updated_at : couple.user1_mood_updated_at) ?? null,
+            myNickname: myData?.nickname ?? "Já",
+            partnerNickname: partnerData?.nickname ?? "Partner",
+            myAvatar: myData?.avatar_url,
+            partnerAvatar: partnerData?.avatar_url,
+        };
+    }
+
     return (
         <header className="flex justify-between items-center mb-8 px-6 rounded-lg h-16">
             <div>
@@ -35,17 +61,25 @@ export async function DashboardHeader() {
                 </p>
             </div>
             <div className="flex items-center gap-1 sm:gap-2 md:gap-4">
-                <Link href="/">
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        aria-label="back to home link"
-                        className="relative bg-accent shadow-md border border-muted rounded-full text-muted-foreground hover:text-foreground cursor-pointer"
-                    >
-                        <House size={5} />
-                    </Button>
-                </Link>
-                <ThemeToggleWrapper />
+                    <Link href="/" className="hidden sm:flex">
+                        <Button variant="ghost" size="icon" aria-label="back to home link"
+                            className="bg-accent shadow-md border border-muted rounded-full text-muted-foreground hover:text-foreground cursor-pointer">
+                            <House size={5} />
+                        </Button>
+                    </Link>
+                    <div className="hidden sm:flex">
+                        <ThemeToggleWrapper />
+                    </div>
+                    {moodProps && (
+                        <>
+                            <div className="sm:hidden flex">
+                                <MoodCheckIn {...moodProps} compact />
+                            </div>
+                            <div className="hidden sm:flex">
+                                <MoodCheckIn {...moodProps} />
+                            </div>
+                        </>
+                    )}
                 <NotificationsBell userId={user.id} />
                 <UserNav
                     id={user?.id || ""}
@@ -55,6 +89,7 @@ export async function DashboardHeader() {
                     couple_id={couple?.id}
                 />
             </div>
+            
         </header>
     );
 }

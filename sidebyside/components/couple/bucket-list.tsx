@@ -18,14 +18,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-
-interface BucketItem {
-    id: string;
-    title: string;
-    status: "planned" | "in_progress" | "completed";
-    image_url?: string;
-    target_date?: string;
-}
+import { BucketItem } from "@/types/couple";
 
 export function BucketList({ items }: { items: BucketItem[] }) {
     const handleDelete = async (id: string) => {

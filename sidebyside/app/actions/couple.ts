@@ -8,9 +8,9 @@ import { z } from "zod";
 
 const BucketItemSchema = z.object({
   title: z.string().min(1, "Název je povinný"),
-    image_url: z.string().url("Neplatný formát URL").optional().or(z.literal("")), 
+    image_url: z.url("Neplatný formát URL").optional().or(z.literal("")), 
     status: z.enum(["planned", "in_progress", "completed"]),
-    coupleId: z.string().uuid(),
+    coupleId: z.uuid(),
 })
 
 export async function updateCoverPhoto(coupleId: string, formData: FormData) {
@@ -203,4 +203,39 @@ export async function uncoupleUser(coupleId: string) {
 
     revalidatePath("/", "layout");
     return { success: true };
+}
+
+export async function updateMood(mood: string) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { success: false };
+
+  const { data: couple } = await supabase
+    .from("couples")
+    .select("id, user1_id, user2_id")
+    .or(`user1_id.eq.${user.id},user2_id.eq.${user.id}`)
+    .single();
+
+  if (!couple) return { success: false };
+
+  const isUser1 = couple.user1_id === user.id;
+  const updateData = isUser1
+    ? { user1_mood: mood, user1_mood_updated_at: new Date().toISOString() }
+    : { user2_mood: mood, user2_mood_updated_at: new Date().toISOString() };
+
+  await supabase.from("couples").update(updateData).eq("id", couple.id);
+
+  try {
+    const partnerId = isUser1 ? couple.user2_id : couple.user1_id;
+    const fullName = user.user_metadata.full_name || "Partner";
+    await sendNotificationToUser(
+      partnerId,
+      "Nová nálada! 💭",
+      `${fullName} sdílel/a svou náladu: ${mood}`,
+      "/dashboard"
+    );
+  } catch (e) { console.error("Push error:", e); }
+
+  revalidatePath("/dashboard");
+  return { success: true };
 }

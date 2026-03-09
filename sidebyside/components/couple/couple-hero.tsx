@@ -3,11 +3,10 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { differenceInDays } from "date-fns";
-import { Heart, Camera } from "lucide-react";
+import { Heart, Camera, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { updateCoverPhoto } from "@/app/actions/couple";
 import { useRef, useState } from "react";
-import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import imageCompression from "browser-image-compression";
 
@@ -65,14 +64,6 @@ export default function CoupleHero({ couple, user1, user2 }: CoupleHeroProps) {
             // 2. Samotná komprese
             toast.info("Optimalizuji obrázek..."); // Volitelné info pro uživatele
             const compressedFile = await imageCompression(file, options);
-
-            // Debug info (abys viděl ten rozdíl v konzoli)
-            console.log(
-                `Původní velikost: ${(file.size / 1024 / 1024).toFixed(2)} MB`,
-            );
-            console.log(
-                `Nová velikost: ${(compressedFile.size / 1024 / 1024).toFixed(2)} MB`,
-            );
 
             // 3. Vytvoření FormData s komprimovaným souborem
             const formData = new FormData();

@@ -23,10 +23,15 @@ import {
     Car,
     Star,
     MapPin,
+    CalendarIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { Button } from "@/components/ui/button";
+import { format } from "date-fns";
+import { cs } from "date-fns/locale";
 
-// Seznam ikonek pro výběr
 const ICONS = [
     { id: "heart", icon: Heart, label: "Láska" },
     { id: "home", icon: Home, label: "Domov" },
@@ -41,12 +46,13 @@ const ICONS = [
 export function AddMilestoneDialog({ coupleId }: { coupleId: string }) {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedIcon, setSelectedIcon] = useState("heart");
+    const [date, setDate] = useState<Date | undefined>(undefined); // ✅ chyběl state
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
                 <ActionButton>
-                    <Plus className="size-4" />{" "}
+                    <Plus className="size-4" />
                     <span className="hidden sm:block">Přidat milník</span>
                 </ActionButton>
             </DialogTrigger>
@@ -57,8 +63,10 @@ export function AddMilestoneDialog({ coupleId }: { coupleId: string }) {
 
                 <form
                     action={async (formData) => {
+                        if (date) formData.set("date", date.toISOString());
                         await createMilestone(formData);
                         setIsOpen(false);
+                        setDate(undefined);
                     }}
                     className="gap-4 grid py-4"
                 >
@@ -76,8 +84,30 @@ export function AddMilestoneDialog({ coupleId }: { coupleId: string }) {
                     </div>
 
                     <div className="gap-2 grid">
-                        <Label htmlFor="date">Datum</Label>
-                        <Input type="date" id="date" name="date" required />
+                        <Label>Datum</Label>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    className={cn(
+                                        "justify-start w-full font-normal text-left",
+                                        !date && "text-muted-foreground"
+                                    )}
+                                >
+                                    <CalendarIcon className="mr-2 size-4" />
+                                    {date ? format(date, "PPP", { locale: cs }) : <span>Vyberte datum</span>}
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="p-0 w-auto">
+                                <Calendar
+                                    mode="single"
+                                    selected={date}
+                                    onSelect={setDate}
+                                    initialFocus
+                                />
+                            </PopoverContent>
+                        </Popover>
                     </div>
 
                     <div className="gap-2 grid">
@@ -95,7 +125,7 @@ export function AddMilestoneDialog({ coupleId }: { coupleId: string }) {
                                             "hover:bg-muted p-2 border rounded-md transition-all",
                                             isSelected
                                                 ? "border-primary bg-primary/10 text-primary"
-                                                : "border-muted text-muted-foreground",
+                                                : "border-muted text-muted-foreground"
                                         )}
                                         title={item.label}
                                     >

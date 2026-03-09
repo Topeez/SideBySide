@@ -19,7 +19,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import ActionButton from "../action-button";
+import { Button } from "@/components/ui/button";
+import ActionButton from "@/components/action-button";
 import { toast } from "sonner";
 import Image from "next/image";
 import { Calendar } from "@/components/ui/calendar";
@@ -28,7 +29,6 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { cs } from "date-fns/locale";
@@ -103,7 +103,6 @@ export function AddBucketItemDialog({ coupleId }: { coupleId: string }) {
                             onChange={handleImageChange}
                         />
 
-                        {/* --- PREVIEW SEKCIE --- */}
                         {imageUrl && (
                             <div className="relative flex justify-center items-center bg-muted/50 mt-2 border rounded-lg w-full h-40 overflow-hidden">
                                 {isImageValid ? (

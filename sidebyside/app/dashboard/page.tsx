@@ -169,6 +169,7 @@ export default async function DashboardPage() {
         </Card>
     );
 
+
     const todoContent = couple ? (
         <TodoList todos={todos} coupleId={couple.id} />
     ) : (
@@ -236,6 +237,7 @@ export default async function DashboardPage() {
                 todoSlot={todoContent}
                 calendarSlot={calendarContent}
                 profileSlot={profileContent}
+
             />
         </div>
     );

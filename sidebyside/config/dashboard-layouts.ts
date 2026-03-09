@@ -15,6 +15,7 @@ export const layoutConfig: Record<DashboardLayoutType, WidgetClasses> = {
     todo: "col-span-12 md:col-span-4",
     calendar: "col-span-12 md:col-span-4",
     profile: "col-span-12 md:col-span-4",
+
   },
   focus: {
     closestEvent: "col-span-12 md:col-span-6",
@@ -22,6 +23,7 @@ export const layoutConfig: Record<DashboardLayoutType, WidgetClasses> = {
     todo: "col-span-12 md:col-span-8 row-span-2", 
     calendar: "col-span-12 md:col-span-4",
     profile: "col-span-12 md:col-span-4",
+
   },
   calendar: {
     closestEvent: "col-span-12 md:col-span-8",
@@ -29,5 +31,6 @@ export const layoutConfig: Record<DashboardLayoutType, WidgetClasses> = {
     profile: "col-span-12 md:col-span-4",
     calendar: "col-span-12 md:col-span-8 row-span-2",
     todo: "col-span-12 md:col-span-4",
+
   },
 };

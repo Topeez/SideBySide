@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { cs } from "date-fns/locale";
+import { Milestone } from "@/types/couple";
 
 const ICON_MAP: Record<string, LucideIcon> = {
     heart: Heart,
@@ -24,14 +25,6 @@ const ICON_MAP: Record<string, LucideIcon> = {
     star: Star,
     map: MapPin,
 };
-
-interface Milestone {
-    id: string;
-    title: string;
-    description?: string;
-    date: string;
-    icon: string;
-}
 
 export function CoupleTimeline({ items }: { items: Milestone[] }) {
     if (items.length === 0) {
