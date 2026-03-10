@@ -22,7 +22,7 @@ export function ChangeEmailForm() {
         const supabase = createClient();
         const { error } = await supabase.auth.updateUser(
             { email: newEmail },
-            { emailRedirectTo: "https://side-by-side-nu.vercel.app/auth/callback?type=email_change" }
+            { emailRedirectTo: `${window.location.origin}/auth/callback` }
         );
         setLoading(false);
 

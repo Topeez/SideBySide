@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { sendNotificationToUser } from "./push";
 import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
+import { nanoid } from "nanoid";
 
 const BucketItemSchema = z.object({
   title: z.string().min(1, "Název je povinný"),
@@ -240,4 +241,63 @@ export async function updateMood(mood: string) {
 
   revalidatePath("/dashboard");
   return { success: true };
+}
+
+export async function getOrCreateInviteCode(userId: string): Promise<string | null> {
+    const supabase = await createClient();
+
+    // Zkontroluj jestli už existuje pending couple
+    const { data: existing } = await supabase
+        .from("couples")
+        .select("invite_code")
+        .eq("user1_id", userId)
+        .is("user2_id", null)
+        .maybeSingle();
+
+    if (existing?.invite_code) return existing.invite_code;
+
+    const invite_code = nanoid(8).toUpperCase();
+
+    const { error } = await supabase
+        .from("couples")
+        .insert({
+            user1_id: userId,
+            invite_code,
+        });
+
+    if (error) {
+        console.error("getOrCreateInviteCode error:", error);
+        return null;
+    }
+
+    return invite_code;
+}
+
+export async function acceptInvite(inviteCode: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { success: false, error: "Nepřihlášen" };
+
+    const { data: couple } = await supabase
+        .from("couples")
+        .select("*")
+        .eq("invite_code", inviteCode)
+        .is("user2_id", null)
+        .single();
+
+    if (!couple) return { success: false, error: "Neplatný kód" };
+    if (couple.user1_id === user.id) return { success: false, error: "Nemůžeš se spárovat sám se sebou" };
+
+    const { error } = await supabase
+        .from("couples")
+        .update({
+            user2_id: user.id,
+            invite_code: null,
+        })
+        .eq("id", couple.id);
+
+    if (error) return { success: false, error: error.message };
+
+    revalidatePath("/dashboard");
+    return { success: true };
 }

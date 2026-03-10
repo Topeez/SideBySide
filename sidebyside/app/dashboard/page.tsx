@@ -31,10 +31,18 @@ export default async function DashboardPage() {
 
     // 1. Načteme Pár
     const { data: couple } = await supabase
-        .from("couples")
-        .select("*")
-        .or(`user1_id.eq.${user.id},user2_id.eq.${user.id}`)
-        .single();
+      .from("couples")
+      .select("*")
+      .or(`user1_id.eq.${user.id},user2_id.eq.${user.id}`)
+      .not("user2_id", "is", null)
+      .maybeSingle();
+
+    const { data: pendingCouple } = await supabase
+      .from("couples")
+      .select("invite_code")
+      .eq("user1_id", user.id)
+      .is("user2_id", null)
+      .maybeSingle();
 
     let noteToDisplay = couple?.love_note || "";
 
@@ -66,7 +74,7 @@ export default async function DashboardPage() {
     userProfile = myProfileData;
 
     // Partnerův profil (pokud existuje pár)
-    if (couple) {
+    if (couple && partnerProfile === null || !pendingCouple) {
         const partnerId =
             couple.user1_id === user.id ? couple.user2_id : couple.user1_id;
         const { data: pData } = await supabase
@@ -112,14 +120,14 @@ export default async function DashboardPage() {
         events = allEventsData || [];
     }
 
-    const eventContent = couple ? (
+    const eventContent = couple && !pendingCouple ? (
         <ClosestEvent
             nextEvent={nextEvent}
             hasCouple={!!couple}
             coupleId={couple?.id}
         />
     ) : (
-        <Card className="col-span-12 md:col-span-8 bg-primary/15 border-primary h-full">
+        <Card className="inset-shadow-primary inset-shadow-xs col-span-12 md:col-span-8 bg-primary/15 border-none h-full">
             <CardContent>
                 <div className="mb-2 font-bold text-foreground text-2xl">
                     Naplánujte si něco hezkého se svou polovičkou.
@@ -140,7 +148,7 @@ export default async function DashboardPage() {
         </Card>
     );
 
-    const noteContent = couple ? (
+    const noteContent = couple && !pendingCouple ? (
         <LoveNoteCard
             initialNote={noteToDisplay}
             coupleId={couple.id}
@@ -148,7 +156,7 @@ export default async function DashboardPage() {
             currentUserId={user.id}
         />
     ) : (
-        <Card className="col-span-12 md:col-span-3 lg:col-span-4 bg-secondary/15 border-secondary border-dashed">
+        <Card className="inset-shadow-secondary inset-shadow-xs col-span-12 md:col-span-3 lg:col-span-4 bg-secondary/15 border-none">
             <CardHeader className="pb-2">
                 <CardTitle className="flex items-center gap-2 font-medium text-secondary text-sm">
                     <Heart className="fill-secondary size-4" />
@@ -170,19 +178,17 @@ export default async function DashboardPage() {
     );
 
 
-    const todoContent = couple ? (
+    const todoContent = couple && !pendingCouple ? (
         <TodoList todos={todos} coupleId={couple.id} />
     ) : (
-        <Card className="col-span-12 md:col-span-4">
+        <Card className="inset-shadow-muted inset-shadow-xs col-span-12 md:col-span-4 border-none h-full">
             <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-base">
                     <ShoppingBag className="size-4" /> Úkoly
                 </CardTitle>
             </CardHeader>
-            <CardContent>
-                <div className="py-6 text-muted-foreground text-sm text-center">
-                    Zatím jsi na to sám/sama.
-                </div>
+            <CardContent className="flex justify-center items-center h-48 text-muted-foreground">
+                Zatím jsi na to sám/sama.
             </CardContent>
         </Card>
     );
@@ -195,7 +201,7 @@ export default async function DashboardPage() {
             partnerProfile={partnerProfile}
         />
     ) : (
-        <Card className="bg-card h-full">
+        <Card className="inset-shadow-muted inset-shadow-xs bg-card border-none h-full">
             <CardHeader>
                 <CardTitle>Kalendář</CardTitle>
             </CardHeader>
@@ -205,7 +211,7 @@ export default async function DashboardPage() {
         </Card>
     );
 
-    const profileContent = couple ? (
+    const profileContent = couple && !pendingCouple ? (
         <CoupleProfileWidget
             userProfile={userProfile}
             partnerProfile={partnerProfile}
@@ -225,7 +231,8 @@ export default async function DashboardPage() {
             {userProfile && (
                 <div className="mb-6">
                     <OnboardingChecklist
-                        userProfile={{ ...userProfile, couple_id: couple?.id }}
+                        userProfile={{ ...userProfile, couple_id: null }}
+                        hasActiveCouple={!!couple}
                         eventsCount={events.length}
                     />
                 </div>

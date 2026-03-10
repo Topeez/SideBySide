@@ -3,27 +3,22 @@
 import Link from "next/link";
 import { CheckCircle2, Circle, PartyPopper } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { ProfileData } from "@/types/profile"; // Import tvého interface
-import { Event } from "@/types/event"; // Předpokládám existenci Event typu, uprav dle potřeby
+import { ProfileData } from "@/types/profile";
+import InviteButton from "./dashboard/invite-button";
 
 interface OnboardingChecklistProps {
     userProfile: ProfileData;
     eventsCount: number;
+    hasActiveCouple: boolean;
 }
 
 export function OnboardingChecklist({
     userProfile,
     eventsCount,
+    hasActiveCouple,
 }: OnboardingChecklistProps) {
-    // Logika kontroly splnění kroků
     const steps = [
         {
             id: "account",
@@ -45,9 +40,9 @@ export function OnboardingChecklist({
             id: "partner",
             label: "Pozvat polovičku",
             description: "Ve dvou se to lépe táhne",
-            done: !!userProfile.couple_id,
-            href: "/dashboard/couple",
-            cta: "Pozvat partnera",
+            done: hasActiveCouple,
+            href: null,
+            cta: null,
         },
         {
             id: "event",
@@ -59,7 +54,6 @@ export function OnboardingChecklist({
         },
     ];
 
-    // Výpočet progresu
     const completedSteps = steps.filter((s) => s.done).length;
     const progress = (completedSteps / steps.length) * 100;
 
@@ -102,13 +96,10 @@ export function OnboardingChecklist({
                                 <Circle className="size-6 text-muted-foreground shrink-0" />
                             )}
                             <div className="flex flex-col">
-                                <span
-                                    className={cn(
-                                        "font-medium text-sm",
-                                        step.done &&
-                                            "text-muted-foreground line-through decoration-muted-foreground/50",
-                                    )}
-                                >
+                                <span className={cn(
+                                    "font-medium text-sm",
+                                    step.done && "text-muted-foreground line-through decoration-muted-foreground/50",
+                                )}>
                                     {step.label}
                                 </span>
                                 {!step.done && (
@@ -119,7 +110,13 @@ export function OnboardingChecklist({
                             </div>
                         </div>
 
-                        {!step.done && step.href && (
+                        {/* Partner krok — InviteButton */}
+                        {step.id === "partner" && !step.done && (
+                            <InviteButton userId={userProfile.id} />
+                        )}
+
+                        {/* Ostatní kroky — Link */}
+                        {step.id !== "partner" && !step.done && step.href && (
                             <Link
                                 href={step.href}
                                 className="bg-primary/10 hover:bg-primary/20 px-3 py-1.5 rounded-full font-medium text-primary text-xs whitespace-nowrap transition-colors"

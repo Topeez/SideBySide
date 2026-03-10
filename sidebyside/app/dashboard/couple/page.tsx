@@ -29,9 +29,17 @@ export default async function CouplePage() {
         `,
         )
         .or(`user1_id.eq.${user?.id},user2_id.eq.${user?.id}`)
-        .single();
+        .maybeSingle();
 
-    if (error || !couple) {
+
+    const { data: pendingCouple } = await supabase
+      .from("couples")
+      .select("invite_code")
+      .eq("user1_id", user?.id)
+      .is("user2_id", null)
+      .maybeSingle();
+
+    if (error || !couple || pendingCouple) {
         return (
             <div className="flex justify-center items-center h-screen cs-container">
                 <ToastNotifier

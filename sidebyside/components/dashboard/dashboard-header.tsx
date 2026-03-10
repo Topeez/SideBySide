@@ -30,14 +30,22 @@ export async function DashboardHeader() {
         );
 
     const { data: couple } = await supabase
-        .from("couples")
-        .select("*")
-        .or(`user1_id.eq.${user?.id},user2_id.eq.${user?.id}`)
-        .maybeSingle();
+      .from("couples")
+      .select("*")
+      .or(`user1_id.eq.${user.id},user2_id.eq.${user.id}`)
+      .not("user2_id", "is", null)
+      .maybeSingle();
+
+    const { data: pendingCouple } = await supabase
+      .from("couples")
+      .select("invite_code")
+      .eq("user1_id", user.id)
+      .is("user2_id", null)
+      .maybeSingle();
 
     let moodProps: MoodCheckInProps | null = null;
 
-    if (couple) {
+    if (couple && !pendingCouple) {
         const partnerId =
             couple.user1_id === user.id ? couple.user2_id : couple.user1_id;
 

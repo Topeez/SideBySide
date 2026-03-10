@@ -42,14 +42,22 @@ export default async function SettingsPage() {
         );
 
     const { data: couple } = await supabase
-        .from("couples")
-        .select("*")
-        .or(`user1_id.eq.${user.id},user2_id.eq.${user.id}`)
-        .maybeSingle();
+      .from("couples")
+      .select("*")
+      .or(`user1_id.eq.${user.id},user2_id.eq.${user.id}`)
+      .not("user2_id", "is", null)
+      .maybeSingle();
+
+    const { data: pendingCouple } = await supabase
+      .from("couples")
+      .select("invite_code")
+      .eq("user1_id", user.id)
+      .is("user2_id", null)
+      .maybeSingle();
 
     let partnerProfile = null;
 
-    if (couple) {
+    if (couple && !pendingCouple) {
         const partnerId = couple.user1_id === user.id
             ? couple.user2_id
             : couple.user1_id;
@@ -103,7 +111,14 @@ export default async function SettingsPage() {
             <Tabs defaultValue="profile" className="w-full">
                 <TabsList className="grid grid-cols-4 w-full">
                     <TabsTrigger value="profile">Profil</TabsTrigger>
-                    <TabsTrigger value="relationship">Vztah</TabsTrigger>
+                    <TabsTrigger
+                        value="relationship"
+                        disabled={!couple}
+                        title={!couple ? "Nejprve se spáruj s partnerem" : undefined}
+                        className="disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                        Vztah
+                    </TabsTrigger>
                     <TabsTrigger value="appearance">Vzhled</TabsTrigger>
                     <TabsTrigger value="account">Účet</TabsTrigger>
                 </TabsList>
@@ -138,7 +153,7 @@ export default async function SettingsPage() {
                         </div>
                         <Separator />
 
-                        {couple ? (
+                        {couple && !pendingCouple && (
                             <div className="space-y-6">
                                 {partnerProfile && (
                                     <div className="space-y-2">
@@ -146,17 +161,11 @@ export default async function SettingsPage() {
                                         <PartnerCard {...partnerProfile} />
                                     </div>
                                 )}
-
                                 <Separator />
-
                                 <RelationshipForm
                                     coupleId={couple.id}
                                     initialDate={couple.relationship_start}
                                 />
-                            </div>
-                        ) : (
-                            <div className="bg-yellow-500/20 p-4 border border-amber-400 rounded-md text-yellow-400 text-sm">
-                                Zatím nemáš spárovaný účet s partnerem.
                             </div>
                         )}
                     </div>
