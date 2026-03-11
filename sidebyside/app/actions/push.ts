@@ -90,3 +90,16 @@ function isWebPushError(error: unknown): error is WebPushError {
         'headers' in error
     );
 }
+
+export async function deleteSubscription() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { success: false };
+
+  await supabase
+    .from("push_subscriptions")
+    .delete()
+    .eq("user_id", user.id);
+
+  return { success: true };
+}

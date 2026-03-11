@@ -1,9 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
 import { Bell, BellOff, Loader2 } from "lucide-react";
-import { saveSubscription } from "@/app/actions/push";
+import { saveSubscription, deleteSubscription } from "@/app/actions/push";
 import { toast } from "sonner";
 import ActionButton from "./action-button";
 
@@ -28,7 +27,6 @@ export function PushNotificationManager() {
     const [loading, setLoading] = useState(true);
 
     async function syncSubscriptionToDb(sub: PushSubscription) {
-        // Pro jistotu pošleme do DB znovu (upsert to vyřeší)
         const result = await saveSubscription(JSON.parse(JSON.stringify(sub)));
         if (!result.success) {
             console.error("Failed to sync sub to DB:", result.error);
@@ -48,7 +46,6 @@ export function PushNotificationManager() {
             const sub = await registration.pushManager.getSubscription();
             setSubscription(sub);
 
-            // OPRAVA: Pokud existuje lokální odběr, ujistíme se, že je i v DB
             if (sub) {
                 await syncSubscriptionToDb(sub);
             }
@@ -83,16 +80,15 @@ export function PushNotificationManager() {
     }
 
     async function unsubscribeFromPush() {
-        setLoading(true);
-        try {
-            if (subscription) {
-                await subscription.unsubscribe(); // Odhlásit v prohlížeči
-                setSubscription(null);
-                // Tady bychom ideálně měli zavolat i server action pro smazání z DB,
-                // ale pro teď stačí, že server při příštím pokusu o odeslání zjistí chybu 410 a smaže to sám.
-                toast.success("Oznámení vypnuta.");
-            }
-        } catch (error) {
+            setLoading(true);
+    try {
+        if (subscription) {
+            await subscription.unsubscribe();
+            await deleteSubscription();
+            setSubscription(null);
+            toast.success("Oznámení vypnuta.");
+        }
+    } catch (error) {
             console.error("Unsubscribe failed", error);
             toast.error("Chyba při vypínání.");
         } finally {
