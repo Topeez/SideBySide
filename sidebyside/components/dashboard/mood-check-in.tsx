@@ -127,21 +127,21 @@ export function MoodCheckIn({
 
           <div className="gap-2 grid grid-cols-4 pt-2">
             {MOODS.map((mood) => (
-              <ActionButton
+              <button
                 key={mood.emoji}
                 onClick={() => handleSelect(mood.emoji)}
                 disabled={isLoading}
                 aria-label={mood.label}
                 className={cn(
-                            "inset-shadow-muted flex flex-col justify-center items-center gap-2! hover:bg-primary/10 shadow-lg p-8! rounded-lg text-2xl transition-all",
-                            currentMood === mood.emoji
-                                ? "border-primary inset-shadow-primary/50! bg-primary/10 text-primary"
-                                : "border-transparent  bg-muted/30 hover:bg-muted/80 text-muted-foreground",
+                          "flex flex-col justify-center items-center gap-2 hover:bg-muted p-4 border rounded-md text-lg transition-all",
+                          currentMood === mood.emoji
+                          ? "border-primary bg-primary/10 text-primary"
+                          : "border-muted text-muted-foreground"
                 )}
               >
                 {mood.emoji}
                 <span className="text-[10px] text-muted-foreground">{mood.label}</span>
-              </ActionButton>
+              </button>
             ))}
           </div>
 

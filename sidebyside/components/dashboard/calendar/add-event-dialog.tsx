@@ -254,7 +254,7 @@ export function AddEventDialog({
                                     const isSelected = selectedType === key;
                                     const Icon = config.icon;
                                     return (
-                                        <ActionButton
+                                        <button
                                             key={key}
                                             type="button"
                                             onClick={() =>
@@ -263,12 +263,12 @@ export function AddEventDialog({
                                                 )
                                             }
                                             className={cn(
-                                                "inset-shadow-muted flex flex-col justify-center items-center gap-1 hover:bg-primary/10 shadow-lg p-8! rounded-lg transition-all",
-                                                isSelected
-                                                    ? "border-primary inset-shadow-primary/50! bg-primary/10 text-primary"
-                                                    : "border-transparent  bg-muted/30 hover:bg-muted/80 text-muted-foreground",
+                                                "flex flex-col justify-center items-center gap-2 hover:bg-muted p-4 border rounded-md transition-all",
+                                                isSelected  
+                                                    ? "border-primary bg-primary/10 text-primary"
+                                                    : "border-muted text-muted-foreground"
                                             )}
-                                        >
+                                            >
                                             <Icon
                                                 className="size-5"
                                                 style={{
@@ -280,7 +280,7 @@ export function AddEventDialog({
                                             <span className="font-medium text-xs">
                                                 {config.label}
                                             </span>
-                                        </ActionButton>
+                                        </button>
                                     );
                                 },
                             )}

@@ -14,7 +14,6 @@ import {
 import { toast } from "sonner";
 import { Separator } from "../ui/separator";
 import { useFont, FontFamily } from "@/components/font-provider";
-import ActionButton from "../action-button";
 
 const colors: { value: ThemeColor; label: string; colorClass: string }[] = [
     { value: "default", label: "Výchozí (Sage)", colorClass: "bg-[#8fbc8f]" },
@@ -93,11 +92,10 @@ export function AppearanceForm() {
 
             <div className="gap-4 grid grid-cols-2 md:grid-cols-4 pt-2">
                 {colors.map((color) => (
-                    <ActionButton
+                    <button
                         key={color.value}
-                        variant="outline"
                         className={cn(
-                            "relative flex flex-col gap-3 hover:bg-accent/50 py-4 h-auto transition-all",
+                            "relative flex flex-col justify-center items-center gap-3 bg-card hover:bg-accent/50 py-4 border border-input rounded-lg h-auto transition-all cursor-pointer",
                             themeColor === color.value &&
                                 "border-primary ring-1 ring-primary bg-accent/50",
                         )}
@@ -116,7 +114,7 @@ export function AppearanceForm() {
                                 <Check className="size-3" />
                             </div>
                         )}
-                    </ActionButton>
+                    </button>
                 ))}
             </div>
 
@@ -129,13 +127,12 @@ export function AppearanceForm() {
                 </div>
                 <div className="gap-3 grid grid-cols-2 md:grid-cols-4">
                     {fonts.map((f) => (
-                        <ActionButton
+                        <button
                             key={f.value}
-                            variant="outline"
+                           
                             onClick={() => handleFontChange(f.value)}
                             className={cn(
-                                "relative flex flex-col gap-2 py-4 h-auto",
-                                "hover:bg-accent/50 transition-all",
+                              "relative flex flex-col justify-center items-center gap-3 bg-card hover:bg-accent/50 py-4 border border-input rounded-lg h-auto transition-all cursor-pointer",
                                 font === f.value && "border-primary ring-1 ring-primary bg-accent/50"
                             )}
                         >
@@ -152,7 +149,7 @@ export function AppearanceForm() {
                                 </div>
                             )}
                         
-                        </ActionButton>
+                        </button>
                     ))}
                 </div>
             </div>
