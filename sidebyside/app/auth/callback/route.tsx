@@ -10,8 +10,6 @@ export async function GET(request: Request) {
     const next = searchParams.get("next") ?? "/dashboard";
 
     if (type === "email_change") {
-        const supabase = await createClient();
-        await supabase.auth.refreshSession(); 
         return NextResponse.redirect(
             `${origin}/dashboard/settings?tab=account&email_changed=true`
         );

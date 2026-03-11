@@ -18,6 +18,8 @@ import { PushNotificationManager } from "@/components/push-notification-manager"
 import { NotificationPreferences } from "@/components/settings/notification-preferences";
 import { PartnerCard } from "@/components/settings/partner-card";
 import { ChangeEmailForm } from "@/components/settings/change-email-form";
+
+export const dynamic = "force-dynamic";
 export default async function SettingsPage() {
     const supabase = await createClient();
 
