@@ -2,7 +2,6 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
-import { sendNotificationToUser } from "@/app/actions/push";
 
 export async function createEvent(formData: FormData) {
   const title = formData.get("title") as string;
@@ -54,7 +53,6 @@ export async function createEvent(formData: FormData) {
           .select("user1_id, user2_id")
           .eq("id", coupleId)
           .single();
-          
 
       if (couple) {
           const partnerId = couple.user1_id === user.id ? couple.user2_id : couple.user1_id;
@@ -64,20 +62,19 @@ export async function createEvent(formData: FormData) {
               const dateDisplay = dateTo && dateTo !== dateFrom 
                   ? `${dateFrom} - ${dateTo}` 
                   : dateFrom;
-                  
-              const message = `Kdy: ${dateDisplay} v ${startTimeStr}`;
+              const message = `${fullName} přidal(a) novou událost. Kdy: ${dateDisplay} v ${startTimeStr}`;
 
-              await sendNotificationToUser(
-                  partnerId, 
-                  `Nová akce: ${title} 📅`, 
-                  `${fullName} přidal(a) novou událost. ${message}`,
-                  "/dashboard",
-                  "event"
-              );
+              await supabase.from("notifications").insert({
+                  user_id: partnerId,
+                  title: `Nová akce: ${title} 📅`,
+                  message,
+                  link: "/dashboard",
+                  type: "events"
+              });
           }
       }
   } catch (pushError) {
-      console.error("Failed to send push notification:", pushError);
+      console.error("Failed to send notification:", pushError);
   }
 
   revalidatePath("/dashboard");

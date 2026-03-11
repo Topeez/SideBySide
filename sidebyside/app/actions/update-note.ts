@@ -2,7 +2,6 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
-import { sendNotificationToUser } from "@/app/actions/push";
 
 export async function updateLoveNote(formData: FormData) {
   const note = formData.get("note") as string || "";
@@ -29,35 +28,33 @@ export async function updateLoveNote(formData: FormData) {
       return;
   }
 
-  if(note.trim().length > 0 || note.trim().length > 1) {
+  if (note.trim().length > 0) {
       try {
+          const { data: couple } = await supabase
+              .from("couples")
+              .select("user1_id, user2_id")
+              .eq("id", coupleId)
+              .single();
 
-      const { data: couple } = await supabase
-          .from("couples")
-          .select("user1_id, user2_id")
-          .eq("id", coupleId)
-          .single();
+          if (couple) {
+              const partnerId = couple.user1_id === user.id ? couple.user2_id : couple.user1_id;
 
-      if (couple) {
-          const partnerId = couple.user1_id === user.id ? couple.user2_id : couple.user1_id;
+              if (partnerId) {
+                  const fullName = user.user_metadata.full_name || "Partner";
+                  const preview = note.length > 50 ? note.substring(0, 50) + "..." : note;
 
-          if (partnerId) {
-              const fullName = user.user_metadata.full_name || "Partner";
-              
-              const preview = note.length > 50 ? note.substring(0, 50) + "..." : note;
-
-              await sendNotificationToUser(
-                  partnerId, 
-                  "Nový vzkaz ❤️", 
-                  `${fullName} ti nechal(a) vzkaz: "${preview}"`,
-                  "/dashboard",
-                  "love_note"
-              );
+                  await supabase.from("notifications").insert({
+                      user_id: partnerId,
+                      title: "Nový vzkaz ❤️",
+                      message: `${fullName} ti nechal(a) vzkaz: "${preview}"`,
+                      link: "/dashboard",
+                      type: "love_note"
+                  });
+              }
           }
+      } catch (pushError) {
+          console.error("Notification error:", pushError);
       }
-    } catch (pushError) {
-        console.error("Push notification error:", pushError);
-    }
   }
 
   revalidatePath('/dashboard');

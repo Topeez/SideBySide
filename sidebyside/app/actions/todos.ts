@@ -2,7 +2,6 @@
 
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
-import { sendNotificationToUser } from "@/app/actions/push";
 
 export async function createTodo(formData: FormData) {
   const title = formData.get("title") as string;
@@ -39,19 +38,18 @@ export async function createTodo(formData: FormData) {
           const partnerId = couple.user1_id === user.id ? couple.user2_id : couple.user1_id;
           if (partnerId) {
               const fullName = user.user_metadata.full_name || "Partner";
-              await sendNotificationToUser(
-                  partnerId,
-                  "Nový úkol 📝",
-                  `${fullName} přidal(a): ${title}`,
-                  "/dashboard",
-                  "todo"
-              );
+              await supabase.from("notifications").insert({
+                  user_id: partnerId,
+                  title: "Nový úkol 📝",
+                  message: `${fullName} přidal(a): ${title}`,
+                  link: "/dashboard",
+                  type: "todos"
+              });
           }
       }
   } catch (e) {
-      console.error("Push error:", e);
+      console.error("Notification error:", e);
   }
-
 
   revalidatePath("/dashboard");
 }
@@ -87,20 +85,19 @@ export async function toggleTodo(todoId: string, isCompleted: boolean) {
               
               if (partnerId) {
                   const fullName = user.user_metadata.full_name || "Partner";
-                  await sendNotificationToUser(
-                      partnerId,
-                      "Úkol splněn! ✅",
-                      `${fullName} splnil(a): ${todo.title}`,
-                      "/dashboard",
-                      "todo"
-                  );
+                  await supabase.from("notifications").insert({
+                      user_id: partnerId,
+                      title: "Úkol splněn! ✅",
+                      message: `${fullName} splnil(a): ${todo.title}`,
+                      link: "/dashboard",
+                      type: "todos"
+                  });
               }
           }
       } catch (e) {
-          console.error("Push error (toggle):", e);
+          console.error("Notification error (toggle):", e);
       }
   }
-  
 }
 
 export async function deleteTodo(todoId: string) {
