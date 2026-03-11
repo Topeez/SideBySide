@@ -11,6 +11,7 @@ import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import Link from "next/link";
 import { DashboardGrid } from "@/components/dashboard/dashboard-grid";
 import { OnboardingChecklist } from "@/components/onboarding-checklist";
+import { EmailChangeNotice } from "@/components/dashboard/email-change-notice";
 
 export default async function DashboardPage() {
     const supabase = await createClient();
@@ -237,6 +238,8 @@ export default async function DashboardPage() {
                     />
                 </div>
             )}
+
+            <EmailChangeNotice />
 
             <DashboardGrid
                 eventSlot={eventContent}
