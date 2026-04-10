@@ -1,0 +1,7 @@
+{
+    "display": "standalone",
+    "scope": "/",
+    "start_url": "/",
+    "name": "SideBySide",
+    "short_name": "SideBySide"
+}

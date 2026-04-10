@@ -35,6 +35,13 @@ export const metadata: Metadata = {
     ],
     metadataBase: new URL("https://side-by-side-nu.vercel.app"),
 
+    manifest: "/manifest.json",
+    appleWebApp: {
+        capable: true,
+        title: "SideBySide",
+        statusBarStyle: "default",
+    },
+
     openGraph: {
         type: "website",
         locale: "cs_CZ",
