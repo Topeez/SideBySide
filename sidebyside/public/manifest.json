@@ -3,7 +3,7 @@
     "short_name": "SideBySide",
     "display": "standalone",
     "scope": "/",
-    "start_url": "/",
+    "start_url": "/dashboard",
     "background_color": "#ffffff",
     "theme_color": "#E27D60",
     "icons": [
