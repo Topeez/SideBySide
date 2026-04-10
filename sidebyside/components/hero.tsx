@@ -54,7 +54,7 @@ export default async function Hero() {
                     sjednocuje sdílený kalendář, plány a vzpomínky na jedno
                     místo.
                 </p>
-                <div className="flex justify-center items-center gap-4 mt-12">
+                <div className="flex md:flex-row flex-col justify-center items-center gap-4 mt-12">
                     {user ? (
                         <Link href="/dashboard">
                             <ActionButton className="gap-2 bg-primary-foreground dark:bg-primary p-4! md:p-6! rounded-full text-md md:text-lg cursor-pointer">

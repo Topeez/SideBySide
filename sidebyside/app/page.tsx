@@ -64,7 +64,7 @@ function FeatureCard({
     desc: string;
 }) {
     return (
-        <div className="flex flex-col items-center bg-card shadow-sm hover:shadow-md p-6 border border-muted rounded-2xl text-center transition-shadow even:-translate-y-8">
+        <div className="flex flex-col items-center bg-card shadow-sm hover:shadow-md p-6 border border-muted rounded-2xl text-center transition-shadow md:even:-translate-y-8">
             <div className="mb-4">{icon}</div>
             <h2 className="mb-2 font-bold text-foreground text-xl">{title}</h2>
             <p className="text-muted-foreground">{desc}</p>

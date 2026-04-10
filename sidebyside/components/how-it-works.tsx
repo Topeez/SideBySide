@@ -1,4 +1,15 @@
+"use client";
+
 import { UserPlus, Link2, Palette, CalendarHeart, Heart } from "lucide-react";
+import { useRef } from "react";
+import {
+  m,
+  LazyMotion,
+  domAnimation,
+  useScroll,
+  useTransform,
+  MotionValue,
+} from "framer-motion";
 
 const steps = [
     {
@@ -33,7 +44,47 @@ const steps = [
     },
 ];
 
+function TimelineIcon({
+    icon: Icon,
+    index,
+    total,
+    scrollYProgress,
+}: {
+    icon: React.ElementType;
+    index: number;
+    total: number;
+    scrollYProgress: MotionValue<number>;
+}) {
+
+    const stepProgress = index / (total - 1);
+
+    const scale = useTransform(
+        scrollYProgress,
+        [stepProgress - 0.08, stepProgress, stepProgress + 0.08],
+        [1, 1.15, 1]
+    );
+
+
+    return (
+        <m.div
+            className="top-0 left-4 md:left-8 z-10 absolute flex justify-center items-center bg-primary shadow-sm border-4 border-background rounded-full size-10 md:size-12 text-primary-foreground -translate-x-1/2 will-change-transform"
+            style={{ scale }}
+        >
+            <Icon className="size-5 md:size-6 text-button-text" />
+        </m.div>
+    );
+}
+
 export default function HowItWorks() {
+    const timelineRef = useRef<HTMLDivElement>(null);
+
+    const { scrollYProgress } = useScroll({
+        target: timelineRef,
+        offset: ["start 70%", "end center"],
+    });
+
+    const lineHeight = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
+
     return (
         <div className="mx-auto px-6 py-12 md:py-24 max-w-2xl">
             <div className="mb-12 text-center">
@@ -45,34 +96,39 @@ export default function HowItWorks() {
                 </p>
             </div>
 
-            <div className="relative ml-4 md:ml-0">
-                {/* Timeline line */}
-                <div className="left-4 md:left-8 absolute inset-y-0 border-primary/20 border-l-2" />
+            <LazyMotion features={domAnimation}>
+                <div ref={timelineRef} className="relative ml-4 md:ml-0">
+                    <div className="left-4 md:left-8 absolute inset-y-0 bg-primary/20 w-0.5" />
 
-                {steps.map(({ title, description, icon: Icon }, index) => (
-                    <div className="relative pb-12 last:pb-0 pl-16" key={index}>
-                        {/* Timeline Icon */}
-                        <div className="top-0 left-4 md:left-8 z-10 absolute flex justify-center items-center bg-primary shadow-sm border-4 border-background rounded-full size-10 md:size-12 text-primary-foreground -translate-x-1/2">
-                            <Icon className="size-5 md:size-6 text-button-text" />
-                        </div>
+                    <m.div
+                        className="top-0 left-4 md:left-8 z-0 absolute bg-primary w-0.5"
+                        style={{ height: lineHeight, willChange: "height" }}
+                    />
 
-                        {/* Content */}
-                        <div className="space-y-3 pt-1">
-                            <div className="flex items-center gap-3">
+                    {steps.map(({ title, description, icon }, index) => (
+                        <div className="relative pb-12 last:pb-0 pl-16" key={index}>
+                            <TimelineIcon
+                                icon={icon}
+                                index={index}
+                                total={steps.length}
+                                scrollYProgress={scrollYProgress}
+                            />
+
+                            <div className="space-y-3 pt-1">
                                 <span className="font-bold text-primary-foreground dark:text-primary text-sm uppercase tracking-wider">
                                     Krok {index + 1}
                                 </span>
+                                <h3 className="font-bold text-foreground text-2xl tracking-tight">
+                                    {title}
+                                </h3>
+                                <p className="text-muted-foreground text-lg leading-relaxed">
+                                    {description}
+                                </p>
                             </div>
-                            <h3 className="font-bold text-foreground text-2xl tracking-tight">
-                                {title}
-                            </h3>
-                            <p className="text-muted-foreground text-lg leading-relaxed">
-                                {description}
-                            </p>
                         </div>
-                    </div>
-                ))}
-            </div>
+                    ))}
+                </div>
+            </LazyMotion>
         </div>
     );
 }

@@ -26,7 +26,7 @@ const faq = [
     {
         icon: Smartphone,
         question: "Funguje to na mobilu?",
-        answer: "Ano! SideBySide je plně responzivní webová aplikace. Můžete si ji také přidat na plochu telefonu jako PWA a bude se chovat téměř jako nativní aplikace.",
+        answer: "Ano! SideBySide je plně responzivní webová aplikace. Můžete si ji také přidat na plochu telefonu a nainstalovat jako webovou aplikaci a je to! Bude se chovat téměř jako nativní aplikace.",
     },
     {
         icon: MessageCircleHeart,
