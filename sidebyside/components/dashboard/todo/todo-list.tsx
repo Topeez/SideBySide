@@ -3,7 +3,7 @@
 import { useRef } from "react";
 import { Plus, ShoppingBag } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ActionButton from "../../action-button";
 
 import { TodoListProps } from "@/types/todo";
@@ -61,8 +61,8 @@ export function TodoList({ todos = [], coupleId }: TodoListProps) {
                     )}
                 </div>
             </CardContent>
-            <CardFooter className="mt-auto w-full">
-                              {/* Formulář pro přidání */}
+            <div className="flex items-center mt-auto p-6 pt-0 w-full">
+                {/* Formulář pro přidání */}
                 <form
                     ref={formRef}
                     action={async (formData) => {
@@ -82,7 +82,7 @@ export function TodoList({ todos = [], coupleId }: TodoListProps) {
                         <Plus className="size-4" />
                     </ActionButton>
                 </form>
-            </CardFooter>
+            </div>
         </Card>
     );
 }

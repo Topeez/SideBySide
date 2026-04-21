@@ -75,15 +75,20 @@ export default async function DashboardPage() {
     userProfile = myProfileData;
 
     // Partnerův profil (pokud existuje pár)
-    if (couple && partnerProfile === null || !pendingCouple) {
+    if (couple && !pendingCouple && partnerProfile === null) {
         const partnerId =
             couple.user1_id === user.id ? couple.user2_id : couple.user1_id;
-        const { data: pData } = await supabase
-            .from("profiles")
-            .select("*")
-            .eq("id", partnerId)
-            .single();
-        partnerProfile = pData;
+        
+        // Pro jistotu přidáme kontrolu, že partnerId není null 
+        // (kdyby náhodou byla v databázi anomálie)
+        if (partnerId) {
+            const { data: pData } = await supabase
+                .from("profiles")
+                .select("*")
+                .eq("id", partnerId)
+                .single();
+            partnerProfile = pData;
+        }
     }
 
     // 3. Načteme Úkoly
@@ -225,7 +230,7 @@ export default async function DashboardPage() {
     );
 
     return (
-        <div className="mx-auto p-4 md:p-8">
+        <div className="mx-auto p-4 md:p-8" suppressHydrationWarning>
             {/* --- HEADER --- */}
             <DashboardHeader />
 
