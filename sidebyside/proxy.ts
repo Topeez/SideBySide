@@ -1,8 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-export async function middleware(request: NextRequest) {
-  // Inicializujeme response hned na začátku
+export async function proxy(request: NextRequest) {
   let response = NextResponse.next({
     request: {
       headers: request.headers,
@@ -18,17 +17,19 @@ export async function middleware(request: NextRequest) {
           return request.cookies.getAll()
         },
         setAll(cookiesToSet) {
+          // Zápis do requestu
           cookiesToSet.forEach(({ name, value, options }) => {
             request.cookies.set({ name, value, ...options })
           })
 
+          // Aktualizace response objektu
           response = NextResponse.next({
             request: {
               headers: request.headers,
             },
           })
 
-          // 3. Zápis do response cookies (aby prohlížeč uložil nové tokeny)
+          // Zápis aktualizovaných cookies zpět do prohlížeče
           cookiesToSet.forEach(({ name, value, options }) => {
             response.cookies.set({ name, value, ...options })
           })
