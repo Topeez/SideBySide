@@ -29,24 +29,28 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     }
 
     // 3. Logika oprávnění (vidím to já nebo můj partner?)
+    const { data: couple } = await supabase
+        .from("couples")
+        .select("*")
+        .or(`user1_id.eq.${user.id},user2_id.eq.${user.id}`)
+        // Volitelně můžeš zkontrolovat, že to není pending invite (user2_id není null)
+        .not("user2_id", "is", null)
+        .maybeSingle();
+
+    // 4. Logika oprávnění (vidím to já nebo můj partner?)
     const isMyProfile = user.id === id;
 
     if (!isMyProfile) {
-        // ... ověření páru (viz předchozí odpovědi) ...
-        const { data: couple } = await supabase
-            .from("couples")
-            .select("*")
-            .or(`user1_id.eq.${user.id},user2_id.eq.${user.id}`)
-            .single();
-
+        // Pokud to není můj profil, zkontrolujeme, jestli ID v URL patří mému partnerovi z 'couple'
         const isPartner =
             couple && (couple.user1_id === id || couple.user2_id === id);
+            
         if (!isPartner) return <div>Nemáš přístup.</div>;
     }
 
     return (
         <div className="py-8">
-            <ProfileView profile={profile} isEditable={isMyProfile} />
+            <ProfileView profile={profile} isEditable={isMyProfile} hasCouple={!!couple} />
         </div>
     );
 }

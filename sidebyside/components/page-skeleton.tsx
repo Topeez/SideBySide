@@ -16,8 +16,8 @@ export function PageSkeleton({
     return (
         <div className="space-y-6 p-4 md:p-8">
             {/* 1. HEADER SKELETON */}
-            <div className="flex justify-between items-center mb-8 px-6">
-                <div className="space-y-2">
+            <div className="flex justify-between items-center mb-8 px-6 w-full">
+                <div className="space-y-2 mt-2">
                     <Skeleton
                         className={cn(
                             "rounded-md w-24 h-8",
@@ -31,9 +31,9 @@ export function PageSkeleton({
                         )}
                     />
                 </div>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
                     {/* Avatar a Theme toggle placeholder */}
-                    <Skeleton className="rounded-full size-8" />
+                    
                     <Skeleton className="rounded-full w-16 h-8" />
                     <Skeleton className="rounded-full size-8" />
                     <Skeleton className="rounded-full size-10" />

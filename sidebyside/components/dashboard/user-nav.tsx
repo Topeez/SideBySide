@@ -18,6 +18,7 @@ import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import { ProfileData } from "@/types/profile";
 import { useKeyboardNavigation } from "@/hooks/use-keyboard-navigation";
+import { ThemeToggleWrapper } from "../theme-switcher-wrapper";
 export function UserNav({
     id,
     email,
@@ -70,15 +71,18 @@ export function UserNav({
                     </Avatar>
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56" align="end" forceMount>
+            <DropdownMenuContent className="w-dvw md:w-100" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
-                    <div className="flex flex-col space-y-1">
+                    <div className="flex justify-between items-center">
+                      <div className="flex flex-col space-y-1">
                         <p className="font-medium text-sm leading-none">
                             Můj Profil
                         </p>
                         <p className="text-muted-foreground text-xs leading-none">
                             {email}
                         </p>
+                      </div>
+                      <span className="md:hidden"><ThemeToggleWrapper /></span>
                     </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />

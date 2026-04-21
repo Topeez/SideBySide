@@ -15,17 +15,16 @@ import {
 } from "lucide-react";
 import { EditProfileDialog } from "./edit-profile-dialog";
 import React, { useState } from "react";
-import { ThemeToggleWrapper } from "../theme-switcher-wrapper";
 import { Profile } from "@/types/profile";
-
-// Typy (uprav podle své DB)
+import { UserNav } from "../dashboard/user-nav";
 
 interface ProfileViewProps {
     profile: Profile;
     isEditable: boolean;
+    hasCouple?: boolean;
 }
 
-export function ProfileView({ profile, isEditable }: ProfileViewProps) {
+export function ProfileView({ profile, isEditable, hasCouple }: ProfileViewProps) {
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
     const initials = profile.full_name
@@ -37,10 +36,34 @@ export function ProfileView({ profile, isEditable }: ProfileViewProps) {
               .slice(0, 2)
         : "JA";
 
+      
+
     return (
         <div className="space-y-4 cs-container">
             {/* --- HLAVIČKA A AKCE --- */}
-            <div className="flex md:flex-row flex-col justify-between items-center gap-4 shadow-sm mb-6 px-6 py-2">
+            <div className="flex md:flex-row flex-col justify-between items-end gap-4 shadow-sm mb-6 px-6 py-2">
+                {isEditable ? (
+                    <div className="flex items-center gap-4">
+                        <Button
+                            onClick={() => setIsEditDialogOpen(true)}
+                            className="inset-shadow-primary-foreground inset-shadow-xs gap-2 shadow-md border-none text-button-text cursor-pointer"
+                        >
+                            <Edit className="size-4" />
+                            <span className="hidden md:block">
+                                Upravit údaje
+                            </span>
+                        </Button>
+                        <UserNav 
+                            id={(profile.id as string) || ""}
+                            email={profile.email || ""}
+                            avatar_url={(profile.avatar_url as string) || undefined}
+                            full_name={profile.full_name || profile.nickname || ""}
+                            couple_id={hasCouple ? "has-couple" : undefined} 
+                        />
+                    </div>
+                ) : (
+                    <></>
+                )}
                 <div>
                     <h1 className="font-bold text-2xl md:text-left text-center tracking-tight">
                         {isEditable
@@ -53,23 +76,6 @@ export function ProfileView({ profile, isEditable }: ProfileViewProps) {
                             : "Podívej se na údaje, které s tebou tvůj partner sdílí."}
                     </p>
                 </div>
-
-                {isEditable ? (
-                    <div className="flex gap-4">
-                        <ThemeToggleWrapper />
-                        <Button
-                            onClick={() => setIsEditDialogOpen(true)}
-                            className="inset-shadow-primary-foreground inset-shadow-xs gap-2 shadow-md border-none text-button-text cursor-pointer"
-                        >
-                            <Edit className="size-4" />
-                            <span className="hidden md:block">
-                                Upravit údaje
-                            </span>
-                        </Button>
-                    </div>
-                ) : (
-                    <></>
-                )}
             </div>
 
             {/* --- BENTO GRID --- */}

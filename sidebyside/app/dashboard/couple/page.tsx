@@ -119,7 +119,7 @@ export default async function CouplePage() {
                             <LayoutDashboard />
                         </Button>
                     </Link>
-                    <ThemeToggleWrapper />
+                    <span className="hidden sm:block"><ThemeToggleWrapper /></span>
                     <UserNav
                         id={user?.id || ""}
                         email={user?.email || ""}

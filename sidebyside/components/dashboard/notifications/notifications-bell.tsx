@@ -39,7 +39,7 @@ export function NotificationsBell({ userId }: NotificationsBellProps) {
                 </Button>
             </PopoverTrigger>
 
-            <PopoverContent className="p-0 w-80" align="end">
+            <PopoverContent className="p-1 w-dvw md:w-100" align="end">
                 {/* Hlavička */}
                 <div className="flex justify-between items-center px-4 py-3 border-b">
                     <div className="flex items-center gap-2">
@@ -65,7 +65,7 @@ export function NotificationsBell({ userId }: NotificationsBellProps) {
                 </div>
 
                 {/* Seznam */}
-                <ScrollArea className="max-h-105">
+                <ScrollArea className="max-h-105 overflow-scroll">
                     {notifications.length === 0 ? (
                         <div className="flex flex-col justify-center items-center gap-2 py-10 text-muted-foreground text-sm">
                             <Bell className="opacity-30 size-8" />
