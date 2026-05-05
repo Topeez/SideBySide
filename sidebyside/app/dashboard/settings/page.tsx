@@ -1,25 +1,29 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
+import Link from "next/link";
+import { LayoutDashboard } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ProfileForm } from "@/components/profile/profile-form";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+
+import { ProfileForm } from "@/components/profile/profile-form";
 import { PasswordForm } from "@/components/settings/password-form";
 import { DeleteAccount } from "@/components/settings/delete-account";
 import { RelationshipForm } from "@/components/settings/relationships-form";
-import { ThemeToggleWrapper } from "@/components/theme-switcher-wrapper";
-import { UserNav } from "@/components/dashboard/user-nav";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { LayoutDashboard } from "lucide-react";
 import { AppearanceForm } from "@/components/settings/appearance-form";
-import { PushNotificationManager } from "@/components/push-notification-manager";
-import { NotificationPreferences } from "@/components/settings/notification-preferences";
 import { PartnerCard } from "@/components/settings/partner-card";
 import { ChangeEmailForm } from "@/components/settings/change-email-form";
+import { ThemeToggleWrapper } from "@/components/theme-switcher-wrapper";
+import { UserNav } from "@/components/dashboard/user-nav";
+
+// Import nové Client komponenty
+import { NotificationSettings } from "@/components/settings/notification-settings";
 
 export const dynamic = "force-dynamic";
+
 export default async function SettingsPage() {
     const supabase = await createClient();
 
@@ -36,40 +40,41 @@ export default async function SettingsPage() {
         .eq("id", user.id)
         .single();
 
-    if (!profile)
+    if (!profile) {
         return (
-            <div className="flex justify-center items-center text-xl cs-container">
+            <div className="flex justify-center items-center h-40 text-xl cs-container">
                 Profil nenalezen.
             </div>
         );
+    }
 
+    // 3. Načtení vztahu
     const { data: couple } = await supabase
-      .from("couples")
-      .select("*")
-      .or(`user1_id.eq.${user.id},user2_id.eq.${user.id}`)
-      .not("user2_id", "is", null)
-      .maybeSingle();
+        .from("couples")
+        .select("*")
+        .or(`user1_id.eq.${user.id},user2_id.eq.${user.id}`)
+        .not("user2_id", "is", null)
+        .maybeSingle();
 
     const { data: pendingCouple } = await supabase
-      .from("couples")
-      .select("invite_code")
-      .eq("user1_id", user.id)
-      .is("user2_id", null)
-      .maybeSingle();
+        .from("couples")
+        .select("invite_code")
+        .eq("user1_id", user.id)
+        .is("user2_id", null)
+        .maybeSingle();
 
+    // 4. Načtení partnera (pokud existuje)
     let partnerProfile = null;
-
     if (couple && !pendingCouple) {
-        const partnerId = couple.user1_id === user.id
-            ? couple.user2_id
-            : couple.user1_id;
-
+        const partnerId =
+            couple.user1_id === user.id ? couple.user2_id : couple.user1_id;
         const { data } = await supabase
             .from("profiles")
-            .select("nickname, full_name, avatar_url, bio, birth_date, love_language")
+            .select(
+                "nickname, full_name, avatar_url, bio, birth_date, love_language",
+            )
             .eq("id", partnerId)
             .single();
-
         partnerProfile = data;
     }
 
@@ -86,23 +91,22 @@ export default async function SettingsPage() {
                     </p>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Link href="/dashboard" aria-label="link to dashboard">
+                    <Link href="/dashboard" aria-label="Zpět na dashboard">
                         <Button
                             variant="ghost"
                             size="icon"
-                            aria-label="dashboard link button"
-                            className="relative bg-accent shadow-md border border-muted rounded-full text-muted-foreground hover:text-foreground cursor-pointer"
+                            className="relative bg-accent shadow-md border border-muted rounded-full text-muted-foreground hover:text-foreground"
                         >
                             <LayoutDashboard />
                         </Button>
                     </Link>
                     <ThemeToggleWrapper />
                     <UserNav
-                        id={user?.id || ""}
-                        email={user?.email || ""}
-                        avatar_url={profile.avatar_url || ""}
-                        couple_id={couple?.id || ""}
-                        full_name={user?.user_metadata.full_name || ""}
+                        id={user.id}
+                        email={user.email ?? ""}
+                        avatar_url={profile.avatar_url ?? ""}
+                        couple_id={couple?.id ?? ""}
+                        full_name={user.user_metadata?.full_name ?? ""}
                     />
                 </div>
             </div>
@@ -116,8 +120,11 @@ export default async function SettingsPage() {
                     <TabsTrigger
                         value="relationship"
                         disabled={!couple}
-                        title={!couple ? "Nejprve se spáruj s partnerem" : undefined}
-                        className="disabled:opacity-40 disabled:cursor-not-allowed"
+                        title={
+                            !couple
+                                ? "Nejprve se spáruj s partnerem"
+                                : undefined
+                        }
                     >
                         Vztah
                     </TabsTrigger>
@@ -128,79 +135,89 @@ export default async function SettingsPage() {
                 {/* Obsah - Profil */}
                 <TabsContent
                     value="profile"
-                    className="mt-6 p-6 border rounded-lg"
+                    className="space-y-6 mt-6 p-6 border rounded-lg"
                 >
-                    <div className="flex flex-col items-center space-y-6">
-                        <div className="self-start">
-                            <h3 className="font-medium text-lg">
-                                Osobní údaje
-                            </h3>
-                            <p className="text-muted-foreground text-sm">
-                                Toto uvidí tvůj partner.
-                            </p>
-                        </div>
-                        <Separator />
-
-                        <ProfileForm profile={profile} />
+                    <div>
+                        <h3 className="font-medium text-lg">Osobní údaje</h3>
+                        <p className="text-muted-foreground text-sm">
+                            Toto uvidí tvůj partner.
+                        </p>
                     </div>
+                    <Separator />
+                    <ProfileForm profile={profile} />
                 </TabsContent>
 
-                <TabsContent value="relationship" className="mt-6 p-6 border rounded-lg">
-                    <div className="space-y-6">
-                        <div>
-                            <h3 className="font-medium text-lg">Nastavení vztahu</h3>
-                            <p className="text-muted-foreground text-sm">
-                                Společná data, která se zobrazují oběma.
-                            </p>
-                        </div>
-                        <Separator />
-
-                        {couple && !pendingCouple && (
-                            <div className="space-y-6">
-                                {partnerProfile && (
-                                    <div className="space-y-2">
-                                        <p className="font-medium text-sm">Tvůj partner</p>
-                                        <PartnerCard {...partnerProfile} />
-                                    </div>
-                                )}
-                                <Separator />
-                                <RelationshipForm
-                                    coupleId={couple.id}
-                                    initialDate={couple.relationship_start}
-                                />
-                            </div>
-                        )}
+                {/* Obsah - Vztah */}
+                <TabsContent
+                    value="relationship"
+                    className="space-y-6 mt-6 p-6 border rounded-lg"
+                >
+                    <div>
+                        <h3 className="font-medium text-lg">
+                            Nastavení vztahu
+                        </h3>
+                        <p className="text-muted-foreground text-sm">
+                            Společná data, která se zobrazují oběma.
+                        </p>
                     </div>
+                    <Separator />
+                    {couple && !pendingCouple && (
+                        <div className="space-y-6">
+                            {partnerProfile && (
+                                <div className="space-y-2">
+                                    <p className="font-medium text-sm">
+                                        Tvůj partner
+                                    </p>
+                                    <PartnerCard {...partnerProfile} />
+                                </div>
+                            )}
+                            <Separator />
+                            <RelationshipForm
+                                coupleId={couple.id}
+                                initialDate={couple.relationship_start}
+                            />
+                        </div>
+                    )}
                 </TabsContent>
 
-                <TabsContent value="appearance">
-                    <div className="space-y-6 p-6 border rounded-lg">
-                        <div>
-                            <h3 className="font-medium text-lg">Vzhled</h3>
-                            <p className="text-muted-foreground text-sm">
-                                Přizpůsob si vzhled svého dashboardu.
-                            </p>
-                        </div>
-                        <Separator />
-                        <AppearanceForm />
+                {/* Obsah - Vzhled */}
+                <TabsContent
+                    value="appearance"
+                    className="space-y-6 mt-6 p-6 border rounded-lg"
+                >
+                    <div>
+                        <h3 className="font-medium text-lg">Vzhled</h3>
+                        <p className="text-muted-foreground text-sm">
+                            Přizpůsob si vzhled svého dashboardu.
+                        </p>
                     </div>
+                    <Separator />
+                    <AppearanceForm />
                 </TabsContent>
+
+                {/* Obsah - Účet */}
                 <TabsContent value="account" className="space-y-6 mt-6">
-                    {/* Sekce Email (jen pro čtení) */}
                     <div className="space-y-4 p-6 border rounded-lg">
                         <div>
-                            <h3 className="font-medium text-lg">Přihlašovací údaje</h3>
-                            <p className="text-muted-foreground text-sm">Tvůj email pro přihlášení.</p>
+                            <h3 className="font-medium text-lg">
+                                Přihlašovací údaje
+                            </h3>
+                            <p className="text-muted-foreground text-sm">
+                                Tvůj email pro přihlášení.
+                            </p>
                         </div>
                         <div className="space-y-2">
                             <Label>Aktuální email</Label>
-                            <Input value={user.email} disabled className="bg-muted max-w-lg" />
+                            <Input
+                                value={user.email ?? ""}
+                                disabled
+                                className="bg-muted max-w-lg"
+                            />
                         </div>
                         <Separator />
-                        <ChangeEmailForm /> 
+                        <ChangeEmailForm />
                     </div>
 
-                    {/* Sekce Heslo */}
                     <div className="space-y-4 p-6 border rounded-lg">
                         <div>
                             <h3 className="font-medium text-lg">Změna hesla</h3>
@@ -208,35 +225,24 @@ export default async function SettingsPage() {
                                 Zvol si silné heslo pro ochranu svého účtu.
                             </p>
                         </div>
-
                         <PasswordForm />
                     </div>
 
-                    <div className="space-y-4 p-6 border rounded-lg">
-                        <PushNotificationManager />
+                    {/* Použití nové Client komponenty */}
+                    <NotificationSettings
+                        initialPrefs={profile.notification_preferences ?? {}}
+                    />
 
-                        <div className="pt-4 border-t">
-                            <p className="mb-3 font-medium text-sm">Typy oznámení</p>
-                            <NotificationPreferences
-                                initialPrefs={profile.notification_preferences ?? {}}
-                            />
+                    <div className="flex justify-between items-center bg-destructive/10 p-6 border border-destructive/50 rounded-lg">
+                        <div>
+                            <h3 className="font-medium text-destructive">
+                                Nebezpečná zóna
+                            </h3>
+                            <p className="text-destructive/80 text-sm">
+                                Smazání účtu je nevratné.
+                            </p>
                         </div>
-                    </div>
-
-                    {/* Danger Zone */}
-                    <div className="bg-red-50 dark:bg-red-950/10 p-6 border border-red-200 dark:border-red-900/50 rounded-lg">
-                        <div className="flex justify-between items-center">
-                            <div>
-                                <h3 className="font-medium text-red-600 dark:text-red-400">
-                                    Nebezpečná zóna
-                                </h3>
-                                <p className="text-red-600/80 dark:text-red-400/80 text-sm">
-                                    Smazání účtu je nevratné.
-                                </p>
-                            </div>
-
-                            <DeleteAccount />
-                        </div>
+                        <DeleteAccount />
                     </div>
                 </TabsContent>
             </Tabs>

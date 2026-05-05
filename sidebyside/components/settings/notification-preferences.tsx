@@ -8,33 +8,37 @@ import { toast } from "sonner";
 import { Heart, Trophy, ListTodo, Smile, CalendarPlus } from "lucide-react";
 
 const PREF_ITEMS = [
-    { key: "love_note",   label: "Vzkazy od partnera/ky",     icon: Heart },
-    { key: "milestone",   label: "Nový milník",               icon: Trophy },
-    { key: "bucket_item", label: "Položka v Bucket Listu",    icon: CalendarPlus },
-    { key: "event",       label: "Nová událost",              icon: CalendarPlus },
-    { key: "todo",        label: "Nový úkol",                 icon: ListTodo },
-    { key: "mood",        label: "Partner/ka sdílel náladu",     icon: Smile },
+    { key: "love_note", label: "Vzkazy od partnera/ky", icon: Heart },
+    { key: "milestone", label: "Nový milník", icon: Trophy },
+    { key: "bucket_item", label: "Položka v Bucket Listu", icon: CalendarPlus },
+    { key: "event", label: "Nová událost", icon: CalendarPlus },
+    { key: "todo", label: "Nový úkol", icon: ListTodo },
+    { key: "mood", label: "Partner/ka sdílel náladu", icon: Smile },
 ] as const;
 
-type PrefKey = typeof PREF_ITEMS[number]["key"];
+type PrefKey = (typeof PREF_ITEMS)[number]["key"];
 
 interface Props {
     initialPrefs: Record<PrefKey, boolean>;
+    disabled?: boolean;
 }
 
-export function NotificationPreferences({ initialPrefs }: Props) {
+export function NotificationPreferences({
+    initialPrefs,
+    disabled = true,
+}: Props) {
     const [prefs, setPrefs] = useState<Record<PrefKey, boolean>>({
-        love_note:   initialPrefs?.love_note   ?? true,
-        milestone:   initialPrefs?.milestone   ?? true,
+        love_note: initialPrefs?.love_note ?? true,
+        milestone: initialPrefs?.milestone ?? true,
         bucket_item: initialPrefs?.bucket_item ?? true,
-        todo:        initialPrefs?.todo        ?? true,
-        mood:        initialPrefs?.mood        ?? true,
-        event:       initialPrefs?.event       ?? true,
+        todo: initialPrefs?.todo ?? true,
+        mood: initialPrefs?.mood ?? true,
+        event: initialPrefs?.event ?? true,
     });
 
     const handleToggle = async (key: PrefKey, value: boolean) => {
         const updated = { ...prefs, [key]: value };
-        setPrefs(updated); 
+        setPrefs(updated);
 
         const result = await updateNotificationPreferences(updated);
         if (!result?.success) {
@@ -48,11 +52,18 @@ export function NotificationPreferences({ initialPrefs }: Props) {
             {PREF_ITEMS.map(({ key, label, icon: Icon }) => (
                 <div
                     key={key}
-                    className="flex justify-between items-center py-2 last:border-0 border-b"
+                    // Přidána podmínka pro opacity, pokud je disabled
+                    className={`flex justify-between items-center py-2 last:border-0 border-b transition-opacity ${
+                        disabled ? "opacity-50" : "opacity-100"
+                    }`}
                 >
                     <div className="flex items-center gap-3">
                         <Icon className="size-4 text-muted-foreground" />
-                        <Label htmlFor={key} className="font-normal cursor-pointer">
+                        <Label
+                            htmlFor={key}
+                            // Zabránění pointer událostem, když je disabled
+                            className={`font-normal ${disabled ? "cursor-not-allowed" : "cursor-pointer"}`}
+                        >
                             {label}
                         </Label>
                     </div>
@@ -60,6 +71,7 @@ export function NotificationPreferences({ initialPrefs }: Props) {
                         id={key}
                         checked={prefs[key]}
                         onCheckedChange={(v: boolean) => handleToggle(key, v)}
+                        disabled={disabled} // VYPNUTÍ PŘEPÍNAČE
                     />
                 </div>
             ))}

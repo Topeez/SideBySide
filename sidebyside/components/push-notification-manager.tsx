@@ -6,6 +6,11 @@ import { saveSubscription, deleteSubscription } from "@/app/actions/push";
 import { toast } from "sonner";
 import ActionButton from "./action-button";
 
+interface PushManagerProps {
+    onSubscriptionChange?: (isSubscribed: boolean) => void;
+}
+
+// 1. Pomocné funkce jsou přesunuté mimo komponentu (nepotřebují state)
 function urlBase64ToUint8Array(base64String: string) {
     const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
     const base64 = (base64String + padding)
@@ -19,42 +24,61 @@ function urlBase64ToUint8Array(base64String: string) {
     return outputArray;
 }
 
-export function PushNotificationManager() {
+async function syncSubscriptionToDb(sub: PushSubscription) {
+    const result = await saveSubscription(JSON.parse(JSON.stringify(sub)));
+    if (!result.success) {
+        console.error("Failed to sync sub to DB:", result.error);
+    }
+}
+
+export function PushNotificationManager({
+    onSubscriptionChange,
+}: PushManagerProps) {
     const [isSupported, setIsSupported] = useState(false);
     const [subscription, setSubscription] = useState<PushSubscription | null>(
         null,
     );
     const [loading, setLoading] = useState(true);
 
-    async function syncSubscriptionToDb(sub: PushSubscription) {
-        const result = await saveSubscription(JSON.parse(JSON.stringify(sub)));
-        if (!result.success) {
-            console.error("Failed to sync sub to DB:", result.error);
+    useEffect(() => {
+        if (onSubscriptionChange) {
+            onSubscriptionChange(!!subscription);
         }
-    }
+    }, [subscription, onSubscriptionChange]);
 
-    async function registerServiceWorker() {
-        try {
-            const registration = await navigator.serviceWorker.register(
-                "/sw.js",
-                {
-                    scope: "/",
-                    updateViaCache: "none",
-                },
-            );
+    // 2. useEffect obsahuje veškerou logiku pro prvotní načtení
+    useEffect(() => {
+        const initAndRegister = async () => {
+            if ("serviceWorker" in navigator && "PushManager" in window) {
+                setIsSupported(true);
+                try {
+                    const registration = await navigator.serviceWorker.register(
+                        "/sw.js",
+                        {
+                            scope: "/",
+                            updateViaCache: "none",
+                        },
+                    );
 
-            const sub = await registration.pushManager.getSubscription();
-            setSubscription(sub);
+                    const sub =
+                        await registration.pushManager.getSubscription();
+                    setSubscription(sub);
 
-            if (sub) {
-                await syncSubscriptionToDb(sub);
+                    if (sub) {
+                        await syncSubscriptionToDb(sub);
+                    }
+                } catch (error) {
+                    console.error("Service Worker Error", error);
+                } finally {
+                    setLoading(false);
+                }
+            } else {
+                setLoading(false);
             }
-        } catch (error) {
-            console.error("Service Worker Error", error);
-        } finally {
-            setLoading(false);
-        }
-    }
+        };
+
+        initAndRegister();
+    }, []); // <-- Žádné externí závislosti, čistý prázdný array!
 
     async function subscribeToPush() {
         setLoading(true);
@@ -80,33 +104,21 @@ export function PushNotificationManager() {
     }
 
     async function unsubscribeFromPush() {
-            setLoading(true);
-    try {
-        if (subscription) {
-            await subscription.unsubscribe();
-            await deleteSubscription();
-            setSubscription(null);
-            toast.success("Oznámení vypnuta.");
-        }
-    } catch (error) {
+        setLoading(true);
+        try {
+            if (subscription) {
+                await subscription.unsubscribe();
+                await deleteSubscription();
+                setSubscription(null);
+                toast.success("Oznámení vypnuta.");
+            }
+        } catch (error) {
             console.error("Unsubscribe failed", error);
             toast.error("Chyba při vypínání.");
         } finally {
             setLoading(false);
         }
     }
-
-    useEffect(() => {
-        const init = async () => {
-            if ("serviceWorker" in navigator && "PushManager" in window) {
-                setIsSupported(true);
-                await registerServiceWorker();
-            } else {
-                setLoading(false);
-            }
-        };
-        init();
-    }, []);
 
     if (!isSupported) return null;
 
