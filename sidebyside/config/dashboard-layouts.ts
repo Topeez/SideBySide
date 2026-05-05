@@ -1,4 +1,4 @@
-import { DashboardLayoutType } from "@/app/actions/profile";
+import { DashboardLayoutType } from "@/types/profile";
 
 type WidgetClasses = {
   closestEvent: string;
