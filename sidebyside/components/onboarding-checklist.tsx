@@ -19,12 +19,14 @@ interface OnboardingChecklistProps {
     userProfile: ProfileData;
     eventsCount: number;
     hasActiveCouple: boolean;
+    hasLoveNote?: boolean;
 }
 
 export function OnboardingChecklist({
     userProfile,
     eventsCount,
     hasActiveCouple,
+    hasLoveNote = false,
 }: OnboardingChecklistProps) {
     const steps = useMemo(
         () => [
@@ -57,6 +59,20 @@ export function OnboardingChecklist({
                 action: <InviteButton userId={userProfile.id} />,
             },
             {
+                id: "love-note",
+                label: "Napsat první vzkaz",
+                description: "Potěš svou polovičku Love Note",
+                done: hasLoveNote,
+                action: (
+                    <Link
+                        href="/dashboard"
+                        className="bg-secondary/20 hover:bg-secondary/30 px-3 py-1.5 rounded-full font-medium text-secondary text-xs whitespace-nowrap transition-colors"
+                    >
+                        Napsat vzkaz
+                    </Link>
+                ),
+            },
+            {
                 id: "event",
                 label: "Naplánovat první rande",
                 description: "Přidej něco do kalendáře",
@@ -71,7 +87,7 @@ export function OnboardingChecklist({
                 ),
             },
         ],
-        [userProfile, eventsCount, hasActiveCouple],
+        [userProfile, eventsCount, hasActiveCouple, hasLoveNote],
     );
 
     const completedSteps = steps.filter((s) => s.done).length;

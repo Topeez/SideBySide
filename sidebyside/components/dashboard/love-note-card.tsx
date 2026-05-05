@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Heart, Pencil, Trash2 } from "lucide-react";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { updateLoveNote } from "@/app/actions/update-note";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -19,6 +19,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { createClient } from "@/utils/supabase/client";
 
 interface LoveNoteCardProps {
     initialNote: string;
@@ -35,15 +36,44 @@ export function LoveNoteCard({
 }: LoveNoteCardProps) {
     const [isEditing, setIsEditing] = useState(false);
     const [isPending, startTransition] = useTransition();
+    const [note, setNote] = useState(initialNote);
+    const [authorIdState, setAuthorIdState] = useState(authorId);
 
-    const isMyNote = authorId === currentUserId;
-    const isEmpty = !initialNote || initialNote.trim().length === 0;
+    const isMyNote = authorIdState === currentUserId;
+    const isEmpty = !note || note.trim().length === 0;
+
+    useEffect(() => {
+        const supabase = createClient();
+
+        const channel = supabase
+            .channel(`couple-love-note-${coupleId}`)
+            .on(
+                "postgres_changes",
+                {
+                    event: "UPDATE",
+                    schema: "public",
+                    table: "couples",
+                    filter: `id=eq.${coupleId}`,
+                },
+                (payload: any) => {
+                    const newRow = payload.new as any;
+                    setNote(newRow.love_note || "");
+                    setAuthorIdState(newRow.love_note_author_id || "");
+                },
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, [coupleId]);
 
     const handleDelete = () => {
         startTransition(async () => {
             const formData = new FormData();
             formData.append("coupleId", coupleId);
             formData.append("note", "");
+            setNote("");
             await updateLoveNote(formData);
         });
     };
@@ -112,6 +142,9 @@ export function LoveNoteCard({
                 {isEditing ? (
                     <form
                         action={async (formData) => {
+                            const newNote = (formData.get("note") as string) ?? "";
+                            setNote(newNote);
+                            setAuthorIdState(currentUserId);
                             await updateLoveNote(formData);
                             setIsEditing(false);
                         }}
@@ -120,7 +153,7 @@ export function LoveNoteCard({
                         <input type="hidden" name="coupleId" value={coupleId} />
                         <Textarea
                             name="note"
-                            defaultValue={initialNote}
+                            defaultValue={note}
                             className="bg-white/50 border-[#E27D60]/20 focus-visible:border-secondary-foreground/50 focus:ring-secondary-foreground/50! min-h-20 font-sans! text-sm"
                             autoFocus
                             placeholder="Napiš něco hezkého..."
@@ -156,7 +189,7 @@ export function LoveNoteCard({
                             ? isMyNote
                                 ? "Zatím jsi nic nenapsal(a). Klikni na tužku a potěš svou polovičku!"
                                 : "Zatím tu žádný vzkaz není."
-                            : `"${initialNote}"`}
+                            : `"${note}"`}
                     </p>
                 )}
             </CardContent>

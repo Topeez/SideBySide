@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Dialog,
@@ -16,6 +16,7 @@ import { MoodCheckInProps } from "@/types/mood";
 import { Smile } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import ActionButton from "../action-button";
+import { createClient } from "@/utils/supabase/client";
 
 const MOODS = [
   { emoji: "🥰", label: "Zamilovaně" },
@@ -42,15 +43,77 @@ export function MoodCheckIn({
   partnerNickname,
   myAvatar,
   partnerAvatar,
+  coupleId,
+  currentUserId,
   compact = false,
 }: MoodCheckInProps) {
-  const [currentMood, setCurrentMood] = useState<string | null>(
-    isTodayMood(myMoodUpdatedAt) ? myMood : null
-  );
+  const [currentMood, setCurrentMood] = useState<string | null>(null);
+  const [partnerMoodState, setPartnerMoodState] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
 
-  const partnerMoodToday = isTodayMood(partnerMoodUpdatedAt) ? partnerMood : null;
+  useEffect(() => {
+    if (isTodayMood(myMoodUpdatedAt)) {
+      setCurrentMood(myMood);
+    } else {
+      setCurrentMood(null);
+    }
+
+    if (isTodayMood(partnerMoodUpdatedAt)) {
+      setPartnerMoodState(partnerMood);
+    } else {
+      setPartnerMoodState(null);
+    }
+  }, [myMood, myMoodUpdatedAt, partnerMood, partnerMoodUpdatedAt]);
+
+  useEffect(() => {
+    const supabase = createClient();
+
+    const channel = supabase
+      .channel(`couple-mood-${coupleId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "couples",
+          filter: `id=eq.${coupleId}`,
+        },
+        (payload: any) => {
+          const newRow = payload.new as any;
+          const isUser1 = newRow.user1_id === currentUserId;
+
+          const myMoodValue = isUser1 ? newRow.user1_mood : newRow.user2_mood;
+          const myMoodUpdatedAtValue = isUser1
+            ? newRow.user1_mood_updated_at
+            : newRow.user2_mood_updated_at;
+
+          const partnerMoodValue = isUser1
+            ? newRow.user2_mood
+            : newRow.user1_mood;
+          const partnerMoodUpdatedAtValue = isUser1
+            ? newRow.user2_mood_updated_at
+            : newRow.user1_mood_updated_at;
+
+          if (isTodayMood(myMoodUpdatedAtValue)) {
+            setCurrentMood(myMoodValue);
+          } else {
+            setCurrentMood(null);
+          }
+
+          if (isTodayMood(partnerMoodUpdatedAtValue)) {
+            setPartnerMoodState(partnerMoodValue);
+          } else {
+            setPartnerMoodState(null);
+          }
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [coupleId, currentUserId]);
 
   const handleSelect = async (emoji: string) => {
     setIsLoading(true);
@@ -77,7 +140,7 @@ export function MoodCheckIn({
               <AvatarFallback className="text-xs">{partnerNickname[0]}</AvatarFallback>
             </Avatar>
             <span className="text-lg leading-none">
-              {partnerMoodToday ?? <span className="text-muted-foreground text-xs">–</span>}
+              {partnerMoodState ?? <span className="text-muted-foreground text-xs">–</span>}
             </span>
           </div>
         </>
@@ -121,7 +184,7 @@ export function MoodCheckIn({
             </Avatar>
             <span className="text-muted-foreground">{partnerNickname.split(" ")[0]}:</span>
             <span className="text-lg">
-              {partnerMoodToday ?? <span className="text-muted-foreground text-xs italic">ještě nesdílel/a</span>}
+              {partnerMoodState ?? <span className="text-muted-foreground text-xs italic">ještě nesdílel/a</span>}
             </span>
           </div>
 

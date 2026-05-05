@@ -7,7 +7,7 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 const playfair = Playfair_Display({ variable: "--font-playfair", subsets: ["latin"] });
 const nunito = Nunito({ variable: "--font-nunito", subsets: ["latin"] });
-const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
+const inter = Inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
 
 export const viewport: Viewport = {
     themeColor: "#E27D60",
@@ -93,10 +93,15 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="cs" suppressHydrationWarning
+        <html
+            lang="cs"
+            suppressHydrationWarning
             className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} ${nunito.variable} ${inter.variable}`}
         >
-            <body className="bg-background min-h-screen text-foreground antialiased">
+            <body
+                suppressHydrationWarning
+                className="bg-background min-h-screen text-foreground antialiased"
+            >
                 <main>{children}</main>
                 <Toaster />
             </body>

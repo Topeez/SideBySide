@@ -7,5 +7,7 @@ export interface MoodCheckInProps {
   partnerNickname: string;
   myAvatar?: string | null;
   partnerAvatar?: string | null;
+  coupleId: string;
+  currentUserId: string;
   compact?: boolean;
 }

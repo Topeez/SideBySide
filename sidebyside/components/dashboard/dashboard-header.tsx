@@ -64,6 +64,8 @@ export async function DashboardHeader() {
             partnerNickname: partnerData?.nickname ?? "Partner",
             myAvatar: myData?.avatar_url,
             partnerAvatar: partnerData?.avatar_url,
+            coupleId: couple.id,
+            currentUserId: user.id,
         };
     }
 

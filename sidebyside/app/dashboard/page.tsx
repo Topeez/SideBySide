@@ -240,6 +240,7 @@ export default async function DashboardPage() {
                         userProfile={{ ...userProfile, couple_id: null }}
                         hasActiveCouple={!!couple}
                         eventsCount={events.length}
+                        hasLoveNote={noteToDisplay.length > 0}
                     />
                 </div>
             )}
