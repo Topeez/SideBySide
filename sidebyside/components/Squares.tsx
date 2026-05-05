@@ -2,8 +2,6 @@
 
 import React, { useRef, useEffect } from "react";
 
-type CanvasStrokeStyle = string | CanvasGradient | CanvasPattern;
-
 interface GridOffset {
     x: number;
     y: number;
@@ -214,8 +212,7 @@ const Squares: React.FC<SquaresProps> = ({
                 transform: "translateZ(0)",
                 willChange: "transform",
             }}
-        >
-        </canvas>
+        ></canvas>
     );
 };
 

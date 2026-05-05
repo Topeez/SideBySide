@@ -1,9 +1,11 @@
 "use client";
 
-import { useOptimistic, startTransition } from "react";
+import { useOptimistic, startTransition, useEffect } from "react";
 import { createTodo, toggleTodo, deleteTodo } from "@/app/actions/todos";
 import { toast } from "sonner";
-import { Todo, OptimisticTodoAction } from "@/types/todo";
+import { Todo, OptimisticTodoAction, TodoRow } from "@/types/todo";
+import { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
+import {createClient,} from "@/utils/supabase/client";
 
 export function useTodos(todos: Todo[], coupleId: string) {
     const [optimisticTodos, updateOptimisticTodos] = useOptimistic(
@@ -23,6 +25,64 @@ export function useTodos(todos: Todo[], coupleId: string) {
             }
         },
     );
+
+     useEffect(() => {
+    if (!coupleId) return;
+
+    const supabase = createClient();
+
+    const channel = supabase
+      .channel(`todos-${coupleId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "todos",
+          filter: `couple_id=eq.${coupleId}`,
+        },
+        (payload: RealtimePostgresChangesPayload<TodoRow>) => {
+          const newRow = (payload.new as TodoRow | null) ?? undefined;
+          const oldRow = (payload.old as TodoRow | null) ?? undefined;
+
+          startTransition(() => {
+            switch (payload.eventType) {
+              case "INSERT":
+                if (!newRow) return;
+                updateOptimisticTodos({
+                  type: "ADD",
+                  todo: {
+                    id: newRow.id,
+                    title: newRow.title,
+                    is_completed: newRow.is_completed,
+                  },
+                });
+                break;
+              case "UPDATE":
+                if (!newRow) return;
+                updateOptimisticTodos({
+                  type: "TOGGLE",
+                  id: newRow.id,
+                  checked: newRow.is_completed,
+                });
+                break;
+              case "DELETE":
+                if (!oldRow) return;
+                updateOptimisticTodos({
+                  type: "DELETE",
+                  id: oldRow.id,
+                });
+                break;
+            }
+          });
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [coupleId, updateOptimisticTodos]);
 
     const handleAdd = async (formData: FormData) => {
         const title = (formData.get("title") as string)?.trim();

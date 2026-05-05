@@ -3,17 +3,18 @@
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import { notifyPartner } from "@/lib/couple-utils";
+import { ActionResult } from "@/types/actions";
 
-export async function updateLoveNote(formData: FormData) {
+export async function updateLoveNote(formData: FormData): Promise<ActionResult> {
     const note = (formData.get("note") as string | null) ?? "";
     const coupleId = formData.get("coupleId") as string;
 
-    if (!coupleId) return { success: false };
+    if (!coupleId) return { success: false, error: "Chyba coupleId" };
 
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
-    if (!user) return { success: false };
+    if (!user) return { success: false, error: "Nepřihlášen" };
 
     const { error } = await supabase
         .from("couples")
@@ -26,7 +27,7 @@ export async function updateLoveNote(formData: FormData) {
 
     if (error) {
         console.error("Error updating love note:", error);
-        return { success: false };
+        return { success: false, error: error.message };
     }
 
     if (note.trim().length > 0) {

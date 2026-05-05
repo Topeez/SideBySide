@@ -3,8 +3,9 @@
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import { notifyPartner } from "@/lib/couple-utils";
+import { ActionResult } from "@/types/actions";
 
-export async function createTodo(formData: FormData) {
+export async function createTodo(formData: FormData): Promise<ActionResult> {
     const title = formData.get("title") as string;
     const coupleId = formData.get("coupleId") as string;
 
@@ -18,7 +19,7 @@ export async function createTodo(formData: FormData) {
 
     if (!user) {
         console.error("Uživatel není přihlášen");
-        return { success: false };
+        return { success: false, error: "Uživatel není přihlášen" };
     }
 
     const { error } = await supabase
@@ -32,7 +33,7 @@ export async function createTodo(formData: FormData) {
 
     if (error) {
         console.error("Chyba při insertu todos:", error);
-        return { success: false };
+        return { success: false, error: error.message };
     }
 
     const fullName = user.user_metadata.full_name || "Partner";
@@ -51,9 +52,10 @@ export async function createTodo(formData: FormData) {
     return { success: true };
 }
 
-export async function toggleTodo(todoId: string, isCompleted: boolean) {
+export async function toggleTodo(todoId: string, isCompleted: boolean): Promise<ActionResult> {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
+    if(!user) return { success: false, error: "Nepřihlášen" };
 
     const { data: todo, error } = await supabase
         .from("todos")
@@ -64,7 +66,7 @@ export async function toggleTodo(todoId: string, isCompleted: boolean) {
 
     if (error) {
         console.error("Error toggling todo:", error);
-        return { success: false };
+        return { success: false, error: error.message };
     }
 
     revalidatePath("/dashboard");
@@ -86,7 +88,7 @@ export async function toggleTodo(todoId: string, isCompleted: boolean) {
     return { success: true };
 }
 
-export async function deleteTodo(todoId: string) {
+export async function deleteTodo(todoId: string): Promise<ActionResult> {
     const supabase = await createClient();
 
     const { data: { user } } = await supabase.auth.getUser();

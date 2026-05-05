@@ -20,3 +20,11 @@ export interface TodoItemProps {
     onToggle: (id: string, checked: boolean) => void;
     onDelete: (id: string) => void;
 }
+
+export interface TodoRow {
+  id: string;
+  title: string;
+  is_completed: boolean;
+  couple_id: string;
+  created_by: string;
+}

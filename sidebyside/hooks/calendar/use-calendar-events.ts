@@ -1,4 +1,4 @@
-import { useOptimistic, startTransition } from "react";
+import { useOptimistic, startTransition, useEffect } from "react";
 import {
     format,
     addYears,
@@ -12,6 +12,8 @@ import { Profile } from "@/types/profile";
 import { createEvent, deleteEvent } from "@/app/actions/events";
 import { toast } from "sonner";
 import { CalendarItem, OptimisticAction } from "@/types/calendar";
+import { createClient } from "@/utils/supabase/client";
+import { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 
 interface UseCalendarEventsProps {
     events: Event[];
@@ -40,6 +42,67 @@ export function useCalendarEvents({
             return state;
         },
     );
+
+    useEffect(() => {
+    if (!coupleId) return;
+
+    const supabase = createClient();
+
+    const channel = supabase
+      .channel(`events-${coupleId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "events",
+          filter: `couple_id=eq.${coupleId}`,
+        },
+        (payload: RealtimePostgresChangesPayload<Event>) => {
+          const newRow = (payload.new as Event | null) ?? undefined;
+          const oldRow = (payload.old as Event | null) ?? undefined;
+
+          startTransition(() => {
+            switch (payload.eventType) {
+              case "INSERT":
+                if (!newRow) return;
+                updateOptimisticEvents({
+                  type: "ADD",
+                  event: {
+                    ...newRow,
+                    couple_id: newRow.couple_id ?? coupleId,
+                  },
+                });
+                break;
+
+              case "UPDATE":
+                if (!newRow) return;
+                updateOptimisticEvents({
+                  type: "UPDATE",
+                  event: {
+                    ...newRow,
+                    couple_id: newRow.couple_id ?? coupleId,
+                  },
+                });
+                break;
+
+              case "DELETE":
+                if (!oldRow) return;
+                updateOptimisticEvents({
+                  type: "DELETE",
+                  id: oldRow.id,
+                });
+                break;
+            }
+          });
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [coupleId, updateOptimisticEvents]);
 
     const handleAddEvent = async (formData: FormData) => {
         const title = formData.get("title") as string;

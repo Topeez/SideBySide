@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Heart, Pencil, Trash2 } from "lucide-react";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState, useTransition, useRef } from "react";
 import { updateLoveNote } from "@/app/actions/update-note";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -20,6 +20,8 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { createClient } from "@/utils/supabase/client";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 
 interface LoveNoteCardProps {
     initialNote: string;
@@ -27,6 +29,12 @@ interface LoveNoteCardProps {
     authorId: string;
     currentUserId: string;
 }
+
+type CoupleRow = {
+    id: string;
+    love_note: string | null;
+    love_note_author_id: string | null;
+};
 
 export function LoveNoteCard({
     initialNote,
@@ -38,10 +46,46 @@ export function LoveNoteCard({
     const [isPending, startTransition] = useTransition();
     const [note, setNote] = useState(initialNote);
     const [authorIdState, setAuthorIdState] = useState(authorId);
+    const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+    const focusParam = searchParams.get("focus");
 
     const isMyNote = authorIdState === currentUserId;
     const isEmpty = !note || note.trim().length === 0;
 
+    // Fokus z onboardingu – bez sync setState v těle efektu
+    useEffect(() => {
+        if (focusParam !== "love-note") return;
+
+        const id = setTimeout(() => {
+            // přepneme do edit modu (asynchronně)
+            setIsEditing(true);
+
+            textareaRef.current?.focus();
+            textareaRef.current?.scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+            });
+
+            // vyčistit query param, aby se efekt znovu netriggeroval
+            const params = new URLSearchParams(searchParams.toString());
+            params.delete("focus");
+
+            const nextUrl =
+                params.toString().length > 0
+                    ? `${pathname}?${params.toString()}`
+                    : pathname;
+
+            router.replace(nextUrl, { scroll: false });
+        }, 50);
+
+        return () => clearTimeout(id);
+    }, [focusParam, pathname, router, searchParams]);
+
+    // Realtime update – type-safe payload
     useEffect(() => {
         const supabase = createClient();
 
@@ -55,10 +99,12 @@ export function LoveNoteCard({
                     table: "couples",
                     filter: `id=eq.${coupleId}`,
                 },
-                (payload: any) => {
-                    const newRow = payload.new as any;
-                    setNote(newRow.love_note || "");
-                    setAuthorIdState(newRow.love_note_author_id || "");
+                (payload: RealtimePostgresChangesPayload<CoupleRow>) => {
+                    const newRow = payload.new as CoupleRow | null;
+                    if (!newRow) return;
+
+                    setNote(newRow.love_note ?? "");
+                    setAuthorIdState(newRow.love_note_author_id ?? "");
                 },
             )
             .subscribe();
@@ -74,6 +120,7 @@ export function LoveNoteCard({
             formData.append("coupleId", coupleId);
             formData.append("note", "");
             setNote("");
+            setAuthorIdState("");
             await updateLoveNote(formData);
         });
     };
@@ -87,12 +134,11 @@ export function LoveNoteCard({
                         {isMyNote ? "Tvůj vzkaz" : "Vzkaz pro tebe"}
                     </div>
                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                        {/* AlertDialog pro smazání */}
                         {!isEmpty && (
                             <AlertDialog>
                                 <AlertDialogTrigger asChild>
                                     <Button
-                                        variant={"ghost"}
+                                        variant="ghost"
                                         size="icon"
                                         disabled={isPending}
                                         className="hover:bg-transparent size-8 text-secondary hover:text-destructive cursor-pointer"
@@ -127,9 +173,9 @@ export function LoveNoteCard({
                         )}
 
                         <Button
-                            variant={"ghost"}
+                            variant="ghost"
                             size="icon"
-                            onClick={() => setIsEditing(!isEditing)}
+                            onClick={() => setIsEditing((prev) => !prev)}
                             className="hover:bg-transparent size-8 text-secondary hover:text-amber-400 cursor-pointer"
                             title="Upravit vzkaz"
                         >
@@ -142,7 +188,8 @@ export function LoveNoteCard({
                 {isEditing ? (
                     <form
                         action={async (formData) => {
-                            const newNote = (formData.get("note") as string) ?? "";
+                            const newNote =
+                                (formData.get("note") as string) ?? "";
                             setNote(newNote);
                             setAuthorIdState(currentUserId);
                             await updateLoveNote(formData);
@@ -154,8 +201,8 @@ export function LoveNoteCard({
                         <Textarea
                             name="note"
                             defaultValue={note}
+                            ref={textareaRef}
                             className="bg-white/50 border-[#E27D60]/20 focus-visible:border-secondary-foreground/50 focus:ring-secondary-foreground/50! min-h-20 font-sans! text-sm"
-                            autoFocus
                             placeholder="Napiš něco hezkého..."
                         />
                         <div className="flex justify-end gap-2">

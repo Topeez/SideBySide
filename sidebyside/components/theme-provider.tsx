@@ -3,6 +3,26 @@
 import * as React from "react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 
+// ⚠️ jen dev workaround na React 19 + next-themes script warning
+if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
+    const originalError = console.error;
+
+    console.error = (...args: unknown[]) => {
+        const [message] = args;
+        if (
+            typeof message === "string" &&
+            message.includes(
+                "Encountered a script tag while rendering React component",
+            )
+        ) {
+            // tenhle konkrétní warning ignorujeme
+            return;
+        }
+
+        originalError(...args);
+    };
+}
+
 export function ThemeProvider({
     children,
     ...props

@@ -50,5 +50,5 @@ export function useKeyboardNavigation({ userId }: UseKeyboardNavigationProps) {
 
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
-    }, [router, userId]);
+    }, [router, userId, supabase.auth]);
 }

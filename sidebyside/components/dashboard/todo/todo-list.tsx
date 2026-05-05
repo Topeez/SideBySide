@@ -39,7 +39,6 @@ export function TodoList({ todos = [], coupleId }: TodoListProps) {
             </CardHeader>
 
             <CardContent className="flex flex-col gap-3">
-
                 {/* Seznam */}
                 <div className="divide-y">
                     {optimisticTodos.length === 0 ? (
@@ -61,8 +60,7 @@ export function TodoList({ todos = [], coupleId }: TodoListProps) {
                     )}
                 </div>
             </CardContent>
-            <div className="flex items-center mt-auto p-6 pt-0 w-full">
-                {/* Formulář pro přidání */}
+            <div className="flex items-center mt-auto p-4 sm:p-6 pt-0 w-full">
                 <form
                     ref={formRef}
                     action={async (formData) => {
@@ -75,10 +73,14 @@ export function TodoList({ todos = [], coupleId }: TodoListProps) {
                     <Input
                         name="title"
                         placeholder="Přidat úkol..."
-                        className="h-8 text-sm"
+                        className="h-10 sm:h-8 text-sm"
                         autoComplete="off"
                     />
-                    <ActionButton type="submit" size="sm" className="px-2 h-8 shrink-0">
+                    <ActionButton
+                        type="submit"
+                        size="sm"
+                        className="px-3 h-10 sm:h-8 shrink-0"
+                    >
                         <Plus className="size-4" />
                     </ActionButton>
                 </form>

@@ -3,6 +3,7 @@
 import { createAdminClient } from "@/utils/supabase/admin";
 import { createClient } from "@/utils/supabase/server";
 import webPush, { WebPushError } from "web-push";
+import {  ActionResult } from "@/types/actions";
 
 
 // Konfigurace web-push
@@ -13,7 +14,7 @@ webPush.setVapidDetails(
 );
 
 // 1. Uložení odběru do DB
-export async function saveSubscription(sub: PushSubscriptionJSON) {
+export async function saveSubscription(sub: PushSubscriptionJSON): Promise<ActionResult> {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -28,12 +29,12 @@ export async function saveSubscription(sub: PushSubscriptionJSON) {
 
   if (error) {
       console.error("Save sub error:", error);
-      return { success: false, error: error.message };
+      return { success: false, error: "" + error.message };
   }
   return { success: true };
 }
 
-export async function sendNotificationToUser(userId: string, title: string, body: string, url: string = "/dashboard", type?: string) {
+export async function sendNotificationToUser(userId: string, title: string, body: string, url: string = "/dashboard", type?: string): Promise<ActionResult> {
     const supabase = createAdminClient();
     
     if (type) {
@@ -44,7 +45,7 @@ export async function sendNotificationToUser(userId: string, title: string, body
             .single();
 
         const prefs = profile?.notification_preferences ?? {};
-        if (prefs[type] === false) return;
+        if (prefs[type] === false) return {  success: false , error: "Nepodařilo se vypnout notifikace" };
     }
 
     const { data: subscriptions } = await supabase
@@ -52,7 +53,7 @@ export async function sendNotificationToUser(userId: string, title: string, body
         .select("*")
         .eq("user_id", userId);
 
-    if (!subscriptions || subscriptions.length === 0) return;
+    if (!subscriptions || subscriptions.length === 0) return { success: false, error: "Nepodařilo se najít odběry" };
 
     const payload = JSON.stringify({ title, body, url });
 
@@ -80,6 +81,7 @@ export async function sendNotificationToUser(userId: string, title: string, body
     });
 
     await Promise.all(promises);
+    return { success: true };
 }
 
 function isWebPushError(error: unknown): error is WebPushError {
@@ -91,10 +93,10 @@ function isWebPushError(error: unknown): error is WebPushError {
     );
 }
 
-export async function deleteSubscription() {
+export async function deleteSubscription(): Promise<ActionResult> {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { success: false };
+  if (!user) return { success: false, error: "Unauthorized" };
 
   await supabase
     .from("push_subscriptions")

@@ -11,7 +11,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createBucketItem } from "@/app/actions/couple";
-import { Plus, ImageOff, CalendarIcon, CalendarClock, Construction, Check } from "lucide-react";
+import {
+    Plus,
+    ImageOff,
+    CalendarIcon,
+    CalendarClock,
+    Construction,
+    Check,
+} from "lucide-react";
 import {
     Select,
     SelectContent,
@@ -56,13 +63,14 @@ export function AddBucketItemDialog({ coupleId }: { coupleId: string }) {
 
         setIsLoading(false);
 
-        if (result?.success) {
-            toast.success(result.message);
-            setIsOpen(false);
+        if (!result?.success) {
+            toast.error(result.error ?? "Něco se pokazilo");
+            setIsOpen(true);
             // Reset formuláře řeší zavření dialogu (Next.js server action resetuje form automaticky, pokud nepoužíváme JS submit, ale tady je to hybrid)
-            setImageUrl("");
+            return;
         } else {
-            toast.error(result?.message || "Něco se pokazilo");
+            setIsOpen(false);
+            toast.success(result?.success || "Nový sen uložen! 🎉");
         }
     };
 
@@ -130,13 +138,15 @@ export function AddBucketItemDialog({ coupleId }: { coupleId: string }) {
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="planned">
-                                    Plánujeme <CalendarClock className="text-destructive"/>
+                                    Plánujeme{" "}
+                                    <CalendarClock className="text-destructive" />
                                 </SelectItem>
                                 <SelectItem value="in_progress">
-                                    Pracujeme na tom <Construction className="text-amber-400"/>
+                                    Pracujeme na tom{" "}
+                                    <Construction className="text-amber-400" />
                                 </SelectItem>
                                 <SelectItem value="completed">
-                                    Splněno <Check className="text-green-400"/>
+                                    Splněno <Check className="text-green-400" />
                                 </SelectItem>
                             </SelectContent>
                         </Select>

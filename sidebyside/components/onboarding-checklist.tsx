@@ -13,7 +13,8 @@ import {
 import { cn } from "@/lib/utils";
 import { ProfileData } from "@/types/profile";
 import InviteButton from "./dashboard/invite-button";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
 
 interface OnboardingChecklistProps {
     userProfile: ProfileData;
@@ -28,6 +29,19 @@ export function OnboardingChecklist({
     hasActiveCouple,
     hasLoveNote = false,
 }: OnboardingChecklistProps) {
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+
+    const goToLoveNote = useCallback(() => {
+        const params = new URLSearchParams(searchParams.toString());
+        params.set("focus", "love-note");
+
+        router.push(`${pathname}?${params.toString()}`, {
+            scroll: true,
+        });
+    }, [pathname, searchParams, router]);
+
     const steps = useMemo(
         () => [
             {
@@ -64,12 +78,13 @@ export function OnboardingChecklist({
                 description: "Potěš svou polovičku Love Note",
                 done: hasLoveNote,
                 action: (
-                    <Link
-                        href="/dashboard"
+                    <button
+                        type="button"
+                        onClick={goToLoveNote}
                         className="bg-secondary/20 hover:bg-secondary/30 px-3 py-1.5 rounded-full font-medium text-secondary text-xs whitespace-nowrap transition-colors"
                     >
                         Napsat vzkaz
-                    </Link>
+                    </button>
                 ),
             },
             {
@@ -87,7 +102,7 @@ export function OnboardingChecklist({
                 ),
             },
         ],
-        [userProfile, eventsCount, hasActiveCouple, hasLoveNote],
+        [userProfile, eventsCount, hasActiveCouple, hasLoveNote, goToLoveNote],
     );
 
     const completedSteps = steps.filter((s) => s.done).length;

@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
 import { nanoid } from "nanoid";
 import { getPartnerId } from "@/lib/couple-utils";
+import { ActionResult } from "@/types/actions";
 
 const MilestoneSchema = z.object({
     title: z.string().min(1, "Název je povinný"),
@@ -23,7 +24,7 @@ const BucketItemSchema = z.object({
     coupleId: z.uuid(),
 })
 
-export async function updateRelationshipDate(coupleId: string, date: string){
+export async function updateRelationshipDate(coupleId: string, date: string): Promise<ActionResult> {
   const supabase = await createClient();
 
   const { data: { user } } = await supabase.auth.getUser();
@@ -44,17 +45,20 @@ export async function updateRelationshipDate(coupleId: string, date: string){
     .update({ relationship_start: date })
     .eq("id", coupleId);
 
-  if(error) return { success: false, error: error.message };
+  if(error) { 
+    console.error("deleteError: ", error)
+    return { success: false, error: "Nepodřilo se aktualizovat datum" }
+  };
 
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/settings");
   return { success: true };
 }
 
-export async function updateCoverPhoto(coupleId: string, formData: FormData) {
+export async function updateCoverPhoto(coupleId: string, formData: FormData): Promise<ActionResult> {
     const imageFile = formData.get("cover") as File;
 
-    if (!coupleId || !imageFile) return;
+    if (!coupleId || !imageFile) return { success: false, error: "Chyba nmáš pár nebo soubor neexistuje" };
 
     const supabase = await createClient();
 
@@ -67,7 +71,7 @@ export async function updateCoverPhoto(coupleId: string, formData: FormData) {
 
     if (uploadError) {
         console.error("Cover upload error:", uploadError);
-        return;
+        return { success: false, error: "Nepodřilo se nahrát obrázek" };
     }
 
     const { data: { publicUrl } } = supabase.storage
@@ -82,9 +86,10 @@ export async function updateCoverPhoto(coupleId: string, formData: FormData) {
     revalidatePath("/dashboard/couple");
     revalidatePath("/couple");
 
+    return { success: true };
 }
 
-export async function createMilestone(formData: FormData) {
+export async function createMilestone(formData: FormData): Promise<ActionResult> {
 const validated = MilestoneSchema.safeParse({
         title: formData.get("title"),
         description: formData.get("description"),
@@ -94,14 +99,14 @@ const validated = MilestoneSchema.safeParse({
     });
 
   if (!validated.success) {
-        return { success: false, message: validated.error.message };
+        return { success: false, error: "Chyba validace" };
     }
 
     const { title, description, date, icon, coupleId } = validated.data;
 
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return { success: false, message: "Nepřihlášen" };
+    if (!user) return { success: false, error: "Nepřihlášen" };
 
     const { error } = await supabase.from("milestones").insert({
         title, description, date,
@@ -109,7 +114,7 @@ const validated = MilestoneSchema.safeParse({
         couple_id: coupleId,
     });
 
-    if (error) return { success: false, message: "Chyba při ukládání" };
+    if (error) return { success: false, error: "Chyba při ukládání" };
 
     const partnerId = await getPartnerId(supabase, coupleId, user.id);
     if (partnerId) {
@@ -127,7 +132,7 @@ const validated = MilestoneSchema.safeParse({
     return { success: true };
 }
 
-export async function createBucketItem(formData: FormData) {
+export async function createBucketItem(formData: FormData): Promise<ActionResult> {
     const validated = BucketItemSchema.safeParse({
         title: formData.get("title"),
         image_url: formData.get("image_url"),
@@ -136,14 +141,14 @@ export async function createBucketItem(formData: FormData) {
     });
 
     if (!validated.success) {
-        return { success: false, message: validated.error.message };
+        return { success: false, error: "Chyba validace" };
     }
 
     const { title, image_url, status, coupleId } = validated.data;
 
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return { success: false, message: "Nepřihlášen" };
+    if (!user) return { success: false, error: "Nepřihlášen" };
 
     const { error } = await supabase.from("bucket_list_items").insert({
         title, status,
@@ -151,7 +156,7 @@ export async function createBucketItem(formData: FormData) {
         couple_id: coupleId,
     });
 
-    if (error) return { success: false, message: "Chyba při ukládání" };
+    if (error) return { success: false, error: "Chyba při ukládání" };
 
     const partnerId = await getPartnerId(supabase, coupleId, user.id);
     if (partnerId) {
@@ -168,7 +173,7 @@ export async function createBucketItem(formData: FormData) {
     revalidatePath("/dashboard/couple");
     return { success: true };
 }
-export async function deleteBucketItem(itemId: string) {
+export async function deleteBucketItem(itemId: string): Promise<ActionResult> {
     const supabase = await createClient();
     
     const { error } = await supabase
@@ -178,24 +183,53 @@ export async function deleteBucketItem(itemId: string) {
 
     if (error) {
         console.error("Error deleting bucket item:", error);
-        return;
+        return { success: false, error: "Nepodřilo se smazat položku." };
     }
 
     revalidatePath("/dashboard/couple");
+    return { success: true };
 }
 
 
-export async function toggleBucketItemStatus(itemId: string, newStatus: string) {
-    const supabase = await createClient();
-    await supabase.from("bucket_list_items").update({ status: newStatus }).eq("id", itemId);
-    revalidatePath("/dashboard/couple");
+export async function toggleBucketItemStatus(
+  itemId: string,
+  newStatus: string,
+): Promise<ActionResult> {
+  if (!itemId) {
+    return { success: false, error: "Chybí ID položky." };
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { success: false, error: "Uživatel není přihlášen." };
+  }
+
+  const { error } = await supabase
+    .from("bucket_list_items")
+    .update({ status: newStatus })
+    .eq("id", itemId);
+
+  if (error) {
+    console.error("toggleBucketItemStatus error:", error);
+    return {
+      success: false,
+      error: "Nepodařilo se aktualizovat stav položky. Zkus to prosím znovu.",
+    };
+  }
+
+  revalidatePath("/dashboard/couple");
+  return { success: true };
 }
 
-export async function uncoupleUser(coupleId: string) {
+export async function uncoupleUser(coupleId: string): Promise<ActionResult> {
     const supabase = await createClient();
     
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return { success: false, message: "Nejste přihlášen" };
+    if (!user) return { success: false, error: "Nejste přihlášen" };
 
     const { data: couple, error: fetchError } = await supabase
         .from("couples")
@@ -204,11 +238,11 @@ export async function uncoupleUser(coupleId: string) {
         .single();
 
     if (fetchError || !couple) {
-        return { success: false, message: "Pár nenalezen." };
+        return { success: false, error: "Pár nenalezen." };
     }
 
     if (couple.user1_id !== user.id && couple.user2_id !== user.id) {
-        return { success: false, message: "Nemáte oprávnění k této akci." };
+        return { success: false, error: "Nemáte oprávnění k této akci." };
     }
 
     const { error: deleteError } = await supabase
@@ -218,17 +252,17 @@ export async function uncoupleUser(coupleId: string) {
 
     if (deleteError) {
         console.error("Uncouple error:", deleteError);
-        return { success: false, message: "Nepodařilo se zrušit propojení." };
+        return { success: false, error: "Nepodařilo se zrušit propojení." };
     }
 
     revalidatePath("/", "layout");
     return { success: true };
 }
 
-export async function updateMood(mood: string) {
+export async function updateMood(mood: string): Promise<ActionResult> {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return { success: false };
+    if (!user) return { success: false, error: "Nepřihlášen" };
 
     const { data: couple } = await supabase
         .from("couples")
@@ -236,7 +270,7 @@ export async function updateMood(mood: string) {
         .or(`user1_id.eq.${user.id},user2_id.eq.${user.id}`)
         .single();
 
-    if (!couple) return { success: false };
+    if (!couple) return { success: false, error: "Nemáte oprávnění" };
 
     const isUser1 = couple.user1_id === user.id;
     await supabase.from("couples").update(
@@ -261,7 +295,7 @@ export async function updateMood(mood: string) {
     return { success: true };
 }
 
-export async function getOrCreateInviteCode(userId: string): Promise<string | null> {
+export async function getOrCreateInviteCode(userId: string): Promise<ActionResult | string> {
     const supabase = await createClient();
 
     // Zkontroluj jestli už existuje pending couple
@@ -285,13 +319,13 @@ export async function getOrCreateInviteCode(userId: string): Promise<string | nu
 
     if (error) {
         console.error("getOrCreateInviteCode error:", error);
-        return null;
+        return { success: false, error: "Nepodařilo se vytvořit kód." };
     }
 
     return invite_code;
 }
 
-export async function acceptInvite(inviteCode: string) {
+export async function acceptInvite(inviteCode: string): Promise<ActionResult> {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return { success: false, error: "Nepřihlášen" };

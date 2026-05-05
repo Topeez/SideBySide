@@ -69,25 +69,25 @@ export default async function ChangelogPage() {
                                     {/* Zde se renderuje Markdown z GitHubu */}
                                     <ReactMarkdown
                                         components={{
-                                            ul: ({ node, ...props }) => (
+                                            ul: ({ ...props }) => (
                                                 <ul
                                                     className="space-y-1 my-2 pl-5 list-disc"
                                                     {...props}
                                                 />
                                             ),
-                                            li: ({ node, ...props }) => (
+                                            li: ({ ...props }) => (
                                                 <li
                                                     className="pl-1"
                                                     {...props}
                                                 />
                                             ),
-                                            h1: ({ node, ...props }) => (
+                                            h1: ({ ...props }) => (
                                                 <h3
                                                     className="mt-4 mb-2 font-bold text-lg"
                                                     {...props}
                                                 />
                                             ),
-                                            h2: ({ node, ...props }) => (
+                                            h2: ({ ...props }) => (
                                                 <h4
                                                     className="mt-3 mb-1 font-bold text-base"
                                                     {...props}
