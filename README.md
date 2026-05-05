@@ -61,7 +61,7 @@ Aplikace se přizpůsobí vašemu stylu.
 
 **Frontend:**
 
-- [Next.js 15](https://nextjs.org/) (App Router, Server Actions)
+- [Next.js 16](https://nextjs.org/) (App Router, Server Actions, React Compiler)
 - [React 19](https://react.dev/)
 - [Tailwind CSS v4](https://tailwindcss.com/) (využití `@theme`, CSS proměnných)
 - [Shadcn UI](https://ui.shadcn.com/) (Radix Primitives)
