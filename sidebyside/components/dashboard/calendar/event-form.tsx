@@ -70,7 +70,7 @@ export function EventForm({
     }
 
     return (
-        <form action={onSubmit} className="space-y-4 pt-4">
+        <form action={onSubmit} className="space-y-4 pt-4 overflow-y-scroll">
             <input
                 type="hidden"
                 name="coupleId"

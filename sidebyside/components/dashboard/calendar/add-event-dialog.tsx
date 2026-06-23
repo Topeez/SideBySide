@@ -77,20 +77,22 @@ export function AddEventDialog({
                     </ActionButton>
                 )}
             </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
+            <DialogContent className="flex flex-col sm:max-w-md max-h-[90dvh]">
                 <DialogHeader>
                     <DialogTitle>Nová událost</DialogTitle>
                 </DialogHeader>
-                <EventForm
-                    onSubmit={handleSubmit}
-                    submitLabel="Přidat událost"
-                    initialValues={{
-                        coupleId,
-                        dateRange: defaultDate
-                            ? { from: defaultDate, to: undefined }
-                            : undefined,
-                    }}
-                />
+                <div className="flex-1 pr-1 overflow-y-auto">
+                    <EventForm
+                        onSubmit={handleSubmit}
+                        submitLabel="Přidat událost"
+                        initialValues={{
+                            coupleId,
+                            dateRange: defaultDate
+                                ? { from: defaultDate, to: undefined }
+                                : undefined,
+                        }}
+                    />
+                </div>
             </DialogContent>
         </Dialog>
     );

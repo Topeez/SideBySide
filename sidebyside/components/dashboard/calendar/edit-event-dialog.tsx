@@ -62,7 +62,7 @@ export function EditEventDialog({ event, onUpdate }: EditEventDialogProps) {
                     <Pencil className="size-3.5" />
                 </button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
+            <DialogContent className="flex flex-col sm:max-w-md max-h-[90dvh]">
                 <DialogHeader>
                     <DialogTitle>Upravit událost</DialogTitle>
                     <DialogDescription className="sr-only">
