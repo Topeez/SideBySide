@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { updateProfile, updateAvatar } from "@/app/actions/profile";
+import { updateCycleSettings } from "@/app/actions/cycle";
 import { useState, useTransition, useRef } from "react";
 import { toast } from "sonner";
 import { Loader2, CalendarIcon, Camera } from "lucide-react";
@@ -29,14 +30,6 @@ import {
     SelectValue,
 } from "../ui/select";
 import { CycleSettingsSection } from "./health-and-cycle";
-// import router from "next/router";
-// import {
-//     Dialog,
-//     DialogContent,
-//     DialogFooter,
-//     DialogHeader,
-//     DialogTitle,
-// } from "../ui/dialog";
 import { useUnsavedChanges } from "../unsaved-changes-context";
 
 export function ProfileForm({ profile }: { profile: Profile }) {
@@ -109,14 +102,33 @@ export function ProfileForm({ profile }: { profile: Profile }) {
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
+
         startTransition(async () => {
             const result = await updateProfile(null, formData);
-            if (result?.success) {
-                markSaved();
-                toast.success("Nastavení uloženo");
-            } else {
+
+            if (!result?.success) {
                 toast.error(result?.error ?? "Něco se pokazilo");
+                return;
             }
+
+            const lastPeriod = formData.get("last_period_start") as
+                | string
+                | null;
+
+            if (gender === "female" && lastPeriod) {
+                const cycleResult = await updateCycleSettings(null, formData);
+
+                if (!cycleResult?.success) {
+                    toast.error(
+                        cycleResult?.error ??
+                            "Profil uložen, ale cyklus se nepodařilo uložit.",
+                    );
+                    return;
+                }
+            }
+
+            markSaved();
+            toast.success("Nastavení uloženo");
         });
     };
 
