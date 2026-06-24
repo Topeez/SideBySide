@@ -15,7 +15,7 @@ export async function updateCycleSettings(
 
   const lastPeriod = formData.get("last_period_start") as string | null;
   const cycleLength = formData.get("cycle_length_days") as string | null;
-  const periodLength = formData.get("perod_length_days") as string | null;
+  const periodLength = formData.get("period_length_days") as string | null;
   const sharingMode = formData.get("sharing_mode") as string | null;
 
   if(!lastPeriod) return { success: false, error: "Vyplňte prosím datum poslední menstruace." }

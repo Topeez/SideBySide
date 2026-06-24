@@ -128,6 +128,25 @@ export default async function DashboardPage() {
         events = allEventsData || [];
     }
 
+    let cycleData = null;
+    if (couple && partnerProfile && partnerProfile.gender === "female") {
+        const partnerId =
+            couple.user1_id === user.id ? couple.user2_id : couple.user1_id;
+
+        const { data: cycleRow } = await supabase
+            .from("cycle_tracking")
+            .select(
+                "last_period_start, cycle_length_days, period_length_days, sharing_mode",
+            )
+            .eq("user_id", partnerId)
+            .maybeSingle();
+
+        // Předáme jen pokud partnerka sdílí fázi
+        if (cycleRow?.sharing_mode === "share_phase_with_partner") {
+            cycleData = cycleRow;
+        }
+    }
+
     const eventContent =
         couple && !pendingCouple ? (
             <ClosestEvent
@@ -240,6 +259,7 @@ export default async function DashboardPage() {
                 user={user}
                 userProfile={userProfile}
                 partnerProfile={partnerProfile}
+                cycle={cycleData}
             />
         ) : (
             <Card className="col-span-12 bg-muted/40 border-none h-full">
