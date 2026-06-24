@@ -6,15 +6,17 @@ type WidgetClasses = {
   todo: string;
   calendar: string;
   profile: string;
+  cycle: string;
 };
 
 export const layoutConfig: Record<DashboardLayoutType, WidgetClasses> = {
   default: {
     closestEvent: "col-span-12 md:col-span-8",
     loveNote:     "col-span-12 md:col-span-4",
-    todo:     "col-span-12 md:col-span-6 lg:col-span-4",
-    calendar: "col-span-12 md:col-span-6 lg:col-span-4",
-    profile:  "col-span-12 lg:col-span-4",              
+    todo:         "col-span-12 md:col-span-6 lg:col-span-4",
+    calendar:     "col-span-12 md:col-span-6 lg:col-span-4",
+    profile:      "col-span-12 lg:col-span-4",  
+    cycle:        "col-span-12"            
   },
   focus: {
     closestEvent: "col-span-12 md:col-span-6",
@@ -22,6 +24,7 @@ export const layoutConfig: Record<DashboardLayoutType, WidgetClasses> = {
     todo:         "col-span-12 md:col-span-7 lg:col-span-8 row-span-2",
     calendar:     "col-span-12 md:col-span-5 lg:col-span-4",
     profile:      "col-span-12 md:col-span-4",
+    cycle:        "col-span-12",
   },
   calendar: {
     closestEvent: "col-span-12 md:col-span-8",
@@ -29,6 +32,8 @@ export const layoutConfig: Record<DashboardLayoutType, WidgetClasses> = {
     profile:      "col-span-12 md:col-span-4",
     calendar:     "col-span-12 md:col-span-8 row-span-2",
     todo:         "col-span-12 md:col-span-4",
+    cycle:        "col-span-12",
   },
+
 };
 

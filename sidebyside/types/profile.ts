@@ -9,8 +9,9 @@ export interface Profile {
   ring_size: string | null;
   love_language: string | null;
   favorite_color: string | null;
-  [key: string]: string | Date | null;
   birth_date: Date | null;
+  gender: Gender | null;
+  [key: string]: string | Date | null;
 }
 
 export interface ProfileData {
@@ -20,11 +21,14 @@ export interface ProfileData {
   nickname?: string;
   avatar_url?: string;
   couple_id?: string;
+  gender?: Gender;
 }
 
 export type DashboardLayoutType = "default" | "focus" | "calendar";
 
 const VALID_LAYOUTS: DashboardLayoutType[] = ["default", "focus", "calendar"];
+
+export type Gender = "male" | "female" | "other" | "unknown";
 
 export function isValidLayout(value: string | null | undefined): DashboardLayoutType | undefined {
     if (!value) return undefined;

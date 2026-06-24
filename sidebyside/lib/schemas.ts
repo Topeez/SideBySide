@@ -11,6 +11,7 @@ export const ProfileSchema = z.object({
   love_language: z.string().optional(),
   favorite_color: z.string().optional(),
   birth_date: z.date().optional(),
+  gender: z.string().optional(),
 });
 
 export const PasswordSchema = z

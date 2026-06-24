@@ -12,6 +12,7 @@ import Link from "next/link";
 import { DashboardGrid } from "@/components/dashboard/dashboard-grid";
 import { OnboardingChecklist } from "@/components/onboarding-checklist";
 import { EmailChangeNotice } from "@/components/dashboard/email-change-notice";
+import { CyclePhaseWidget } from "@/components/dashboard/cycle-phase-widget";
 
 export default async function DashboardPage() {
     const supabase = await createClient();
@@ -233,6 +234,22 @@ export default async function DashboardPage() {
             </div>
         );
 
+    const cycleContent =
+        (couple ?? !pendingCouple) ? (
+            <CyclePhaseWidget
+                user={user}
+                userProfile={userProfile}
+                partnerProfile={partnerProfile}
+            />
+        ) : (
+            <Card className="col-span-12 bg-muted/40 border-none h-full">
+                <CardContent className="flex justify-center items-center h-24 text-muted-foreground text-sm">
+                    Zdraví a cyklus se objeví po spárování a nastavení u
+                    partnerky
+                </CardContent>
+            </Card>
+        );
+
     return (
         <div className="mx-auto p-4 md:p-8" suppressHydrationWarning>
             {/* --- HEADER --- */}
@@ -264,6 +281,7 @@ export default async function DashboardPage() {
                 todoSlot={todoContent}
                 calendarSlot={calendarContent}
                 profileSlot={profileContent}
+                cycleSlot={cycleContent}
             />
         </div>
     );

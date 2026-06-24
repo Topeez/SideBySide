@@ -11,6 +11,7 @@ interface DashboardGridProps {
     todoSlot: ReactNode;
     calendarSlot: ReactNode;
     profileSlot: ReactNode;
+    cycleSlot: ReactNode;
 }
 
 export function DashboardGrid({
@@ -19,6 +20,7 @@ export function DashboardGrid({
     todoSlot,
     calendarSlot,
     profileSlot,
+    cycleSlot,
 }: DashboardGridProps) {
     const { layout } = useDashboardLayout();
     const config = layoutConfig[layout] || layoutConfig.default;
@@ -48,6 +50,9 @@ export function DashboardGrid({
 
             <div className={cn("transition-all duration-300", config.profile)}>
                 <div className="size-full">{profileSlot}</div>
+            </div>
+            <div className={cn("transition-all duration-300", config.cycle)}>
+                <div className="size-full">{cycleSlot}</div>
             </div>
         </div>
     );

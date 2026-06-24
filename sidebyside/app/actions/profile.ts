@@ -33,6 +33,7 @@ export async function updateProfile(
     birth_date: formData.get("birth_date")
       ? new Date(formData.get("birth_date") as string)
       : undefined,
+    gender: formData.get("gender") || undefined,
   };
 
   const validatedFields = ProfileSchema.safeParse(rawData);
