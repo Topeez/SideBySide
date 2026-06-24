@@ -56,14 +56,31 @@ export async function updateRelationshipDate(coupleId: string, date: string): Pr
 }
 
 export async function updateCoverPhoto(coupleId: string, formData: FormData): Promise<ActionResult> {
+    const supabase = await createClient();
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { success: false, error: "Nepřihlášen" };
+    
     const imageFile = formData.get("cover") as File;
 
     if (!coupleId || !imageFile) return { success: false, error: "Chyba nmáš pár nebo soubor neexistuje" };
 
-    const supabase = await createClient();
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+    if(!allowedTypes.includes(imageFile.type)) return { success: false, error: "Nepodporovaný formát. Povolen je pouze JPG, PNG nebo WebP." };
+
+    if(imageFile.size > 1 * 1204 * 1024) return { success: false, error: "Soubor je příliš velký. Maximum je 1 MB." };
 
     const fileExt = imageFile.name.split('.').pop();
     const fileName = `covers/${coupleId}/${uuidv4()}.${fileExt}`;
+
+    const { data: couple } = await supabase
+      .from("couples")
+        .select("id")
+        .eq("id", coupleId)
+        .or(`user1_id.eq.${user?.id},user2_id.eq.${user?.id}`)
+        .maybeSingle();
+
+    if(!couple) return { success: false, error: "Nemáte oprávnění" }
 
     const { error: uploadError } = await supabase.storage
         .from('couple-photos')
@@ -108,6 +125,15 @@ const validated = MilestoneSchema.safeParse({
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return { success: false, error: "Nepřihlášen" };
 
+    const { data: couple } = await supabase
+        .from("couples")
+        .select("id")
+        .eq("id", coupleId)
+        .or(`user1_id.eq.${user.id},user2_id.eq.${user.id}`)
+        .maybeSingle();
+
+    if(!couple) return { success: false, error: "Nemáte oprávnění" }
+
     const { error } = await supabase.from("milestones").insert({
         title, description, date,
         icon: icon || "star",
@@ -150,6 +176,15 @@ export async function createBucketItem(formData: FormData): Promise<ActionResult
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return { success: false, error: "Nepřihlášen" };
 
+    const { data: couple } = await supabase
+        .from("couples")
+        .select("id")
+        .eq("id", coupleId)
+        .or(`user1_id.eq.${user?.id},user2_id.eq.${user?.id}`)
+        .maybeSingle();
+
+    if(!couple) return { success: false, error: "Nemáte oprávnění" }
+
     const { error } = await supabase.from("bucket_list_items").insert({
         title, status,
         image_url: image_url || null,
@@ -175,7 +210,27 @@ export async function createBucketItem(formData: FormData): Promise<ActionResult
 }
 export async function deleteBucketItem(itemId: string): Promise<ActionResult> {
     const supabase = await createClient();
-    
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { success: false, error: "Nepřihlášen" };
+
+    const { data: item } = await supabase
+        .from("bucket_list_items")
+        .select("couple_id")
+        .eq("id", itemId)
+        .single();
+
+    if (!item) return { success: false, error: "Položka nenalezena." };
+
+    const { data: couple } = await supabase
+        .from("couples")
+        .select("id")
+        .eq("id", item.couple_id)
+        .or(`user1_id.eq.${user.id},user2_id.eq.${user.id}`)
+        .maybeSingle();
+
+    if (!couple) return { success: false, error: "Nemáte oprávnění." };
+
     const { error } = await supabase
         .from("bucket_list_items")
         .delete()
@@ -183,7 +238,7 @@ export async function deleteBucketItem(itemId: string): Promise<ActionResult> {
 
     if (error) {
         console.error("Error deleting bucket item:", error);
-        return { success: false, error: "Nepodřilo se smazat položku." };
+        return { success: false, error: "Nepodařilo se smazat položku." };
     }
 
     revalidatePath("/dashboard/couple");

@@ -29,6 +29,15 @@ export async function createEvent(formData: FormData): Promise<ActionResult> {
     return { success: false, error: "Uživatel není přihlášen." };
   }
 
+  const { data: couple } = await supabase
+      .from("couples")
+        .select("id")
+        .eq("id", coupleId)
+        .or(`user1_id.eq.${user?.id},user2_id.eq.${user?.id}`)
+        .maybeSingle();
+
+  if(!couple) return { success: false, error: "Nemáte oprávnění" }
+
   const startIso = new Date(`${dateFrom}T${startTimeStr}`).toISOString();
   
   let endIso = null;
@@ -49,6 +58,7 @@ export async function createEvent(formData: FormData): Promise<ActionResult> {
     created_by: user.id,
     type: type || 'other',
     notify_before: notifyBefore ? parseInt(notifyBefore as string): null,
+    notification_sent: false
   });
 
   if (error) {
@@ -91,6 +101,7 @@ export async function updateEvent(eventId: string, formData: FormData): Promise<
   const dateTo = formData.get("dateTo") as string;
   const startTimeStr = formData.get("startTime") as string;
   const endTimeStr = formData.get("endTime") as string;
+  const notifyBefore = formData.get("notifyBefore") as string;
 
   if (!title || !dateFrom || !startTimeStr) {
     return { success: false, error: "Chybí název nebo datum/čas události." };
@@ -112,6 +123,8 @@ export async function updateEvent(eventId: string, formData: FormData): Promise<
           start_time: startIso,
           end_time: endIso,
           type: type || "other",
+          notify_before: notifyBefore ? parseInt(notifyBefore as string) : null,
+          notification_sent: false
       })
       .eq("id", eventId);
 

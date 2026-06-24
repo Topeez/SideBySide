@@ -27,6 +27,7 @@ export interface EventFormInitialValues {
     startTime?: string;
     endTime?: string;
     coupleId: string;
+    notifyBefore?: number | null;
 }
 
 interface EventFormProps {
@@ -47,7 +48,9 @@ export function EventForm({
     const [date, setDate] = useState<DateRange | undefined>(
         initialValues.dateRange,
     );
-    const [notifyBefore, setNotifyBefore] = useState<string | null>(null);
+    const [notifyBefore, setNotifyBefore] = useState<string | null>(
+        initialValues.notifyBefore ? String(initialValues.notifyBefore) : null,
+    );
 
     const handleOpenChange = (open: boolean) => {
         if (open && !date) {

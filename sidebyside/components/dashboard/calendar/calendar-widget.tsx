@@ -110,7 +110,10 @@ export function CalendarWidget({
             />
 
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogContent className="sm:max-w-lg">
+                <DialogContent
+                    className="sm:max-w-lg"
+                    aria-describedby="dialog-description"
+                >
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2 capitalize">
                             {date

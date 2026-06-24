@@ -11,6 +11,7 @@ export type Event = {
     description?: string | null;
     type?: string | null;
     creator_id?: string | null;
+    notify_before?: number | null;
 };
 
 export interface ClosestEventProps {

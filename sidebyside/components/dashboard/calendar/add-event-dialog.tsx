@@ -77,7 +77,10 @@ export function AddEventDialog({
                     </ActionButton>
                 )}
             </DialogTrigger>
-            <DialogContent className="flex flex-col sm:max-w-md max-h-[90dvh]">
+            <DialogContent
+                className="flex flex-col sm:max-w-md max-h-[90dvh]"
+                aria-describedby="event-form"
+            >
                 <DialogHeader>
                     <DialogTitle>Nová událost</DialogTitle>
                 </DialogHeader>

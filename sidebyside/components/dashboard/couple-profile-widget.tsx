@@ -31,7 +31,7 @@ export function CoupleProfileWidget({
             <CardContent className="flex flex-col">
                 <div className="flex flex-row xl:flex-row md:flex-col items-center gap-4 size-full">
                     {/* JÁ */}
-                    <div className="z-100 flex flex-col items-center gap-2">
+                    <div className="z-10 flex flex-col items-center gap-2">
                         <Link
                             href={`/dashboard/profile/${userProfile?.id}`}
                             aria-label="partner profile link"
@@ -51,7 +51,7 @@ export function CoupleProfileWidget({
                         </span>
                     </div>
 
-                    <div className="z-10 relative flex flex-1 justify-center items-center min-w-28 sm:min-w-52 h-28 sm:h-52 animate-heart">
+                    <div className="z-1 relative flex flex-1 justify-center items-center min-w-28 sm:min-w-52 h-28 sm:h-52 animate-heart">
                         <Heart
                             className="absolute opacity-50 dark:opacity-30 size-100 md:size-200 text-red-700 transition-all animate-heart"
                             strokeWidth={1}
@@ -86,7 +86,7 @@ export function CoupleProfileWidget({
                     </div>
 
                     {/* PARTNER */}
-                    <div className="z-100 flex flex-col items-center gap-2">
+                    <div className="z-10 flex flex-col items-center gap-2">
                         <Link
                             href={`/dashboard/profile/${partnerProfile?.id}`}
                             aria-label="partner profile link"

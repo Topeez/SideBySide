@@ -62,7 +62,10 @@ export function EditEventDialog({ event, onUpdate }: EditEventDialogProps) {
                     <Pencil className="size-3.5" />
                 </button>
             </DialogTrigger>
-            <DialogContent className="flex flex-col sm:max-w-md max-h-[90dvh]">
+            <DialogContent
+                className="flex flex-col sm:max-w-md max-h-[90dvh]"
+                aria-describedby="event-form"
+            >
                 <DialogHeader>
                     <DialogTitle>Upravit událost</DialogTitle>
                     <DialogDescription className="sr-only">
@@ -80,6 +83,7 @@ export function EditEventDialog({ event, onUpdate }: EditEventDialogProps) {
                         dateRange: { from: startDate, to: endDate },
                         startTime: format(startDate, "HH:mm"),
                         endTime: endDate ? format(endDate, "HH:mm") : undefined,
+                        notifyBefore: event.notify_before ?? null,
                     }}
                 />
             </DialogContent>
