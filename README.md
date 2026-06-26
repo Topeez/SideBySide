@@ -1,4 +1,4 @@
-# SideBySide
+# LoveSync
 
 > **Plánujte společně, žijte lépe.**
 > Aplikace pro páry, která sjednocuje sdílený kalendář, úkoly a společné plány na jedno místo.
@@ -17,7 +17,7 @@ Vyzkoušejte aplikaci živě: **[side-by-side-nu.vercel.app](https://side-by-sid
 
 ## O projektu
 
-**SideBySide** je moderní webová aplikace navržená pro páry, které chtějí mít pořádek ve společném čase. Řeší klasický problém "kdy máš čas?" a "co musíme zařídit?" tím, že nabízí **sdílený prostor pro plánování**.
+**LoveSync** je moderní webová aplikace navržená pro páry, které chtějí mít pořádek ve společném čase. Řeší klasický problém "kdy máš čas?" a "co musíme zařídit?" tím, že nabízí **sdílený prostor pro plánování**.
 
 Kromě organizace času slouží i jako digitální památník vztahu – od počítání společných dnů až po ukládání vzpomínek. Projekt vznikl jako univerzitní práce se zaměřením na moderní technologie React ekosystému.
 
@@ -84,8 +84,8 @@ Aplikace se přizpůsobí vašemu stylu.
 
 1. **Klonování repozitáře:**
     ```bash
-    git clone https://github.com/Topeez/SideBySide.git
-    cd SideBySide
+    git clone https://github.com/Topeez/LoveSync.git
+    cd LoveSync
     ```
 2. **Instalace závislostí:**
    `npm install`
